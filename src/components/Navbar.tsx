@@ -1,6 +1,8 @@
 import { useState } from "react";
-import { Menu, X } from "lucide-react";
+import { Menu, X, LogIn } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { Link } from "react-router-dom";
+import { Button } from "@/components/ui/button";
 import cblakeLogo from "@/assets/cblake-logo.png";
 
 const navLinks = [
@@ -36,6 +38,12 @@ const Navbar = () => {
               {link.label}
             </a>
           ))}
+          <Button variant="outline" size="sm" asChild>
+            <Link to="/auth">
+              <LogIn size={16} className="mr-2" />
+              Portal Login
+            </Link>
+          </Button>
         </div>
 
         {/* Mobile toggle */}
@@ -68,6 +76,12 @@ const Navbar = () => {
                   {link.label}
                 </a>
               ))}
+              <Button variant="outline" size="sm" className="w-full mt-2" asChild>
+                <Link to="/auth" onClick={() => setOpen(false)}>
+                  <LogIn size={16} className="mr-2" />
+                  Portal Login
+                </Link>
+              </Button>
             </div>
           </motion.div>
         )}
