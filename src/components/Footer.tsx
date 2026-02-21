@@ -4,8 +4,14 @@ const Footer = () => {
       <div className="container mx-auto">
         <div className="flex flex-col md:flex-row items-center justify-between gap-6 mb-8">
           <div>
-            <p className="text-xl font-bold tracking-tight">
-              C. Blake <span className="text-gradient">Enterprise</span>
+            <div className="flex items-center gap-3 mb-2">
+              <div className="w-6 h-6 rounded-full bg-gradient-to-br from-primary to-accent-magenta" />
+              <p className="text-xl font-serif font-bold tracking-tight">
+                C. Blake <span className="text-gradient">Enterprise</span>
+              </p>
+            </div>
+            <p className="text-xs text-muted-foreground">
+              Residential Housing & Asset Optimization
             </p>
             <p className="text-xs text-muted-foreground mt-1 italic">
               Built With Vision. Managed With Structure.
@@ -19,7 +25,9 @@ const Footer = () => {
           </div>
         </div>
 
-        <div className="border-t border-border pt-6 flex flex-col md:flex-row items-center justify-between gap-4">
+        <div className="separator-pink mb-6" />
+
+        <div className="flex flex-col md:flex-row items-center justify-between gap-4">
           <p className="text-xs text-muted-foreground">
             © {new Date().getFullYear()} C. Blake Enterprise. All rights reserved.
           </p>

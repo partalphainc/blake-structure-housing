@@ -1,29 +1,27 @@
 import Navbar from "@/components/Navbar";
 import HeroSection from "@/components/HeroSection";
-import AboutSection from "@/components/AboutSection";
-import OurModelSection from "@/components/OurModelSection";
-import ForOwnersSection from "@/components/ForOwnersSection";
 import ForResidentsSection from "@/components/ForResidentsSection";
-import SecondChanceSection from "@/components/SecondChanceSection";
+import ForOwnersSection from "@/components/ForOwnersSection";
+import HousingDivisionsSection from "@/components/HousingDivisionsSection";
+import PerformanceSection from "@/components/PerformanceSection";
 import AvailableUnitsSection from "@/components/AvailableUnitsSection";
-import WhyChooseUsSection from "@/components/WhyChooseUsSection";
 import ContactSection from "@/components/ContactSection";
 import Footer from "@/components/Footer";
+import DestinyChat from "@/components/DestinyChat";
 
 const Index = () => {
   return (
     <div className="min-h-screen bg-background text-foreground">
       <Navbar />
       <HeroSection />
-      <AboutSection />
-      <OurModelSection />
-      <ForOwnersSection />
       <ForResidentsSection />
-      <SecondChanceSection />
+      <ForOwnersSection />
+      <HousingDivisionsSection />
+      <PerformanceSection />
       <AvailableUnitsSection />
-      <WhyChooseUsSection />
       <ContactSection />
       <Footer />
+      <DestinyChat />
     </div>
   );
 };
