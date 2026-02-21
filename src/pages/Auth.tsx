@@ -89,7 +89,7 @@ const Auth = () => {
               C. Blake <span className="text-gradient">Enterprise</span>
             </span>
           </a>
-          <p className="text-muted-foreground text-sm">Resident & Investor Portal</p>
+          <p className="text-muted-foreground text-sm">Resident, Investor & Admin Portal</p>
         </div>
 
         <Card className="border-border/50 glow-primary">
