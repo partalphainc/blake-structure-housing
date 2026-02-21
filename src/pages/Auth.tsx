@@ -62,19 +62,11 @@ const Auth = () => {
         email: signupEmail,
         password: signupPassword,
         options: {
-          data: { full_name: signupName },
+          data: { full_name: signupName, role: signupRole },
           emailRedirectTo: window.location.origin,
         },
       });
       if (error) throw error;
-
-      // Assign role if user was created
-      if (data.user) {
-        await supabase.from("user_roles").insert({
-          user_id: data.user.id,
-          role: signupRole,
-        });
-      }
 
       toast({
         title: "Account created!",
