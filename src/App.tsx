@@ -4,7 +4,18 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
+import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
+import ResidentDashboard from "./pages/resident/ResidentDashboard";
+import ResidentPayments from "./pages/resident/ResidentPayments";
+import ResidentMaintenance from "./pages/resident/ResidentMaintenance";
+import ResidentDocuments from "./pages/resident/ResidentDocuments";
+import ResidentUpload from "./pages/resident/ResidentUpload";
+import InvestorDashboard from "./pages/investor/InvestorDashboard";
+import InvestorProperties from "./pages/investor/InvestorProperties";
+import InvestorFinancials from "./pages/investor/InvestorFinancials";
+import InvestorTenants from "./pages/investor/InvestorTenants";
+import InvestorDocuments from "./pages/investor/InvestorDocuments";
 
 const queryClient = new QueryClient();
 
@@ -16,7 +27,22 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Index />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+          <Route path="/auth" element={<Auth />} />
+          
+          {/* Resident Portal */}
+          <Route path="/resident" element={<ResidentDashboard />} />
+          <Route path="/resident/payments" element={<ResidentPayments />} />
+          <Route path="/resident/maintenance" element={<ResidentMaintenance />} />
+          <Route path="/resident/documents" element={<ResidentDocuments />} />
+          <Route path="/resident/upload" element={<ResidentUpload />} />
+          
+          {/* Investor Portal */}
+          <Route path="/investor" element={<InvestorDashboard />} />
+          <Route path="/investor/properties" element={<InvestorProperties />} />
+          <Route path="/investor/financials" element={<InvestorFinancials />} />
+          <Route path="/investor/tenants" element={<InvestorTenants />} />
+          <Route path="/investor/documents" element={<InvestorDocuments />} />
+          
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
