@@ -16,6 +16,12 @@ import InvestorProperties from "./pages/investor/InvestorProperties";
 import InvestorFinancials from "./pages/investor/InvestorFinancials";
 import InvestorTenants from "./pages/investor/InvestorTenants";
 import InvestorDocuments from "./pages/investor/InvestorDocuments";
+import AdminDashboard from "./pages/admin/AdminDashboard";
+import AdminProperties from "./pages/admin/AdminProperties";
+import AdminUnits from "./pages/admin/AdminUnits";
+import AdminLeases from "./pages/admin/AdminLeases";
+import AdminPayments from "./pages/admin/AdminPayments";
+import AdminMaintenance from "./pages/admin/AdminMaintenance";
 
 const queryClient = new QueryClient();
 
@@ -42,6 +48,14 @@ const App = () => (
           <Route path="/investor/financials" element={<InvestorFinancials />} />
           <Route path="/investor/tenants" element={<InvestorTenants />} />
           <Route path="/investor/documents" element={<InvestorDocuments />} />
+          
+          {/* Admin Portal */}
+          <Route path="/admin" element={<AdminDashboard />} />
+          <Route path="/admin/properties" element={<AdminProperties />} />
+          <Route path="/admin/units" element={<AdminUnits />} />
+          <Route path="/admin/leases" element={<AdminLeases />} />
+          <Route path="/admin/payments" element={<AdminPayments />} />
+          <Route path="/admin/maintenance" element={<AdminMaintenance />} />
           
           <Route path="*" element={<NotFound />} />
         </Routes>
