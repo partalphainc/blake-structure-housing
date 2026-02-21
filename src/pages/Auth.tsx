@@ -39,7 +39,9 @@ const Auth = () => {
           .eq("user_id", user.id);
 
         const role = roles?.[0]?.role;
-        if (role === "investor") {
+        if (role === "admin") {
+          navigate("/admin");
+        } else if (role === "investor") {
           navigate("/investor");
         } else {
           navigate("/resident");
