@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { Phone, BarChart3, Bot } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import cblakeLogo from "@/assets/cblake-logo.png";
 
 const HeroSection = () => {
   return (
@@ -18,9 +19,8 @@ const HeroSection = () => {
           transition={{ duration: 0.8, ease: "easeOut" }}
           className="max-w-4xl mx-auto text-center"
         >
-          {/* Circular accent */}
-          <div className="w-20 h-20 mx-auto mb-8 rounded-full border-2 border-primary/40 flex items-center justify-center glow-pink">
-            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-accent-magenta" />
+          <div className="w-24 h-24 mx-auto mb-8 rounded-full flex items-center justify-center glow-pink">
+            <img src={cblakeLogo} alt="C. Blake Enterprise" className="w-20 h-20 object-contain" />
           </div>
 
           <h1 className="text-4xl md:text-5xl lg:text-7xl font-serif font-bold leading-tight tracking-tight mb-6">
@@ -50,7 +50,7 @@ const HeroSection = () => {
           transition={{ delay: 0.4, duration: 0.6 }}
           className="flex flex-col sm:flex-row gap-6 sm:gap-10 justify-center"
         >
-          <a href="tel:+10000000000" className="flex items-center gap-3 text-muted-foreground hover:text-foreground transition-colors">
+          <a href="tel:+16362066037" className="flex items-center gap-3 text-muted-foreground hover:text-foreground transition-colors">
             <Phone size={18} className="text-primary" />
             <span className="text-sm">Speak With a Housing Representative</span>
           </a>

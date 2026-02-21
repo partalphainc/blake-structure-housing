@@ -1,3 +1,5 @@
+import cblakeLogo from "@/assets/cblake-logo.png";
+
 const Footer = () => {
   return (
     <footer className="border-t border-border py-12 px-4">
@@ -5,7 +7,7 @@ const Footer = () => {
         <div className="flex flex-col md:flex-row items-center justify-between gap-6 mb-8">
           <div>
             <div className="flex items-center gap-3 mb-2">
-              <div className="w-6 h-6 rounded-full bg-gradient-to-br from-primary to-accent-magenta" />
+              <img src={cblakeLogo} alt="C. Blake Enterprise" className="w-8 h-8 object-contain" />
               <p className="text-xl font-serif font-bold tracking-tight">
                 C. Blake <span className="text-gradient">Enterprise</span>
               </p>

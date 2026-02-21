@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Menu, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import cblakeLogo from "@/assets/cblake-logo.png";
 
 const navLinks = [
   { label: "Home", href: "#home" },
@@ -18,7 +19,7 @@ const Navbar = () => {
     <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-xl border-b border-border">
       <div className="container mx-auto flex items-center justify-between h-16 px-4">
         <a href="#home" className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-accent-magenta" />
+          <img src={cblakeLogo} alt="C. Blake Enterprise" className="w-10 h-10 object-contain" />
           <span className="text-lg font-serif font-bold tracking-tight text-foreground">
             C. Blake <span className="text-gradient">Enterprise</span>
           </span>
