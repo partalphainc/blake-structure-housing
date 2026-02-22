@@ -4,6 +4,14 @@ import { Button } from "@/components/ui/button";
 import cblakeLogo from "@/assets/cblake-logo.png";
 
 const HeroSection = () => {
+  const openDestinyChat = () => {
+    window.dispatchEvent(new CustomEvent("openDestinyChat"));
+  };
+
+  const startDestinyCall = () => {
+    window.dispatchEvent(new CustomEvent("startDestinyCall"));
+  };
+
   return (
     <section id="home" className="relative min-h-screen flex items-center pt-16 overflow-hidden">
       {/* Abstract bg glow */}
@@ -35,10 +43,10 @@ const HeroSection = () => {
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-14">
             <Button variant="hero" size="lg" asChild>
-              <a href="#residents">Find Housing</a>
+              <a href="#units">Find Housing</a>
             </Button>
             <Button variant="heroOutline" size="lg" asChild>
-              <a href="#investors">Partner With Us</a>
+              <a href="tel:+16362066037">Partner With Us</a>
             </Button>
           </div>
         </motion.div>
@@ -50,16 +58,31 @@ const HeroSection = () => {
           transition={{ delay: 0.4, duration: 0.6 }}
           className="flex flex-col sm:flex-row gap-6 sm:gap-10 justify-center"
         >
-          <a href="tel:+16362066037" className="flex items-center gap-3 text-muted-foreground hover:text-foreground transition-colors">
-            <Phone size={18} className="text-primary" />
+          <button
+            onClick={startDestinyCall}
+            className="flex items-center gap-3 text-muted-foreground hover:text-foreground transition-colors"
+          >
+            <span className="relative inline-flex items-center justify-center w-7 h-7 ring-pulse">
+              <Phone size={16} className="text-primary" />
+            </span>
             <span className="text-sm">Speak With a Housing Representative</span>
-          </a>
-          <a href="#investors" className="flex items-center gap-3 text-muted-foreground hover:text-foreground transition-colors">
-            <BarChart3 size={18} className="text-accent-lavender" />
+          </button>
+          <a
+            href="tel:+16362066037"
+            className="flex items-center gap-3 text-muted-foreground hover:text-foreground transition-colors"
+          >
+            <span className="relative inline-flex items-center justify-center w-7 h-7 ring-pulse">
+              <Phone size={16} className="text-accent-lavender" />
+            </span>
             <span className="text-sm">Speak With an Investment Advisor</span>
           </a>
-          <button className="flex items-center gap-3 text-muted-foreground hover:text-foreground transition-colors">
-            <Bot size={18} className="text-primary" />
+          <button
+            onClick={openDestinyChat}
+            className="flex items-center gap-3 text-muted-foreground hover:text-foreground transition-colors"
+          >
+            <span className="relative inline-flex items-center justify-center w-7 h-7 ring-pulse">
+              <Phone size={16} className="text-primary" />
+            </span>
             <span className="text-sm">Chat With Our AI Leasing Rep</span>
           </button>
         </motion.div>

@@ -1,15 +1,23 @@
+import { useState } from "react";
 import { motion } from "framer-motion";
-import { Home, Sofa, Building, Shield, Zap, CalendarDays, DollarSign } from "lucide-react";
+import { Home, Sofa, Building, Shield, Briefcase, RefreshCw, Zap, CalendarDays } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useToast } from "@/hooks/use-toast";
 
-const offerings = [
-  { icon: Home, title: "Private Rooms", desc: "Never shared bedrooms — every resident gets a private room." },
-  { icon: Sofa, title: "Furnished Units", desc: "Move-in ready units for traveling professionals." },
-  { icon: Building, title: "Unfurnished Units", desc: "Traditional unfurnished residential units available." },
-  { icon: Shield, title: "Insurance Replacement", desc: "Structured housing for insurance placement needs." },
-  { icon: Zap, title: "Utilities Included", desc: "All utilities included in designated housing models." },
-  { icon: CalendarDays, title: "Flexible Terms", desc: "Weekly and monthly structured agreements." },
-  { icon: DollarSign, title: "Second-Chance Evaluations", desc: "Structured evaluations based on income, stability, and references." },
+const housingModels = [
+  { icon: Home, title: "Private Room Housing", desc: "Private rooms in a shared residential setting — never shared bedrooms. Every resident gets their own secure, private space." },
+  { icon: Sofa, title: "Furnished Corporate Units", desc: "Move-in ready furnished units for corporate and traveling professionals." },
+  { icon: Building, title: "Unfurnished Second-Chance Units", desc: "Structured residential units for residents rebuilding stability through our second-chance program with documented agreements." },
+  { icon: Shield, title: "Insurance Replacement Housing", desc: "Placement solutions for insurance-displaced residents with structured housing models." },
+  { icon: Briefcase, title: "Traveling Professional Units", desc: "Short and mid-term housing for mobile professionals with flexible terms." },
+  { icon: RefreshCw, title: "Second-Chance Structured Placements", desc: "Evaluated placements based on income, stability, and references for individuals rebuilding their future." },
+  { icon: Zap, title: "Utilities Included", desc: "All utilities included in designated housing models — no surprise bills." },
+  { icon: CalendarDays, title: "Flexible Terms", desc: "Weekly and monthly structured agreements to fit your situation." },
 ];
 
 const criteria = [
@@ -20,6 +28,15 @@ const criteria = [
 ];
 
 const ForResidentsSection = () => {
+  const [showApplication, setShowApplication] = useState(false);
+  const { toast } = useToast();
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    toast({ title: "Application Submitted", description: "A housing representative will contact you shortly." });
+    setShowApplication(false);
+  };
+
   return (
     <section id="residents" className="section-padding">
       <div className="container mx-auto">
@@ -40,21 +57,24 @@ const ForResidentsSection = () => {
           </p>
         </motion.div>
 
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-          {offerings.map((o, i) => (
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+          {housingModels.map((o, i) => (
             <motion.div
               key={o.title}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ delay: i * 0.07, duration: 0.5 }}
-              className="p-6 rounded-xl bg-card border border-border hover:border-primary/30 transition-all group"
+              transition={{ delay: i * 0.06, duration: 0.5 }}
+              className="group relative p-6 rounded-xl bg-card border border-border hover:border-primary/40 transition-all overflow-hidden"
             >
-              <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center mb-4 group-hover:bg-primary/20 transition-colors">
-                <o.icon size={20} className="text-primary" />
+              <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+              <div className="relative z-10">
+                <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-4 group-hover:bg-primary/20 transition-colors">
+                  <o.icon size={22} className="text-primary" />
+                </div>
+                <h3 className="font-semibold text-lg mb-2">{o.title}</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">{o.desc}</p>
               </div>
-              <h3 className="font-semibold text-lg mb-2">{o.title}</h3>
-              <p className="text-sm text-muted-foreground">{o.desc}</p>
             </motion.div>
           ))}
         </div>
@@ -81,10 +101,53 @@ const ForResidentsSection = () => {
           <Button variant="hero" size="lg" asChild>
             <a href="#units">View Available Units</a>
           </Button>
-          <Button variant="heroOutline" size="lg" asChild>
-            <a href="#contact">Apply Now</a>
+          <Button variant="heroOutline" size="lg" onClick={() => setShowApplication(true)}>
+            Apply Now
           </Button>
         </div>
+
+        {/* Application Dialog */}
+        <Dialog open={showApplication} onOpenChange={setShowApplication}>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle className="font-serif">Housing Application</DialogTitle>
+            </DialogHeader>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div>
+                <Label htmlFor="name">Full Name</Label>
+                <Input id="name" required placeholder="Your full name" />
+              </div>
+              <div>
+                <Label htmlFor="phone">Phone</Label>
+                <Input id="phone" required type="tel" placeholder="(555) 123-4567" />
+              </div>
+              <div>
+                <Label htmlFor="email">Email</Label>
+                <Input id="email" required type="email" placeholder="you@example.com" />
+              </div>
+              <div>
+                <Label htmlFor="preference">Housing Preference</Label>
+                <Select>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="private-room">Private Room</SelectItem>
+                    <SelectItem value="furnished">Furnished Unit</SelectItem>
+                    <SelectItem value="unfurnished">Unfurnished Unit</SelectItem>
+                    <SelectItem value="insurance">Insurance Replacement</SelectItem>
+                    <SelectItem value="second-chance">Second-Chance Placement</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label htmlFor="message">Additional Info</Label>
+                <Textarea id="message" placeholder="Tell us about your housing needs..." />
+              </div>
+              <Button type="submit" variant="hero" className="w-full">Submit Application</Button>
+            </form>
+          </DialogContent>
+        </Dialog>
       </div>
     </section>
   );
