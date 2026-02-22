@@ -1,1 +1,4 @@
 project_id = "xiumaiblwtwckumalsmv"
+
+[functions.destiny-chat]
+verify_jwt = false

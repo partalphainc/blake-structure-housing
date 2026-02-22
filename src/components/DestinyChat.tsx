@@ -1,9 +1,9 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Phone, PhoneOff, Mic, MicOff, Send, MessageSquare } from "lucide-react";
+import { X, Mic, MicOff, Send } from "lucide-react";
 import destinyAvatar from "@/assets/destiny-avatar.png";
 
-const VAPI_ASSISTANT_ID = "a51e4ffa-4659-4cf9-a491-5f7b91739c40";
+const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/destiny-chat`;
 const ZAPIER_WEBHOOK_URL = "";
 
 interface ChatMessage {
@@ -14,13 +14,12 @@ interface ChatMessage {
 
 const DestinyChat = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [isConnecting, setIsConnecting] = useState(false);
-  const [isConnected, setIsConnected] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
-  const [isMuted, setIsMuted] = useState(false);
   const [textInput, setTextInput] = useState("");
-  const vapiRef = useRef<any>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isListening, setIsListening] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const recognitionRef = useRef<any>(null);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -51,106 +50,136 @@ const DestinyChat = () => {
   }, []);
 
   useEffect(() => {
-    const script = document.createElement("script");
-    script.src = "https://cdn.jsdelivr.net/npm/@vapi-ai/web@latest/dist/vapi.js";
-    script.async = true;
-    script.onload = () => {
-      // @ts-ignore
-      if (window.Vapi) {
-        // @ts-ignore
-        vapiRef.current = new window.Vapi("e2ea88a0-52e2-4482-b0d0-fc0c0de2cf78");
-
-        vapiRef.current.on("call-start", () => {
-          setIsConnecting(false);
-          setIsConnected(true);
-          setMessages(prev => [...prev, { role: "assistant", content: "Connected! How can I help you today?", timestamp: new Date() }]);
-        });
-
-        vapiRef.current.on("call-end", () => {
-          setIsConnected(false);
-          setIsConnecting(false);
-          setMessages(prev => {
-            const updated = [...prev, { role: "assistant" as const, content: "Call ended. Thank you!", timestamp: new Date() }];
-            sendToZapier(updated);
-            return updated;
-          });
-        });
-
-        vapiRef.current.on("message", (msg: any) => {
-          if (msg.type === "transcript" && msg.transcriptType === "final") {
-            setMessages(prev => [...prev, {
-              role: msg.role === "user" ? "user" : "assistant",
-              content: msg.transcript,
-              timestamp: new Date(),
-            }]);
-          }
-        });
-      }
-    };
-    document.body.appendChild(script);
-
-    return () => {
-      if (vapiRef.current) {
-        try { vapiRef.current.stop(); } catch {}
-      }
-      if (document.body.contains(script)) {
-        document.body.removeChild(script);
-      }
-    };
-  }, [sendToZapier]);
-
-  useEffect(() => {
     const handleOpen = () => setIsOpen(true);
-    const handleStartCall = () => {
-      setIsOpen(true);
-      setTimeout(() => handleCall(), 500);
-    };
     window.addEventListener("openDestinyChat", handleOpen);
-    window.addEventListener("startDestinyCall", handleStartCall);
+    window.addEventListener("startDestinyCall", handleOpen);
     return () => {
       window.removeEventListener("openDestinyChat", handleOpen);
-      window.removeEventListener("startDestinyCall", handleStartCall);
+      window.removeEventListener("startDestinyCall", handleOpen);
     };
   }, []);
 
-  const handleCall = async () => {
-    if (isConnected) {
-      vapiRef.current?.stop();
+  // Speech-to-text using Web Speech API
+  const toggleListening = () => {
+    if (isListening) {
+      recognitionRef.current?.stop();
+      setIsListening(false);
       return;
     }
-    setIsConnecting(true);
-    try {
-      await vapiRef.current?.start(VAPI_ASSISTANT_ID);
-    } catch (err) {
-      console.error("VAPI connection error:", err);
-      setIsConnecting(false);
+
+    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      alert("Speech recognition is not supported in this browser.");
+      return;
     }
+
+    const recognition = new SpeechRecognition();
+    recognition.continuous = false;
+    recognition.interimResults = true;
+    recognition.lang = "en-US";
+
+    recognition.onresult = (event: any) => {
+      let transcript = "";
+      for (let i = 0; i < event.results.length; i++) {
+        transcript += event.results[i][0].transcript;
+      }
+      setTextInput(transcript);
+    };
+
+    recognition.onend = () => setIsListening(false);
+    recognition.onerror = () => setIsListening(false);
+
+    recognitionRef.current = recognition;
+    recognition.start();
+    setIsListening(true);
   };
 
-  const toggleMute = () => {
-    if (vapiRef.current && isConnected) {
-      vapiRef.current.setMuted(!isMuted);
-      setIsMuted(!isMuted);
-    }
-  };
+  const streamAIResponse = async (allMessages: ChatMessage[]) => {
+    const apiMessages = allMessages.map(m => ({ role: m.role, content: m.content }));
 
-  const handleSendText = () => {
-    const trimmed = textInput.trim();
-    if (!trimmed) return;
-    const userMsg: ChatMessage = { role: "user", content: trimmed, timestamp: new Date() };
-    setMessages(prev => {
-      const updated = [...prev, userMsg];
-      // Auto-reply with a helpful message and send to Zapier
-      const botReply: ChatMessage = {
-        role: "assistant",
-        content: "Thanks for your message! A housing representative will follow up with you shortly. You can also tap the mic button to speak with Destiny live.",
-        timestamp: new Date(),
-      };
-      const withReply = [...updated, botReply];
-      sendToZapier(withReply);
-      return withReply;
+    const resp = await fetch(CHAT_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+      },
+      body: JSON.stringify({ messages: apiMessages }),
     });
+
+    if (!resp.ok || !resp.body) throw new Error("Failed to start stream");
+
+    const reader = resp.body.getReader();
+    const decoder = new TextDecoder();
+    let textBuffer = "";
+    let assistantSoFar = "";
+    let streamDone = false;
+
+    while (!streamDone) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      textBuffer += decoder.decode(value, { stream: true });
+
+      let newlineIndex: number;
+      while ((newlineIndex = textBuffer.indexOf("\n")) !== -1) {
+        let line = textBuffer.slice(0, newlineIndex);
+        textBuffer = textBuffer.slice(newlineIndex + 1);
+
+        if (line.endsWith("\r")) line = line.slice(0, -1);
+        if (line.startsWith(":") || line.trim() === "") continue;
+        if (!line.startsWith("data: ")) continue;
+
+        const jsonStr = line.slice(6).trim();
+        if (jsonStr === "[DONE]") { streamDone = true; break; }
+
+        try {
+          const parsed = JSON.parse(jsonStr);
+          const content = parsed.choices?.[0]?.delta?.content as string | undefined;
+          if (content) {
+            assistantSoFar += content;
+            setMessages(prev => {
+              const last = prev[prev.length - 1];
+              if (last?.role === "assistant" && last === prev[prev.length - 1]) {
+                return prev.map((m, i) => i === prev.length - 1 ? { ...m, content: assistantSoFar } : m);
+              }
+              return [...prev, { role: "assistant", content: assistantSoFar, timestamp: new Date() }];
+            });
+          }
+        } catch {
+          textBuffer = line + "\n" + textBuffer;
+          break;
+        }
+      }
+    }
+
+    return assistantSoFar;
+  };
+
+  const handleSendText = async () => {
+    const trimmed = textInput.trim();
+    if (!trimmed || isLoading) return;
+
+    const userMsg: ChatMessage = { role: "user", content: trimmed, timestamp: new Date() };
+    const updatedMessages = [...messages, userMsg];
+    setMessages(updatedMessages);
     setTextInput("");
+    setIsLoading(true);
+
+    try {
+      await streamAIResponse(updatedMessages);
+      setMessages(prev => {
+        sendToZapier(prev);
+        return prev;
+      });
+    } catch (err) {
+      console.error("AI response error:", err);
+      setMessages(prev => [...prev, {
+        role: "assistant",
+        content: "I'm having trouble connecting right now. Please try again or call us at (636) 206-6037.",
+        timestamp: new Date(),
+      }]);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -162,7 +191,7 @@ const DestinyChat = () => {
 
   return (
     <>
-      {/* Floating button with ring vibration */}
+      {/* Floating button with ring */}
       <div className="fixed bottom-6 right-6 z-50">
         <motion.div
           className="absolute inset-0 rounded-full border-2 border-primary/40"
@@ -226,7 +255,7 @@ const DestinyChat = () => {
                   </div>
                   <p className="text-sm text-foreground font-medium mb-2">Hi! I'm Destiny 👋</p>
                   <p className="text-xs text-muted-foreground">
-                    Type a message below or tap the mic to start a voice conversation about available units, second-chance housing, or scheduling.
+                    Type a message or tap the mic to speak. I can help you find housing, answer questions, or schedule a tour.
                   </p>
                 </div>
               ) : (
@@ -242,71 +271,54 @@ const DestinyChat = () => {
                   </div>
                 ))
               )}
+              {isLoading && messages[messages.length - 1]?.role !== "assistant" && (
+                <div className="flex justify-start">
+                  <div className="bg-secondary text-secondary-foreground px-3 py-2 rounded-xl rounded-bl-sm text-sm">
+                    <span className="animate-pulse">Destiny is typing...</span>
+                  </div>
+                </div>
+              )}
               <div ref={messagesEndRef} />
             </div>
 
-            {/* Text input + voice controls */}
-            <div className="p-3 border-t border-border shrink-0 space-y-2">
-              {/* Text input row */}
+            {/* Input area */}
+            <div className="p-3 border-t border-border shrink-0">
               <div className="flex items-center gap-2">
+                <motion.button
+                  onClick={toggleListening}
+                  className={`w-9 h-9 rounded-full flex items-center justify-center shrink-0 transition-colors ${
+                    isListening
+                      ? "bg-destructive text-destructive-foreground animate-pulse"
+                      : "bg-primary/10 text-primary hover:bg-primary/20"
+                  }`}
+                  whileTap={{ scale: 0.9 }}
+                  aria-label={isListening ? "Stop listening" : "Speak your message"}
+                >
+                  {isListening ? <MicOff size={16} /> : <Mic size={16} />}
+                </motion.button>
                 <input
                   type="text"
                   value={textInput}
                   onChange={(e) => setTextInput(e.target.value)}
                   onKeyDown={handleKeyDown}
-                  placeholder="Type a message..."
+                  placeholder={isListening ? "Listening..." : "Type a message..."}
                   className="flex-1 rounded-full border border-border bg-background px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+                  disabled={isLoading}
                 />
                 <motion.button
                   onClick={handleSendText}
-                  disabled={!textInput.trim()}
-                  className="w-9 h-9 rounded-full bg-primary text-primary-foreground flex items-center justify-center disabled:opacity-40"
+                  disabled={!textInput.trim() || isLoading}
+                  className="w-9 h-9 rounded-full bg-primary text-primary-foreground flex items-center justify-center shrink-0 disabled:opacity-40"
                   whileTap={{ scale: 0.9 }}
                 >
                   <Send size={16} />
                 </motion.button>
               </div>
-
-              {/* Voice controls row */}
-              <div className="flex items-center justify-center gap-3">
-                {isConnected && (
-                  <motion.button
-                    onClick={toggleMute}
-                    className={`w-9 h-9 rounded-full flex items-center justify-center transition-colors ${
-                      isMuted ? "bg-destructive/20 text-destructive" : "bg-primary/10 text-primary"
-                    }`}
-                    whileTap={{ scale: 0.95 }}
-                  >
-                    {isMuted ? <MicOff size={16} /> : <Mic size={16} />}
-                  </motion.button>
-                )}
-
-                <motion.button
-                  onClick={handleCall}
-                  disabled={isConnecting}
-                  className={`flex items-center gap-2 px-5 py-2 rounded-full font-semibold text-xs transition-all ${
-                    isConnected
-                      ? "bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                      : "bg-gradient-to-r from-primary to-accent-magenta text-primary-foreground glow-btn hover:opacity-90"
-                  } ${isConnecting ? "opacity-60 cursor-wait" : ""}`}
-                  whileHover={{ scale: 1.03 }}
-                  whileTap={{ scale: 0.97 }}
-                >
-                  {isConnected ? (
-                    <><PhoneOff size={14} /> End Call</>
-                  ) : isConnecting ? (
-                    <><Phone size={14} className="animate-pulse" /> Connecting...</>
-                  ) : (
-                    <><Mic size={14} /> Talk to Destiny</>
-                  )}
-                </motion.button>
-              </div>
-
-              {isConnected && (
-                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex items-center justify-center gap-2">
-                  <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-                  <span className="text-xs text-muted-foreground">Connected — speak now</span>
-                </motion.div>
+              {isListening && (
+                <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-xs text-center text-muted-foreground mt-2">
+                  <span className="inline-block w-2 h-2 rounded-full bg-destructive animate-pulse mr-1" />
+                  Listening — speak now, then send
+                </motion.p>
               )}
             </div>
           </motion.div>

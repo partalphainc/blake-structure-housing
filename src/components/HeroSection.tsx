@@ -49,17 +49,17 @@ const HeroSection = () => {
 
           <div className="text-base md:text-lg text-muted-foreground leading-relaxed mb-4 max-w-3xl mx-auto space-y-4">
             <p>
-              Designed for second-chance applicants —
+              Designed for traveling nurses and physicians,
+              government and contract professionals,
+              corporate travelers, relocation placements,
+              and insurance-based housing placements.
+            </p>
+            <p>
+              We also serve second-chance applicants —
               those rebuilding credit, rental history, or stability —
               including veterans, individuals on fixed incomes,
               and those who may not yet qualify for a traditional lease
               but are ready for structure, accountability, and a fresh start.
-            </p>
-            <p>
-              We also serve traveling nurses and physicians,
-              government and contract professionals,
-              corporate travelers, relocation placements,
-              and insurance-based housing placements.
             </p>
             <p>
               Whether short-term, contract-based, or traditional —
