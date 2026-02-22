@@ -7,6 +7,7 @@ import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 import AdminLogin from "./pages/AdminLogin";
+import ResetPassword from "./pages/ResetPassword";
 import ResidentDashboard from "./pages/resident/ResidentDashboard";
 import ResidentPayments from "./pages/resident/ResidentPayments";
 import ResidentMaintenance from "./pages/resident/ResidentMaintenance";
@@ -37,6 +38,7 @@ const App = () => (
           <Route path="/" element={<Index />} />
           <Route path="/auth" element={<Auth />} />
           <Route path="/admin-login" element={<AdminLogin />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
           
           {/* Resident Portal */}
           <Route path="/resident" element={<ResidentDashboard />} />
