@@ -5,7 +5,9 @@ import { useAuth } from "@/hooks/useAuth";
 import PortalLayout from "@/components/portal/PortalLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { CreditCard } from "lucide-react";
 
 const navItems = [
   { label: "Dashboard", href: "/resident", icon: <LayoutDashboard className="w-4 h-4" /> },
@@ -36,8 +38,17 @@ const ResidentPayments = () => {
   return (
     <PortalLayout title="Resident Portal" navItems={navItems} onSignOut={signOut} userName={profile?.full_name || user?.email}>
       <div className="space-y-6">
-        <h1 className="text-2xl font-serif font-bold">Payment History</h1>
-        <p className="text-muted-foreground text-sm">All recorded payments for your account. Payments are managed externally (Zelle, cash, etc.) and recorded here for your records.</p>
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+          <div>
+            <h1 className="text-2xl font-serif font-bold">Payment History</h1>
+            <p className="text-muted-foreground text-sm mt-1">All recorded payments for your account.</p>
+          </div>
+          <Button variant="cta" size="sm" asChild>
+            <a href="https://enroll.zellepay.com/qr-codes?data=ewogICJ0b2tlbiI6ICJEZXN0aW55QENibGFrZUVudC5jb20iLAogICJhY3Rpb24iOiAicGF5bWVudCIsCiAgIm5hbWUiOiAiQy4gQmxha2UgRW50ZXJwcmlzZSIKfQ==" target="_blank" rel="noopener noreferrer">
+              <CreditCard className="w-4 h-4 mr-1" /> Pay Online
+            </a>
+          </Button>
+        </div>
 
         <Card>
           <CardContent className="p-0">

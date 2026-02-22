@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { MessageCircle, X, Mail, Phone, ChevronDown } from "lucide-react";
+import { MessageCircle, X, Mail, Phone } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
@@ -13,7 +13,7 @@ const faqs = [
   {
     question: "How do I pay rent?",
     answer:
-      "Navigate to the Payments section in your portal sidebar. You can view your balance and payment history there. For payment methods, contact our support team.",
+      "Navigate to the Payments section in your portal sidebar. You can view your balance, payment history, and pay online there. For other payment methods, contact our support team.",
   },
   {
     question: "How do I submit a maintenance request?",
@@ -34,6 +34,31 @@ const faqs = [
     question: "How do I update my profile?",
     answer:
       "Click your name in the top header bar (or the edit profile button on mobile) to update your name and phone number.",
+  },
+  {
+    question: "What are the move-in procedures?",
+    answer:
+      "Before move-in, you'll need to sign your lease, pay your deposit, and provide valid ID and proof of income. Contact management for a move-in checklist and to schedule your walkthrough.",
+  },
+  {
+    question: "What are the move-out procedures?",
+    answer:
+      "Provide written notice at least 30 days before your intended move-out date. Schedule a move-out inspection, return all keys, and ensure the unit is clean. Your security deposit will be returned within 30 days after inspection.",
+  },
+  {
+    question: "How do I renew my lease?",
+    answer:
+      "Lease renewal notices are typically sent 60 days before your lease expires. Contact management to discuss renewal terms, rate changes, or to request an early renewal.",
+  },
+  {
+    question: "What utilities are included?",
+    answer:
+      "Included utilities vary by unit. Check your lease agreement or the unit details in your portal for specifics. Contact management if you have questions.",
+  },
+  {
+    question: "What is the guest policy?",
+    answer:
+      "Guests are welcome for short visits. Overnight guests staying more than 3 consecutive nights or 7 nights in a month should be reported to management. Refer to your lease for full details.",
   },
 ];
 
