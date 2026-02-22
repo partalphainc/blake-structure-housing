@@ -11,7 +11,6 @@ import cblakeLogo from "@/assets/cblake-logo.png";
 
 const Auth = () => {
   const [isLoading, setIsLoading] = useState(false);
-  const [isCheckingSession, setIsCheckingSession] = useState(true);
   const [loginEmail, setLoginEmail] = useState("");
   const [loginPassword, setLoginPassword] = useState("");
   const [showForgot, setShowForgot] = useState(false);
@@ -25,30 +24,21 @@ const Auth = () => {
 
   useEffect(() => {
     const redirectByRole = async (userId: string) => {
-      const { data: roles } = await supabase.from("user_roles").select("role").eq("user_id", userId);
-      const role = roles?.[0]?.role;
-      if (role === "admin") navigate("/admin");
-      else if (role === "investor") navigate("/investor");
-      else navigate("/resident");
-    };
-
-    const checkSession = async () => {
-      // Safety timeout - never show spinner for more than 3 seconds
-      const timeout = setTimeout(() => setIsCheckingSession(false), 3000);
       try {
-        const { data: { session } } = await supabase.auth.getSession();
-        clearTimeout(timeout);
-        setIsCheckingSession(false);
-        if (session?.user) {
-          redirectByRole(session.user.id);
-        }
+        const { data: roles } = await supabase.from("user_roles").select("role").eq("user_id", userId);
+        const role = roles?.[0]?.role;
+        if (role === "admin") navigate("/admin");
+        else if (role === "investor") navigate("/investor");
+        else navigate("/resident");
       } catch (err) {
-        console.error("Session check failed:", err);
-        clearTimeout(timeout);
-        setIsCheckingSession(false);
+        console.error("Role lookup failed:", err);
       }
     };
-    checkSession();
+
+    // Check session in background without blocking UI
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session?.user) redirectByRole(session.user.id);
+    });
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (event === "SIGNED_IN" && session?.user) {
@@ -118,13 +108,6 @@ const Auth = () => {
     }
   };
 
-  if (isCheckingSession) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center px-4">
