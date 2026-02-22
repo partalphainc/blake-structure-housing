@@ -127,12 +127,8 @@ const AvailableUnitsSection = () => {
 
         <div className="grid md:grid-cols-2 gap-6">
           {units.map((u, i) => (
-            <motion.div
+            <div
               key={i}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.1, duration: 0.5 }}
               className="p-6 rounded-xl bg-card border border-border hover:border-primary/30 transition-all"
             >
               {/* Tags */}
@@ -167,12 +163,12 @@ const AvailableUnitsSection = () => {
                   <span>{u.minStay}</span>
                 </div>
               </div>
-              <div className="mt-5 relative z-10">
-                <Button variant="heroOutline" size="sm" className="cursor-pointer" onClick={(e) => { e.stopPropagation(); setSelectedUnit(u.location); setInquiryOpen(true); }}>
+              <div className="mt-5">
+                <Button variant="heroOutline" size="sm" onClick={() => { setSelectedUnit(u.location); setInquiryOpen(true); }}>
                   Inquire
                 </Button>
               </div>
-            </motion.div>
+            </div>
           ))}
         </div>
       </div>

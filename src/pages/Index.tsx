@@ -17,7 +17,7 @@ const sectionFade = {
 };
 
 const WhiteFade = () => (
-  <div className="h-72 md:h-96 w-full -my-36 md:-my-48 relative z-10 bg-gradient-to-b from-transparent via-white/70 to-transparent" />
+  <div className="h-72 md:h-96 w-full -my-36 md:-my-48 relative z-10 pointer-events-none bg-gradient-to-b from-transparent via-white/70 to-transparent" />
 );
 
 const Index = () => {
