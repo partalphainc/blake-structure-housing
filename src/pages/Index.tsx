@@ -3,6 +3,7 @@ import HeroSection from "@/components/HeroSection";
 import ForResidentsSection from "@/components/ForResidentsSection";
 import ForOwnersSection from "@/components/ForOwnersSection";
 import AvailableUnitsSection from "@/components/AvailableUnitsSection";
+import ReviewsSection from "@/components/ReviewsSection";
 import ContactSection from "@/components/ContactSection";
 import Footer from "@/components/Footer";
 import DestinyChat from "@/components/DestinyChat";
@@ -15,6 +16,7 @@ const Index = () => {
       <ForResidentsSection />
       <ForOwnersSection />
       <AvailableUnitsSection />
+      <ReviewsSection />
       <ContactSection />
       <Footer />
       <DestinyChat />

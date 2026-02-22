@@ -1,7 +1,8 @@
 import { motion } from "framer-motion";
-import { Phone, BarChart3, Bot } from "lucide-react";
+import { Phone, Bot } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import cblakeLogo from "@/assets/cblake-logo.png";
+import housingBg from "@/assets/housing-bg.jpg";
 
 const HeroSection = () => {
   const openDestinyChat = () => {
@@ -14,6 +15,12 @@ const HeroSection = () => {
 
   return (
     <section id="home" className="relative min-h-screen flex items-center pt-16 overflow-hidden">
+      {/* Background image faded */}
+      <div className="absolute inset-0">
+        <img src={housingBg} alt="" className="w-full h-full object-cover opacity-15" />
+        <div className="absolute inset-0 bg-gradient-to-b from-background via-background/80 to-background" />
+      </div>
+
       {/* Abstract bg glow */}
       <div className="absolute inset-0">
         <div className="absolute top-1/4 left-1/4 w-[600px] h-[600px] rounded-full bg-primary/8 blur-[120px]" />
@@ -81,7 +88,7 @@ const HeroSection = () => {
             className="flex items-center gap-3 text-muted-foreground hover:text-foreground transition-colors"
           >
             <span className="relative inline-flex items-center justify-center w-7 h-7 ring-pulse">
-              <Phone size={16} className="text-primary" />
+              <Bot size={16} className="text-primary" />
             </span>
             <span className="text-sm">Chat With Our AI Leasing Rep</span>
           </button>

@@ -87,7 +87,7 @@ const ContactSection = () => {
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-4xl mx-auto">
           {[
             { icon: Phone, label: "Phone", value: "(636) 206-6037" },
-            { icon: Mail, label: "Email", value: "destiny@seablakeent.com" },
+            { icon: Mail, label: "Email", value: "Destiny@cBlakeEnt.com" },
             { icon: Clock, label: "Hours", value: "Mon–Fri 9AM–6PM" },
             { icon: CalendarDays, label: "Consult", value: "By Appointment" },
           ].map((item, i) => (

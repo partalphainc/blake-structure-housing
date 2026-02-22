@@ -1,10 +1,9 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Phone, PhoneOff, Mic, MicOff, Send } from "lucide-react";
+import { X, Phone, PhoneOff, Mic, MicOff, Send, MessageSquare } from "lucide-react";
 import destinyAvatar from "@/assets/destiny-avatar.png";
 
 const VAPI_ASSISTANT_ID = "a51e4ffa-4659-4cf9-a491-5f7b91739c40";
-// TODO: Replace with your Zapier webhook URL
 const ZAPIER_WEBHOOK_URL = "";
 
 interface ChatMessage {
@@ -19,6 +18,7 @@ const DestinyChat = () => {
   const [isConnected, setIsConnected] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [isMuted, setIsMuted] = useState(false);
+  const [textInput, setTextInput] = useState("");
   const vapiRef = useRef<any>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -99,7 +99,6 @@ const DestinyChat = () => {
     };
   }, [sendToZapier]);
 
-  // Listen for custom events from other components
   useEffect(() => {
     const handleOpen = () => setIsOpen(true);
     const handleStartCall = () => {
@@ -132,6 +131,32 @@ const DestinyChat = () => {
     if (vapiRef.current && isConnected) {
       vapiRef.current.setMuted(!isMuted);
       setIsMuted(!isMuted);
+    }
+  };
+
+  const handleSendText = () => {
+    const trimmed = textInput.trim();
+    if (!trimmed) return;
+    const userMsg: ChatMessage = { role: "user", content: trimmed, timestamp: new Date() };
+    setMessages(prev => {
+      const updated = [...prev, userMsg];
+      // Auto-reply with a helpful message and send to Zapier
+      const botReply: ChatMessage = {
+        role: "assistant",
+        content: "Thanks for your message! A housing representative will follow up with you shortly. You can also tap the mic button to speak with Destiny live.",
+        timestamp: new Date(),
+      };
+      const withReply = [...updated, botReply];
+      sendToZapier(withReply);
+      return withReply;
+    });
+    setTextInput("");
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      handleSendText();
     }
   };
 
@@ -187,7 +212,7 @@ const DestinyChat = () => {
                 </div>
                 <div>
                   <p className="font-serif font-bold text-sm">Destiny — AI Leasing Rep</p>
-                  <p className="text-xs text-muted-foreground">Powered by C. Blake Enterprise Automation</p>
+                  <p className="text-xs text-muted-foreground">Powered by C. Blake Enterprise</p>
                 </div>
               </div>
             </div>
@@ -201,7 +226,7 @@ const DestinyChat = () => {
                   </div>
                   <p className="text-sm text-foreground font-medium mb-2">Hi! I'm Destiny 👋</p>
                   <p className="text-xs text-muted-foreground">
-                    Your AI leasing representative. Tap the mic to start a conversation about available units, second-chance policy, or scheduling.
+                    Type a message below or tap the mic to start a voice conversation about available units, second-chance housing, or scheduling.
                   </p>
                 </div>
               ) : (
@@ -220,27 +245,46 @@ const DestinyChat = () => {
               <div ref={messagesEndRef} />
             </div>
 
-            {/* Controls */}
-            <div className="p-4 border-t border-border shrink-0">
+            {/* Text input + voice controls */}
+            <div className="p-3 border-t border-border shrink-0 space-y-2">
+              {/* Text input row */}
+              <div className="flex items-center gap-2">
+                <input
+                  type="text"
+                  value={textInput}
+                  onChange={(e) => setTextInput(e.target.value)}
+                  onKeyDown={handleKeyDown}
+                  placeholder="Type a message..."
+                  className="flex-1 rounded-full border border-border bg-background px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+                />
+                <motion.button
+                  onClick={handleSendText}
+                  disabled={!textInput.trim()}
+                  className="w-9 h-9 rounded-full bg-primary text-primary-foreground flex items-center justify-center disabled:opacity-40"
+                  whileTap={{ scale: 0.9 }}
+                >
+                  <Send size={16} />
+                </motion.button>
+              </div>
+
+              {/* Voice controls row */}
               <div className="flex items-center justify-center gap-3">
-                {/* Mic/Mute button */}
                 {isConnected && (
                   <motion.button
                     onClick={toggleMute}
-                    className={`w-10 h-10 rounded-full flex items-center justify-center transition-colors ${
+                    className={`w-9 h-9 rounded-full flex items-center justify-center transition-colors ${
                       isMuted ? "bg-destructive/20 text-destructive" : "bg-primary/10 text-primary"
                     }`}
                     whileTap={{ scale: 0.95 }}
                   >
-                    {isMuted ? <MicOff size={18} /> : <Mic size={18} />}
+                    {isMuted ? <MicOff size={16} /> : <Mic size={16} />}
                   </motion.button>
                 )}
 
-                {/* Call button */}
                 <motion.button
                   onClick={handleCall}
                   disabled={isConnecting}
-                  className={`flex items-center gap-2 px-6 py-3 rounded-full font-semibold text-sm transition-all ${
+                  className={`flex items-center gap-2 px-5 py-2 rounded-full font-semibold text-xs transition-all ${
                     isConnected
                       ? "bg-destructive text-destructive-foreground hover:bg-destructive/90"
                       : "bg-gradient-to-r from-primary to-accent-magenta text-primary-foreground glow-btn hover:opacity-90"
@@ -249,17 +293,17 @@ const DestinyChat = () => {
                   whileTap={{ scale: 0.97 }}
                 >
                   {isConnected ? (
-                    <><PhoneOff size={16} /> End Call</>
+                    <><PhoneOff size={14} /> End Call</>
                   ) : isConnecting ? (
-                    <><Phone size={16} className="animate-pulse" /> Connecting...</>
+                    <><Phone size={14} className="animate-pulse" /> Connecting...</>
                   ) : (
-                    <><Mic size={16} /> Talk to Destiny</>
+                    <><Mic size={14} /> Talk to Destiny</>
                   )}
                 </motion.button>
               </div>
 
               {isConnected && (
-                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mt-3 flex items-center justify-center gap-2">
+                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex items-center justify-center gap-2">
                   <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
                   <span className="text-xs text-muted-foreground">Connected — speak now</span>
                 </motion.div>

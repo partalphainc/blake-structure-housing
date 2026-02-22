@@ -1,8 +1,8 @@
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Search, Home, Megaphone, FileSignature, ClipboardCheck, Camera, Users, TrendingUp, Sofa, FileText, MessageSquare } from "lucide-react";
+import { Phone, Search, Home, Megaphone, FileSignature, ClipboardCheck, Camera, Users, TrendingUp, Sofa, FileText, MessageSquare } from "lucide-react";
 
-const services = [
+const allServices = [
   { icon: Home, label: "Converting underperforming properties into structured private-room housing" },
   { icon: Sofa, label: "Furnished unit setup for corporate and insurance placement" },
   { icon: TrendingUp, label: "Revenue optimization strategies" },
@@ -12,9 +12,6 @@ const services = [
   { icon: ClipboardCheck, label: "Property inspections" },
   { icon: Camera, label: "Optional professional photography" },
   { icon: Users, label: "Community-focused resident placement" },
-];
-
-const trustPillars = [
   { icon: FileText, label: "Documentation-driven model" },
   { icon: ClipboardCheck, label: "Structured agreements" },
   { icon: Search, label: "Screening protocols" },
@@ -36,7 +33,8 @@ const ForOwnersSection = () => {
           >
             <p className="text-sm font-semibold uppercase tracking-widest text-primary mb-3">For Investors & Property Owners</p>
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-serif font-bold mb-6">
-              Optimize Your <span className="text-gradient">Residential Assets</span>
+              Built With Structure.{" "}
+              <span className="text-gradient">Managed With Discipline.</span>
             </h2>
             <p className="text-muted-foreground leading-relaxed mb-6">
               We specialize in transforming standard residential properties into structured
@@ -51,19 +49,24 @@ const ForOwnersSection = () => {
                 <a href="#contact">Schedule Owner Consultation</a>
               </Button>
               <Button variant="heroOutline" size="lg" asChild>
-                <a href="tel:+16362066037">Speak With an Advisor</a>
+                <a href="tel:+16362066037" className="flex items-center gap-2">
+                  <span className="relative inline-flex items-center justify-center w-5 h-5 ring-pulse">
+                    <Phone size={14} />
+                  </span>
+                  Speak With an Advisor
+                </a>
               </Button>
             </div>
           </motion.div>
 
           <div className="space-y-3">
-            {services.map((s, i) => (
+            {allServices.map((s, i) => (
               <motion.div
-                key={s.label}
+                key={`${s.label}-${i}`}
                 initial={{ opacity: 0, x: 20 }}
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true }}
-                transition={{ delay: i * 0.05, duration: 0.4 }}
+                transition={{ delay: i * 0.04, duration: 0.4 }}
                 className="flex items-center gap-4 p-4 rounded-lg bg-card border border-border hover:border-primary/30 transition-colors"
               >
                 <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
@@ -73,38 +76,6 @@ const ForOwnersSection = () => {
               </motion.div>
             ))}
           </div>
-        </div>
-
-        {/* Trust pillars — merged from Performance/Investor Trust */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          className="text-center mt-20 mb-10"
-        >
-          <h3 className="text-2xl md:text-3xl font-serif font-bold">
-            Built With Structure.{" "}
-            <span className="text-gradient">Managed With Discipline.</span>
-          </h3>
-        </motion.div>
-
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-4xl mx-auto">
-          {trustPillars.map((p, i) => (
-            <motion.div
-              key={p.label}
-              initial={{ opacity: 0, scale: 0.95 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.08, duration: 0.4 }}
-              className="flex items-center gap-4 p-5 rounded-xl bg-card border border-border"
-            >
-              <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-                <p.icon size={20} className="text-primary" />
-              </div>
-              <span className="font-medium">{p.label}</span>
-            </motion.div>
-          ))}
         </div>
       </div>
     </section>
