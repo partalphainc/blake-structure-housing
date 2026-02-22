@@ -9,7 +9,6 @@ const navLinks = [
   { label: "Home", href: "#home" },
   { label: "For Residents", href: "#residents" },
   { label: "For Investors", href: "#investors" },
-  { label: "Housing Models", href: "#divisions" },
   { label: "Available Units", href: "#units" },
   { label: "Contact", href: "#contact" },
 ];

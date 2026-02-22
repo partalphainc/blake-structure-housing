@@ -3,6 +3,10 @@ import { Button } from "@/components/ui/button";
 import { Phone, Mail, Clock, CalendarDays, Home, BarChart3 } from "lucide-react";
 
 const ContactSection = () => {
+  const startDestinyCall = () => {
+    window.dispatchEvent(new CustomEvent("startDestinyCall"));
+  };
+
   return (
     <section id="contact" className="section-padding bg-gradient-brand">
       <div className="container mx-auto">
@@ -41,8 +45,11 @@ const ContactSection = () => {
               <li className="flex items-center gap-2"><div className="w-1.5 h-1.5 rounded-full bg-primary" /> Application questions</li>
               <li className="flex items-center gap-2"><div className="w-1.5 h-1.5 rounded-full bg-primary" /> Unit availability</li>
             </ul>
-            <Button variant="hero" size="default" asChild>
-              <a href="tel:+16362066037">Contact Housing Team</a>
+            <Button variant="hero" size="default" onClick={startDestinyCall} className="flex items-center gap-2">
+              <span className="relative inline-flex items-center justify-center w-5 h-5 ring-pulse">
+                <Phone size={14} />
+              </span>
+              Contact Housing Team
             </Button>
           </motion.div>
 
@@ -66,7 +73,12 @@ const ContactSection = () => {
               <li className="flex items-center gap-2"><div className="w-1.5 h-1.5 rounded-full bg-accent-lavender" /> Revenue optimization consultation</li>
             </ul>
             <Button variant="heroOutline" size="default" asChild>
-              <a href="mailto:management@cblakeent.com">Contact Investment Team</a>
+              <a href="tel:+16362066037" className="flex items-center gap-2">
+                <span className="relative inline-flex items-center justify-center w-5 h-5 ring-pulse">
+                  <Phone size={14} />
+                </span>
+                Contact Investment Team
+              </a>
             </Button>
           </motion.div>
         </div>
@@ -75,7 +87,7 @@ const ContactSection = () => {
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-4xl mx-auto">
           {[
             { icon: Phone, label: "Phone", value: "(636) 206-6037" },
-            { icon: Mail, label: "Email", value: "management@cblakeent.com" },
+            { icon: Mail, label: "Email", value: "destiny@seablakeent.com" },
             { icon: Clock, label: "Hours", value: "Mon–Fri 9AM–6PM" },
             { icon: CalendarDays, label: "Consult", value: "By Appointment" },
           ].map((item, i) => (

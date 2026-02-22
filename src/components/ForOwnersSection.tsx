@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Search, Home, Megaphone, FileSignature, ClipboardCheck, Camera, Users, TrendingUp, Sofa } from "lucide-react";
+import { Search, Home, Megaphone, FileSignature, ClipboardCheck, Camera, Users, TrendingUp, Sofa, FileText, MessageSquare } from "lucide-react";
 
 const services = [
   { icon: Home, label: "Converting underperforming properties into structured private-room housing" },
@@ -12,6 +12,15 @@ const services = [
   { icon: ClipboardCheck, label: "Property inspections" },
   { icon: Camera, label: "Optional professional photography" },
   { icon: Users, label: "Community-focused resident placement" },
+];
+
+const trustPillars = [
+  { icon: FileText, label: "Documentation-driven model" },
+  { icon: ClipboardCheck, label: "Structured agreements" },
+  { icon: Search, label: "Screening protocols" },
+  { icon: TrendingUp, label: "Revenue strategy optimization" },
+  { icon: Users, label: "Community standards enforcement" },
+  { icon: MessageSquare, label: "Transparent communication" },
 ];
 
 const ForOwnersSection = () => {
@@ -42,7 +51,7 @@ const ForOwnersSection = () => {
                 <a href="#contact">Schedule Owner Consultation</a>
               </Button>
               <Button variant="heroOutline" size="lg" asChild>
-                <a href="#performance">Explore Investment Strategy</a>
+                <a href="tel:+16362066037">Speak With an Advisor</a>
               </Button>
             </div>
           </motion.div>
@@ -64,6 +73,38 @@ const ForOwnersSection = () => {
               </motion.div>
             ))}
           </div>
+        </div>
+
+        {/* Trust pillars — merged from Performance/Investor Trust */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+          className="text-center mt-20 mb-10"
+        >
+          <h3 className="text-2xl md:text-3xl font-serif font-bold">
+            Built With Structure.{" "}
+            <span className="text-gradient">Managed With Discipline.</span>
+          </h3>
+        </motion.div>
+
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-4xl mx-auto">
+          {trustPillars.map((p, i) => (
+            <motion.div
+              key={p.label}
+              initial={{ opacity: 0, scale: 0.95 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ delay: i * 0.08, duration: 0.4 }}
+              className="flex items-center gap-4 p-5 rounded-xl bg-card border border-border"
+            >
+              <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                <p.icon size={20} className="text-primary" />
+              </div>
+              <span className="font-medium">{p.label}</span>
+            </motion.div>
+          ))}
         </div>
       </div>
     </section>
