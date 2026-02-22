@@ -1,6 +1,11 @@
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { MapPin, DollarSign, Clock, Wifi, Droplets, CalendarDays } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { useToast } from "@/hooks/use-toast";
 
 const units = [
   {
@@ -50,7 +55,45 @@ const tagColors: Record<string, string> = {
 };
 
 const AvailableUnitsSection = () => {
+  const [inquiryOpen, setInquiryOpen] = useState(false);
+  const [selectedUnit, setSelectedUnit] = useState("");
+  const [name, setName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [email, setEmail] = useState("");
+  const { toast } = useToast();
+
+  const handleInquiry = (e: React.FormEvent) => {
+    e.preventDefault();
+    toast({ title: "Inquiry sent!", description: `We'll be in touch about ${selectedUnit}.` });
+    setInquiryOpen(false);
+    setName(""); setPhone(""); setEmail("");
+  };
+
   return (
+    <>
+    <Dialog open={inquiryOpen} onOpenChange={setInquiryOpen}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Inquire About This Unit</DialogTitle>
+          <DialogDescription>{selectedUnit}</DialogDescription>
+        </DialogHeader>
+        <form onSubmit={handleInquiry} className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="inq-name">Full Name</Label>
+            <Input id="inq-name" required value={name} onChange={(e) => setName(e.target.value)} placeholder="Your name" />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="inq-phone">Phone Number</Label>
+            <Input id="inq-phone" type="tel" required value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="(555) 123-4567" />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="inq-email">Email</Label>
+            <Input id="inq-email" type="email" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" />
+          </div>
+          <Button type="submit" variant="cta" className="w-full">Submit Inquiry</Button>
+        </form>
+      </DialogContent>
+    </Dialog>
     <section id="units" className="section-padding">
       <div className="container mx-auto">
         <motion.div
@@ -107,8 +150,8 @@ const AvailableUnitsSection = () => {
                 </div>
               </div>
               <div className="mt-5">
-                <Button variant="heroOutline" size="sm" asChild>
-                  <a href="#contact">Inquire</a>
+                <Button variant="heroOutline" size="sm" onClick={() => { setSelectedUnit(u.location); setInquiryOpen(true); }}>
+                  Inquire
                 </Button>
               </div>
             </motion.div>
@@ -116,6 +159,7 @@ const AvailableUnitsSection = () => {
         </div>
       </div>
     </section>
+    </>
   );
 };
 
