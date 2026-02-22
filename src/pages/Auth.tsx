@@ -33,10 +33,14 @@ const Auth = () => {
     };
 
     const checkSession = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session?.user) {
-        await redirectByRole(session.user.id);
-      } else {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session?.user) {
+          await redirectByRole(session.user.id);
+        }
+      } catch (err) {
+        console.error("Session check failed:", err);
+      } finally {
         setIsCheckingSession(false);
       }
     };
