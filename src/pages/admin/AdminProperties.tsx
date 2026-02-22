@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
@@ -17,7 +18,28 @@ const AdminProperties = () => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
-  const [form, setForm] = useState({ name: "", address: "", city: "", state: "", zip: "", property_type: "residential", total_units: "1" });
+  const [form, setForm] = useState({ name: "", address: "", city: "", state: "", zip: "", property_type: "residential", total_units: "1", owner_id: "" });
+
+  const { data: investors } = useQuery({
+    queryKey: ["investor-users"],
+    enabled: !!user,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("user_roles")
+        .select("user_id")
+        .eq("role", "investor");
+      if (error) throw error;
+      // Fetch profiles for these investor user_ids
+      const userIds = data.map((r) => r.user_id);
+      if (userIds.length === 0) return [];
+      const { data: profiles, error: pErr } = await supabase
+        .from("profiles")
+        .select("user_id, full_name")
+        .in("user_id", userIds);
+      if (pErr) throw pErr;
+      return profiles || [];
+    },
+  });
 
   const { data: properties } = useQuery({
     queryKey: ["admin-properties"],
@@ -39,14 +61,14 @@ const AdminProperties = () => {
         zip: form.zip,
         property_type: form.property_type,
         total_units: parseInt(form.total_units) || 1,
-        owner_id: user!.id,
+        owner_id: form.owner_id || user!.id,
       });
       if (error) throw error;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin-properties"] });
       setOpen(false);
-      setForm({ name: "", address: "", city: "", state: "", zip: "", property_type: "residential", total_units: "1" });
+      setForm({ name: "", address: "", city: "", state: "", zip: "", property_type: "residential", total_units: "1", owner_id: "" });
       toast({ title: "Property added" });
     },
     onError: (e: any) => toast({ title: "Error", description: e.message, variant: "destructive" }),
@@ -75,6 +97,19 @@ const AdminProperties = () => {
               <div className="grid grid-cols-2 gap-2">
                 <div><Label>Type</Label><Input value={form.property_type} onChange={(e) => setForm({ ...form, property_type: e.target.value })} /></div>
                 <div><Label>Total Units</Label><Input type="number" min="1" value={form.total_units} onChange={(e) => setForm({ ...form, total_units: e.target.value })} /></div>
+              </div>
+              <div>
+                <Label>Owner / Investor</Label>
+                <Select value={form.owner_id} onValueChange={(v) => setForm({ ...form, owner_id: v })}>
+                  <SelectTrigger><SelectValue placeholder="Select an investor" /></SelectTrigger>
+                  <SelectContent>
+                    {investors?.map((inv) => (
+                      <SelectItem key={inv.user_id} value={inv.user_id}>
+                        {inv.full_name || inv.user_id.slice(0, 8)}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
               <Button type="submit" variant="cta" className="w-full" disabled={addProperty.isPending}>
                 {addProperty.isPending ? "Adding..." : "Add Property"}
