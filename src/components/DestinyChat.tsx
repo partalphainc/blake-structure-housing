@@ -241,7 +241,7 @@ const DestinyChat = () => {
                 </div>
                 <div>
                   <p className="font-serif font-bold text-sm">Destiny — AI Leasing Rep</p>
-                  <p className="text-xs text-muted-foreground">Powered by C. Blake Enterprise</p>
+                  <p className="text-xs text-muted-foreground">Powered by PART Alpha Incorporation</p>
                 </div>
               </div>
             </div>

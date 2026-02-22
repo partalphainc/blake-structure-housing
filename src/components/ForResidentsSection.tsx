@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Home, Sofa, Building, Shield, Briefcase, RefreshCw, Zap, CalendarDays } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -31,6 +31,12 @@ const evaluationPoints = [
 const ForResidentsSection = () => {
   const [showApplication, setShowApplication] = useState(false);
   const { toast } = useToast();
+
+  useEffect(() => {
+    const handleOpen = () => setShowApplication(true);
+    window.addEventListener("openApplication", handleOpen);
+    return () => window.removeEventListener("openApplication", handleOpen);
+  }, []);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -85,14 +91,14 @@ const ForResidentsSection = () => {
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="max-w-2xl mx-auto mb-10 p-6 rounded-xl bg-card border border-border"
+          className="max-w-2xl mx-auto mb-10 p-6 rounded-xl bg-card border border-border text-center"
         >
           <h4 className="font-serif font-bold text-lg mb-2">How We Evaluate Applicants</h4>
           <p className="text-sm text-muted-foreground mb-4">We don't guess. We verify.</p>
           <ul className="space-y-2 mb-4">
             {evaluationPoints.map((point) => (
-              <li key={point} className="flex items-start gap-2 text-sm">
-                <div className="w-1.5 h-1.5 rounded-full bg-primary shrink-0 mt-1.5" />
+              <li key={point} className="flex items-center justify-center gap-2 text-sm">
+                <div className="w-1.5 h-1.5 rounded-full bg-primary shrink-0" />
                 <span>{point}</span>
               </li>
             ))}

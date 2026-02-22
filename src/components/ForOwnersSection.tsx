@@ -55,10 +55,17 @@ const ForOwnersSection = () => {
               transparency, accountability, and results — so you always know exactly
               how your investment is performing.
             </p>
-            <p className="text-muted-foreground leading-relaxed mb-8">
+            <p className="text-muted-foreground leading-relaxed mb-6">
               From furnished corporate units and insurance placements to second-chance housing
               and traveling professional accommodations — we identify the highest-value use
               for every unit and execute with precision. That's the C. Blake difference.
+            </p>
+            <p className="text-muted-foreground leading-relaxed mb-8">
+              We don't just manage properties — we build systems that protect your investment
+              long-term. Every decision, from tenant selection to maintenance scheduling,
+              is driven by data, documentation, and a commitment to preserving asset value.
+              Our partners trust us because we treat every property like it's our own —
+              with discipline, transparency, and a relentless focus on performance.
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
               <Button variant="hero" size="lg" asChild>
