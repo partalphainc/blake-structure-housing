@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Building2, BarChart3, FileText, Users, LayoutDashboard, DollarSign } from "lucide-react";
+import ContactSupportCard from "@/components/portal/ContactSupportCard";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import PortalLayout from "@/components/portal/PortalLayout";
@@ -68,7 +69,7 @@ const InvestorDashboard = () => {
   const occupancyRate = totalUnits > 0 ? Math.round((activeLeases / totalUnits) * 100) : 0;
 
   return (
-    <PortalLayout title="Investor Portal" navItems={navItems} onSignOut={signOut} userName={profile?.full_name || user?.email}>
+    <PortalLayout title="Investor Portal" navItems={navItems} onSignOut={signOut} userName={profile?.full_name || user?.email} userId={user?.id}>
       <div className="space-y-6">
         <div>
           <h1 className="text-2xl font-serif font-bold">Investment Overview</h1>
@@ -149,6 +150,8 @@ const InvestorDashboard = () => {
             )}
           </CardContent>
         </Card>
+
+        <ContactSupportCard />
       </div>
     </PortalLayout>
   );

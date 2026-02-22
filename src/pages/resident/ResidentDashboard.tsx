@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { DollarSign, Wrench, FileText, Upload, LayoutDashboard } from "lucide-react";
+import ContactSupportCard from "@/components/portal/ContactSupportCard";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import PortalLayout from "@/components/portal/PortalLayout";
@@ -41,7 +42,7 @@ const ResidentDashboard = () => {
   if (loading) return <div className="min-h-screen bg-background flex items-center justify-center text-muted-foreground">Loading...</div>;
 
   return (
-    <PortalLayout title="Resident Portal" navItems={navItems} onSignOut={signOut} userName={profile?.full_name || user?.email}>
+    <PortalLayout title="Resident Portal" navItems={navItems} onSignOut={signOut} userName={profile?.full_name || user?.email} userId={user?.id}>
       <div className="space-y-6">
         <div>
           <h1 className="text-2xl font-serif font-bold">Welcome back{profile?.full_name ? `, ${profile.full_name}` : ""}</h1>
@@ -122,6 +123,8 @@ const ResidentDashboard = () => {
             </CardContent>
           </Card>
         )}
+
+        <ContactSupportCard />
       </div>
     </PortalLayout>
   );
