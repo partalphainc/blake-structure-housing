@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { DollarSign, Wrench, FileText, Upload, LayoutDashboard } from "lucide-react";
-import ContactSupportCard from "@/components/portal/ContactSupportCard";
+import SupportChatWidget from "@/components/portal/SupportChatWidget";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import PortalLayout from "@/components/portal/PortalLayout";
@@ -124,7 +124,7 @@ const ResidentDashboard = () => {
           </Card>
         )}
 
-        <ContactSupportCard />
+        <SupportChatWidget />
       </div>
     </PortalLayout>
   );

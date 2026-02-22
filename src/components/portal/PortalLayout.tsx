@@ -1,6 +1,6 @@
 import { ReactNode, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { LogOut, Home, UserPen } from "lucide-react";
+import { LogOut, Home, UserPen, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import ProfileEditDialog from "@/components/portal/ProfileEditDialog";
 import cblakeLogo from "@/assets/cblake-logo.png";
@@ -38,6 +38,10 @@ const PortalLayout = ({ children, title, navItems, onSignOut, userName, userId }
               {userName}
             </button>
           )}
+          {/* Mobile profile edit button */}
+          <Button variant="ghost" size="icon" onClick={() => setProfileOpen(true)} className="text-muted-foreground md:hidden">
+            <UserPen className="w-4 h-4" />
+          </Button>
           <Link to="/">
             <Button variant="ghost" size="icon" className="text-muted-foreground">
               <Home className="w-4 h-4" />
