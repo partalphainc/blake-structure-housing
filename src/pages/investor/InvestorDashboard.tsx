@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Building2, BarChart3, FileText, Users, LayoutDashboard, DollarSign } from "lucide-react";
-import ContactSupportCard from "@/components/portal/ContactSupportCard";
+import SupportChatWidget from "@/components/portal/SupportChatWidget";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import PortalLayout from "@/components/portal/PortalLayout";
@@ -151,7 +151,7 @@ const InvestorDashboard = () => {
           </CardContent>
         </Card>
 
-        <ContactSupportCard />
+        <SupportChatWidget />
       </div>
     </PortalLayout>
   );
