@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -19,6 +19,39 @@ const Auth = () => {
   const [signupRole, setSignupRole] = useState<"resident" | "investor">("resident");
   const navigate = useNavigate();
   const { toast } = useToast();
+
+  // On mount, check if user just verified email and has a session
+  useEffect(() => {
+    const checkSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.user) {
+        const { data: roles } = await supabase
+          .from("user_roles")
+          .select("role")
+          .eq("user_id", session.user.id);
+        const role = roles?.[0]?.role;
+        if (role === "admin") navigate("/admin");
+        else if (role === "investor") navigate("/investor");
+        else navigate("/resident");
+      }
+    };
+    checkSession();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (event === "SIGNED_IN" && session?.user) {
+        const { data: roles } = await supabase
+          .from("user_roles")
+          .select("role")
+          .eq("user_id", session.user.id);
+        const role = roles?.[0]?.role;
+        if (role === "admin") navigate("/admin");
+        else if (role === "investor") navigate("/investor");
+        else navigate("/resident");
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, [navigate]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -63,7 +96,7 @@ const Auth = () => {
         password: signupPassword,
         options: {
           data: { full_name: signupName, role: signupRole },
-          emailRedirectTo: window.location.origin,
+          emailRedirectTo: `${window.location.origin}/auth`,
         },
       });
       if (error) throw error;
