@@ -21,7 +21,7 @@ const Navbar = () => {
       {/* Promo banner */}
       <div className="fixed top-0 left-0 right-0 z-[60] bg-primary text-primary-foreground text-center py-2 px-4">
         <p className="text-xs sm:text-sm font-semibold tracking-wide">
-          🎉 Special: Application Fee Waived — <a href="#residents" className="underline underline-offset-2 hover:opacity-80">Apply Now</a>
+          🎉 Special: Application Fee Waived — <button onClick={() => window.dispatchEvent(new CustomEvent("openApplication"))} className="underline underline-offset-2 hover:opacity-80">Apply Now</button>
         </p>
       </div>
 

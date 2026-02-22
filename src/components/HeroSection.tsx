@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 import { Phone, Bot } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import cblakeLogo from "@/assets/cblake-logo.png";
-import housingBg from "@/assets/housing-bg.jpg";
+import walkthroughVideo from "@/assets/unit-walkthrough.mp4";
 
 const HeroSection = () => {
   const openDestinyChat = () => {
@@ -15,9 +15,16 @@ const HeroSection = () => {
 
   return (
     <section id="home" className="relative min-h-screen flex items-center pt-24 overflow-hidden">
-      {/* Background image faded */}
+      {/* Background video faded */}
       <div className="absolute inset-0">
-        <img src={housingBg} alt="" className="w-full h-full object-cover opacity-15" />
+        <video
+          src={walkthroughVideo}
+          autoPlay
+          muted
+          loop
+          playsInline
+          className="w-full h-full object-cover opacity-15"
+        />
         <div className="absolute inset-0 bg-gradient-to-b from-background via-background/80 to-background" />
       </div>
 
