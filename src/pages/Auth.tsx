@@ -23,6 +23,17 @@ const Auth = () => {
   const { toast } = useToast();
 
   useEffect(() => {
+    // Check if user arrived via email verification link
+    const hash = window.location.hash;
+    if (hash.includes("type=signup") || hash.includes("type=email")) {
+      toast({
+        title: "Email verified!",
+        description: "Your email has been verified. You may now log in.",
+      });
+      // Clean the hash from URL
+      window.history.replaceState(null, "", window.location.pathname);
+    }
+
     // Sign out any existing session so users must always log in fresh
     supabase.auth.signOut();
 
