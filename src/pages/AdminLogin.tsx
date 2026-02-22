@@ -29,7 +29,7 @@ const AdminLogin = () => {
           .select("role")
           .eq("user_id", user.id);
 
-        if (roles?.[0]?.role === "admin") {
+        if (roles?.some((r) => r.role === "admin")) {
           navigate("/admin");
         } else {
           await supabase.auth.signOut();
