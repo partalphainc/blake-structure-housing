@@ -167,8 +167,8 @@ const AvailableUnitsSection = () => {
                   <span>{u.minStay}</span>
                 </div>
               </div>
-              <div className="mt-5">
-                <Button variant="heroOutline" size="sm" onClick={() => { setSelectedUnit(u.location); setInquiryOpen(true); }}>
+              <div className="mt-5 relative z-10">
+                <Button variant="heroOutline" size="sm" className="cursor-pointer" onClick={(e) => { e.stopPropagation(); setSelectedUnit(u.location); setInquiryOpen(true); }}>
                   Inquire
                 </Button>
               </div>
