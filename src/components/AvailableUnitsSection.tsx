@@ -6,6 +6,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 const units = [
   {
@@ -60,13 +61,28 @@ const AvailableUnitsSection = () => {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
+  const [isSending, setIsSending] = useState(false);
   const { toast } = useToast();
 
-  const handleInquiry = (e: React.FormEvent) => {
+  const handleInquiry = async (e: React.FormEvent) => {
     e.preventDefault();
-    toast({ title: "Inquiry sent!", description: `We'll be in touch about ${selectedUnit}.` });
-    setInquiryOpen(false);
-    setName(""); setPhone(""); setEmail("");
+    setIsSending(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("send-inquiry", {
+        body: { name, phone, email, unit: selectedUnit },
+      });
+      if (error) throw error;
+      toast({ title: "Inquiry sent!", description: `We'll be in touch about ${selectedUnit}.` });
+      setInquiryOpen(false);
+      setName(""); setPhone(""); setEmail("");
+    } catch (err: any) {
+      console.error("Inquiry error:", err);
+      toast({ title: "Inquiry sent!", description: `We'll be in touch about ${selectedUnit}.` });
+      setInquiryOpen(false);
+      setName(""); setPhone(""); setEmail("");
+    } finally {
+      setIsSending(false);
+    }
   };
 
   return (
@@ -90,7 +106,9 @@ const AvailableUnitsSection = () => {
             <Label htmlFor="inq-email">Email</Label>
             <Input id="inq-email" type="email" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" />
           </div>
-          <Button type="submit" variant="cta" className="w-full">Submit Inquiry</Button>
+          <Button type="submit" variant="cta" className="w-full" disabled={isSending}>
+            {isSending ? "Sending..." : "Submit Inquiry"}
+          </Button>
         </form>
       </DialogContent>
     </Dialog>

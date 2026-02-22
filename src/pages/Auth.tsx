@@ -33,14 +33,18 @@ const Auth = () => {
     };
 
     const checkSession = async () => {
+      // Safety timeout - never show spinner for more than 3 seconds
+      const timeout = setTimeout(() => setIsCheckingSession(false), 3000);
       try {
         const { data: { session } } = await supabase.auth.getSession();
+        clearTimeout(timeout);
         setIsCheckingSession(false);
         if (session?.user) {
           redirectByRole(session.user.id);
         }
       } catch (err) {
         console.error("Session check failed:", err);
+        clearTimeout(timeout);
         setIsCheckingSession(false);
       }
     };
