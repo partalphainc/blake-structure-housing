@@ -16,47 +16,45 @@ export type Database = {
     Tables: {
       documents: {
         Row: {
+          category: string | null
           created_at: string
-          document_type: string
           file_name: string
           file_url: string
           id: string
-          lease_id: string | null
           notes: string | null
+          owner_id: string
+          owner_type: string
           uploaded_by: string
-          user_id: string
+          visible_to_investor: boolean | null
+          visible_to_tenant: boolean | null
         }
         Insert: {
+          category?: string | null
           created_at?: string
-          document_type: string
           file_name: string
           file_url: string
           id?: string
-          lease_id?: string | null
           notes?: string | null
+          owner_id: string
+          owner_type: string
           uploaded_by: string
-          user_id: string
+          visible_to_investor?: boolean | null
+          visible_to_tenant?: boolean | null
         }
         Update: {
+          category?: string | null
           created_at?: string
-          document_type?: string
           file_name?: string
           file_url?: string
           id?: string
-          lease_id?: string | null
           notes?: string | null
+          owner_id?: string
+          owner_type?: string
           uploaded_by?: string
-          user_id?: string
+          visible_to_investor?: boolean | null
+          visible_to_tenant?: boolean | null
         }
-        Relationships: [
-          {
-            foreignKeyName: "documents_lease_id_fkey"
-            columns: ["lease_id"]
-            isOneToOne: false
-            referencedRelation: "leases"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       investor_reports: {
         Row: {
@@ -212,6 +210,7 @@ export type Database = {
           notes: string | null
           payment_date: string
           payment_method: string | null
+          receipt_url: string | null
           recorded_by: string | null
           status: string | null
           tenant_id: string
@@ -225,6 +224,7 @@ export type Database = {
           notes?: string | null
           payment_date?: string
           payment_method?: string | null
+          receipt_url?: string | null
           recorded_by?: string | null
           status?: string | null
           tenant_id: string
@@ -238,6 +238,7 @@ export type Database = {
           notes?: string | null
           payment_date?: string
           payment_method?: string | null
+          receipt_url?: string | null
           recorded_by?: string | null
           status?: string | null
           tenant_id?: string

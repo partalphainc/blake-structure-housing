@@ -25,6 +25,10 @@ import AdminLeases from "./pages/admin/AdminLeases";
 import AdminPayments from "./pages/admin/AdminPayments";
 import AdminMaintenance from "./pages/admin/AdminMaintenance";
 import AdminUsers from "./pages/admin/AdminUsers";
+import AdminTenants from "./pages/admin/AdminTenants";
+import AdminInvestors from "./pages/admin/AdminInvestors";
+import AdminDocuments from "./pages/admin/AdminDocuments";
+import AdminActivityLog from "./pages/admin/AdminActivityLog";
 
 const queryClient = new QueryClient();
 
@@ -56,11 +60,15 @@ const App = () => (
           
           {/* Admin Portal */}
           <Route path="/admin" element={<AdminDashboard />} />
+          <Route path="/admin/tenants" element={<AdminTenants />} />
+          <Route path="/admin/investors" element={<AdminInvestors />} />
           <Route path="/admin/properties" element={<AdminProperties />} />
           <Route path="/admin/units" element={<AdminUnits />} />
           <Route path="/admin/leases" element={<AdminLeases />} />
           <Route path="/admin/payments" element={<AdminPayments />} />
           <Route path="/admin/maintenance" element={<AdminMaintenance />} />
+          <Route path="/admin/documents" element={<AdminDocuments />} />
+          <Route path="/admin/activity" element={<AdminActivityLog />} />
           <Route path="/admin/users" element={<AdminUsers />} />
           
           <Route path="*" element={<NotFound />} />

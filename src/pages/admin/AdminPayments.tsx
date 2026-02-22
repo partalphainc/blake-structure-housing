@@ -20,6 +20,7 @@ const AdminPayments = () => {
   const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState({ lease_id: "", tenant_id: "", amount: "", payment_date: "", payment_method: "cash", notes: "" });
+  const [receiptFile, setReceiptFile] = useState<File | null>(null);
 
   const { data: leases } = useQuery({
     queryKey: ["admin-leases-list"],
@@ -42,6 +43,18 @@ const AdminPayments = () => {
 
   const recordPayment = useMutation({
     mutationFn: async () => {
+      let receipt_url: string | null = null;
+
+      // Upload receipt if provided
+      if (receiptFile) {
+        const ext = receiptFile.name.split(".").pop();
+        const path = `${form.tenant_id}/${Date.now()}.${ext}`;
+        const { error: uploadError } = await supabase.storage.from("receipts").upload(path, receiptFile);
+        if (uploadError) throw uploadError;
+        const { data: urlData } = supabase.storage.from("receipts").getPublicUrl(path);
+        receipt_url = urlData.publicUrl;
+      }
+
       const { error } = await supabase.from("payments").insert({
         lease_id: form.lease_id,
         tenant_id: form.tenant_id,
@@ -50,13 +63,24 @@ const AdminPayments = () => {
         payment_method: form.payment_method,
         notes: form.notes || null,
         recorded_by: user!.id,
+        receipt_url,
       });
       if (error) throw error;
+
+      // Log activity
+      await (supabase as any).from("activity_log").insert({
+        actor_type: "admin",
+        actor_id: user!.id,
+        action: "Recorded payment",
+        entity_type: "payment",
+        metadata: { amount: form.amount, tenant_id: form.tenant_id },
+      });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin-payments"] });
       setOpen(false);
       setForm({ lease_id: "", tenant_id: "", amount: "", payment_date: "", payment_method: "cash", notes: "" });
+      setReceiptFile(null);
       toast({ title: "Payment recorded" });
     },
     onError: (e: any) => toast({ title: "Error", description: e.message, variant: "destructive" }),
@@ -75,7 +99,7 @@ const AdminPayments = () => {
         <h1 className="text-2xl font-serif font-bold">Payments</h1>
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
-            <Button variant="cta" size="sm"><Plus className="w-4 h-4 mr-2" />Record Payment</Button>
+            <Button variant="cta" size="sm"><Plus className="w-4 h-4 mr-2" />Add Payment</Button>
           </DialogTrigger>
           <DialogContent>
             <DialogHeader><DialogTitle>Record Payment</DialogTitle></DialogHeader>
@@ -105,6 +129,10 @@ const AdminPayments = () => {
                 </Select>
               </div>
               <div><Label>Notes</Label><Input value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} /></div>
+              <div>
+                <Label>Receipt (optional)</Label>
+                <Input type="file" accept=".pdf,.jpg,.jpeg,.png" onChange={(e) => setReceiptFile(e.target.files?.[0] || null)} />
+              </div>
               <Button type="submit" variant="cta" className="w-full" disabled={recordPayment.isPending}>
                 {recordPayment.isPending ? "Recording..." : "Record Payment"}
               </Button>
@@ -125,6 +153,7 @@ const AdminPayments = () => {
                 <span className="font-semibold text-foreground">${p.amount}</span>
                 <span>{p.payment_date}</span>
                 <span>{p.payment_method}</span>
+                {p.receipt_url && <a href={p.receipt_url} target="_blank" rel="noreferrer" className="text-primary underline">Receipt</a>}
               </div>
               {p.notes && <p className="text-xs text-muted-foreground mt-1">{p.notes}</p>}
             </CardContent>
