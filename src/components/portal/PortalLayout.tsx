@@ -1,7 +1,8 @@
-import { ReactNode } from "react";
+import { ReactNode, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { LogOut, Home } from "lucide-react";
+import { LogOut, Home, UserPen } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import ProfileEditDialog from "@/components/portal/ProfileEditDialog";
 import cblakeLogo from "@/assets/cblake-logo.png";
 
 interface PortalLayoutProps {
@@ -10,10 +11,12 @@ interface PortalLayoutProps {
   navItems: { label: string; href: string; icon: ReactNode }[];
   onSignOut: () => void;
   userName?: string;
+  userId?: string;
 }
 
-const PortalLayout = ({ children, title, navItems, onSignOut, userName }: PortalLayoutProps) => {
+const PortalLayout = ({ children, title, navItems, onSignOut, userName, userId }: PortalLayoutProps) => {
   const location = useLocation();
+  const [profileOpen, setProfileOpen] = useState(false);
 
   return (
     <div className="min-h-screen bg-background">
@@ -27,9 +30,13 @@ const PortalLayout = ({ children, title, navItems, onSignOut, userName }: Portal
         </div>
         <div className="ml-auto flex items-center gap-3">
           {userName && (
-            <span className="text-xs text-muted-foreground hidden md:block">
+            <button
+              onClick={() => setProfileOpen(true)}
+              className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors hidden md:flex"
+            >
+              <UserPen className="w-3.5 h-3.5" />
               {userName}
-            </span>
+            </button>
           )}
           <Link to="/">
             <Button variant="ghost" size="icon" className="text-muted-foreground">
@@ -82,6 +89,10 @@ const PortalLayout = ({ children, title, navItems, onSignOut, userName }: Portal
           {children}
         </main>
       </div>
+
+      {userId && (
+        <ProfileEditDialog open={profileOpen} onOpenChange={setProfileOpen} userId={userId} />
+      )}
     </div>
   );
 };
