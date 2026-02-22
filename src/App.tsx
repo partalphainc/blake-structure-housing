@@ -23,6 +23,7 @@ import AdminUnits from "./pages/admin/AdminUnits";
 import AdminLeases from "./pages/admin/AdminLeases";
 import AdminPayments from "./pages/admin/AdminPayments";
 import AdminMaintenance from "./pages/admin/AdminMaintenance";
+import AdminUsers from "./pages/admin/AdminUsers";
 
 const queryClient = new QueryClient();
 
@@ -58,6 +59,7 @@ const App = () => (
           <Route path="/admin/leases" element={<AdminLeases />} />
           <Route path="/admin/payments" element={<AdminPayments />} />
           <Route path="/admin/maintenance" element={<AdminMaintenance />} />
+          <Route path="/admin/users" element={<AdminUsers />} />
           
           <Route path="*" element={<NotFound />} />
         </Routes>

@@ -12,6 +12,7 @@ const adminNav = [
   { label: "Leases", href: "/admin/leases", icon: <FileText className="w-4 h-4" /> },
   { label: "Payments", href: "/admin/payments", icon: <DollarSign className="w-4 h-4" /> },
   { label: "Maintenance", href: "/admin/maintenance", icon: <Wrench className="w-4 h-4" /> },
+  { label: "Users", href: "/admin/users", icon: <Users className="w-4 h-4" /> },
 ];
 
 export { adminNav };
