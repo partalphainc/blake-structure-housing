@@ -39,10 +39,26 @@ const ForOwnersSection = () => {
             <p className="text-muted-foreground leading-relaxed mb-6">
               We specialize in transforming standard residential properties into structured
               income-generating assets through documentation, systems, and disciplined placement models.
-            </p>
-            <p className="text-muted-foreground leading-relaxed mb-8">
               C. Blake Enterprise is a strategic operator — not a property listing service.
               We build revenue infrastructure for residential assets.
+            </p>
+            <p className="text-muted-foreground leading-relaxed mb-6">
+              Our approach combines professional tenant screening, structured lease agreements,
+              and ongoing property management to maximize occupancy and minimize risk.
+              Every property in our portfolio is managed with the same discipline and attention
+              to detail — from marketing and placement to inspections and community standards enforcement.
+            </p>
+            <p className="text-muted-foreground leading-relaxed mb-6">
+              Whether you own a single property or a multi-unit portfolio, we provide
+              the systems, documentation, and operational infrastructure to turn your asset
+              into a consistent, high-performing revenue stream. Our model is built on
+              transparency, accountability, and results — so you always know exactly
+              how your investment is performing.
+            </p>
+            <p className="text-muted-foreground leading-relaxed mb-8">
+              From furnished corporate units and insurance placements to second-chance housing
+              and traveling professional accommodations — we identify the highest-value use
+              for every unit and execute with precision. That's the C. Blake difference.
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
               <Button variant="hero" size="lg" asChild>

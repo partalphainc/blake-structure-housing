@@ -14,7 +14,7 @@ const HeroSection = () => {
   };
 
   return (
-    <section id="home" className="relative min-h-screen flex items-center pt-16 overflow-hidden">
+    <section id="home" className="relative min-h-screen flex items-center pt-24 overflow-hidden">
       {/* Background image faded */}
       <div className="absolute inset-0">
         <img src={housingBg} alt="" className="w-full h-full object-cover opacity-15" />
@@ -43,12 +43,35 @@ const HeroSection = () => {
             <span className="text-gradient">Strategic Returns.</span>
           </h1>
 
-          <p className="text-lg md:text-xl text-muted-foreground leading-relaxed mb-10 max-w-3xl mx-auto">
-            Private room housing. Furnished and unfurnished units. Second-chance structure.
-            Insurance placement solutions. Professionally managed assets.
+          <p className="text-lg md:text-xl text-foreground font-medium leading-relaxed mb-4 max-w-3xl mx-auto">
+            Professionally managed properties built to perform.
           </p>
 
-          <div className="flex flex-col sm:flex-row gap-4 justify-center mb-14">
+          <div className="text-base md:text-lg text-muted-foreground leading-relaxed mb-4 max-w-3xl mx-auto space-y-4">
+            <p>
+              Designed for second-chance applicants —
+              those rebuilding credit, rental history, or stability —
+              including veterans, individuals on fixed incomes,
+              and those who may not yet qualify for a traditional lease
+              but are ready for structure, accountability, and a fresh start.
+            </p>
+            <p>
+              We also serve traveling nurses and physicians,
+              government and contract professionals,
+              corporate travelers, relocation placements,
+              and insurance-based housing placements.
+            </p>
+            <p>
+              Whether short-term, contract-based, or traditional —
+              we provide structured housing with standards in place.
+            </p>
+            <p className="font-semibold text-foreground">
+              Stability for residents.{" "}
+              <span className="text-gradient">Strategy for owners.</span>
+            </p>
+          </div>
+
+          <div className="flex flex-col sm:flex-row gap-4 justify-center mb-14 mt-10">
             <Button variant="hero" size="lg" asChild>
               <a href="#units">Find Housing</a>
             </Button>
