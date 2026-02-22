@@ -16,23 +16,32 @@ const sectionFade = {
   transition: { duration: 1, ease: "easeOut" as const },
 };
 
+const WhiteFade = () => (
+  <div className="h-24 md:h-32 w-full bg-gradient-to-b from-transparent via-white/15 to-transparent" />
+);
+
 const Index = () => {
   return (
     <div className="min-h-screen bg-background text-foreground">
       <Navbar />
       <HeroSection />
+      <WhiteFade />
       <motion.div {...sectionFade}>
         <ForResidentsSection />
       </motion.div>
+      <WhiteFade />
       <motion.div {...sectionFade}>
         <ForOwnersSection />
       </motion.div>
+      <WhiteFade />
       <motion.div {...sectionFade}>
         <AvailableUnitsSection />
       </motion.div>
+      <WhiteFade />
       <motion.div {...sectionFade}>
         <ReviewsSection />
       </motion.div>
+      <WhiteFade />
       <motion.div {...sectionFade}>
         <ContactSection />
       </motion.div>
