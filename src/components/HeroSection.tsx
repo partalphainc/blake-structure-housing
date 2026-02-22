@@ -23,7 +23,7 @@ const HeroSection = () => {
           muted
           loop
           playsInline
-          className="w-full h-full object-cover opacity-15"
+          className="w-full h-full object-cover opacity-30"
         />
         <div className="absolute inset-0 bg-gradient-to-b from-background via-background/80 to-background" />
       </div>
@@ -51,25 +51,27 @@ const HeroSection = () => {
           </h1>
 
           <p className="text-lg md:text-xl text-foreground font-medium leading-relaxed mb-4 max-w-3xl mx-auto">
-            Professionally managed properties built to perform.
+            Built with wisdom. Managed with purpose.
           </p>
 
           <div className="text-base md:text-lg text-muted-foreground leading-relaxed mb-4 max-w-3xl mx-auto space-y-4">
             <p>
-              Designed for traveling nurses and physicians,
-              government and contract professionals,
-              corporate travelers, relocation placements,
-              and insurance-based housing placements.
+              We serve traveling nurses and physicians.{" "}
+              Government and contract professionals.{" "}
+              Corporate travelers, relocation placements, and insurance-based housing placements.
             </p>
             <p>
-              We also serve second-chance applicants —
-              those rebuilding credit, rental history, or stability —
-              including veterans, individuals on fixed incomes,
-              and those who may not yet qualify for a traditional lease
+              Our model is structured to deliver consistency, protection, and strategic returns for investors and property partners.
+            </p>
+            <p>
+              We also serve second-chance applicants —{" "}
+              those rebuilding credit, rental history, or stability —{" "}
+              including veterans, individuals on fixed incomes,{" "}
+              and those who may not yet qualify for a traditional lease{" "}
               but are ready for structure, accountability, and a fresh start.
             </p>
             <p>
-              Whether short-term, contract-based, or traditional —
+              Whether short-term, contract-based, or traditional,{" "}
               we provide structured housing with standards in place.
             </p>
             <p className="font-semibold text-foreground">
