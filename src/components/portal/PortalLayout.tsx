@@ -1,8 +1,9 @@
 import { ReactNode, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { LogOut, Home, UserPen, Settings } from "lucide-react";
+import { LogOut, Home, UserPen } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import ProfileEditDialog from "@/components/portal/ProfileEditDialog";
+import SupportChatWidget from "@/components/portal/SupportChatWidget";
 import cblakeLogo from "@/assets/cblake-logo.png";
 
 interface PortalLayoutProps {
@@ -97,6 +98,8 @@ const PortalLayout = ({ children, title, navItems, onSignOut, userName, userId }
       {userId && (
         <ProfileEditDialog open={profileOpen} onOpenChange={setProfileOpen} userId={userId} />
       )}
+
+      <SupportChatWidget />
     </div>
   );
 };
