@@ -50,11 +50,13 @@ const ResidentUpload = () => {
         .getPublicUrl(filePath);
 
       const { error: dbError } = await supabase.from("documents").insert({
-        user_id: user.id,
-        document_type: docType,
+        owner_type: "tenant",
+        owner_id: user.id,
+        category: docType,
         file_name: file.name,
         file_url: urlData.publicUrl,
         uploaded_by: user.id,
+        visible_to_tenant: true,
       });
 
       if (dbError) throw dbError;

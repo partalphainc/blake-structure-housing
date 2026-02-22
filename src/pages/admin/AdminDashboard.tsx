@@ -1,17 +1,21 @@
 import { useAuth } from "@/hooks/useAuth";
 import PortalLayout from "@/components/portal/PortalLayout";
-import { Building2, Users, FileText, Wrench, DollarSign, LayoutDashboard } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
+import { Building2, Users, FileText, Wrench, DollarSign, LayoutDashboard, UserCheck, Briefcase, ClipboardList } from "lucide-react";
 
 const adminNav = [
   { label: "Dashboard", href: "/admin", icon: <LayoutDashboard className="w-4 h-4" /> },
+  { label: "Tenants", href: "/admin/tenants", icon: <UserCheck className="w-4 h-4" /> },
+  { label: "Investors", href: "/admin/investors", icon: <Briefcase className="w-4 h-4" /> },
   { label: "Properties", href: "/admin/properties", icon: <Building2 className="w-4 h-4" /> },
   { label: "Units", href: "/admin/units", icon: <Building2 className="w-4 h-4" /> },
   { label: "Leases", href: "/admin/leases", icon: <FileText className="w-4 h-4" /> },
   { label: "Payments", href: "/admin/payments", icon: <DollarSign className="w-4 h-4" /> },
   { label: "Maintenance", href: "/admin/maintenance", icon: <Wrench className="w-4 h-4" /> },
+  { label: "Documents", href: "/admin/documents", icon: <FileText className="w-4 h-4" /> },
+  { label: "Activity Log", href: "/admin/activity", icon: <ClipboardList className="w-4 h-4" /> },
   { label: "Users", href: "/admin/users", icon: <Users className="w-4 h-4" /> },
 ];
 

@@ -23,7 +23,7 @@ const ResidentDocuments = () => {
   useEffect(() => {
     if (!user) return;
     Promise.all([
-      supabase.from("documents").select("*").eq("user_id", user.id).order("created_at", { ascending: false }),
+      supabase.from("documents").select("*").eq("owner_type", "tenant").eq("owner_id", user.id).order("created_at", { ascending: false }),
       supabase.from("profiles").select("full_name").eq("user_id", user.id).single(),
     ]).then(([docsRes, profileRes]) => {
       setDocuments(docsRes.data || []);
@@ -51,7 +51,7 @@ const ResidentDocuments = () => {
                     <div>
                       <p className="font-medium text-sm">{doc.file_name}</p>
                       <div className="flex items-center gap-2 mt-1">
-                        <Badge variant="outline" className="text-xs">{doc.document_type}</Badge>
+                        <Badge variant="outline" className="text-xs">{doc.category || "Document"}</Badge>
                         <span className="text-xs text-muted-foreground">{new Date(doc.created_at).toLocaleDateString()}</span>
                       </div>
                     </div>
