@@ -20,11 +20,12 @@ const housingModels = [
   { icon: CalendarDays, title: "Flexible Terms", desc: "Weekly and monthly structured agreements to fit your situation." },
 ];
 
-const criteria = [
-  "Current income",
-  "Stability",
-  "References",
-  "Commitment to community standards",
+const evaluationPoints = [
+  "Confirmed income or active contract placement",
+  "Stability and consistency",
+  "Rental history and references (when applicable)",
+  "Alignment with structured housing standards",
+  "Ability to live responsibly in a shared environment",
 ];
 
 const ForResidentsSection = () => {
@@ -86,14 +87,21 @@ const ForResidentsSection = () => {
           viewport={{ once: true }}
           className="max-w-2xl mx-auto mb-10 p-6 rounded-xl bg-card border border-border"
         >
-          <h4 className="font-semibold mb-4 text-sm uppercase tracking-widest text-muted-foreground">We Evaluate Applicants Based On</h4>
-          <div className="grid grid-cols-2 gap-3">
-            {criteria.map((c) => (
-              <div key={c} className="flex items-center gap-2 text-sm">
-                <div className="w-1.5 h-1.5 rounded-full bg-primary shrink-0" />
-                <span>{c}</span>
-              </div>
+          <h4 className="font-serif font-bold text-lg mb-2">How We Evaluate Applicants</h4>
+          <p className="text-sm text-muted-foreground mb-4">We don't guess. We verify.</p>
+          <ul className="space-y-2 mb-4">
+            {evaluationPoints.map((point) => (
+              <li key={point} className="flex items-start gap-2 text-sm">
+                <div className="w-1.5 h-1.5 rounded-full bg-primary shrink-0 mt-1.5" />
+                <span>{point}</span>
+              </li>
             ))}
+          </ul>
+          <div className="text-sm text-muted-foreground space-y-1 border-t border-border pt-4">
+            <p>Structure matters here.</p>
+            <p>Accountability matters here.</p>
+            <p>And opportunity does too.</p>
+            <p className="font-semibold text-foreground mt-2">That's C. Blake Enterprise.</p>
           </div>
         </motion.div>
 

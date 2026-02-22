@@ -86,10 +86,10 @@ const ContactSection = () => {
         {/* Contact info strip */}
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-4xl mx-auto">
           {[
-            { icon: Phone, label: "Phone", value: "(636) 206-6037" },
-            { icon: Mail, label: "Email", value: "Destiny@cBlakeEnt.com" },
-            { icon: Clock, label: "Hours", value: "Mon–Fri 9AM–6PM" },
-            { icon: CalendarDays, label: "Consult", value: "By Appointment" },
+            { icon: Phone, label: "Phone", value: "(636) 206-6037", href: "tel:+16362066037" },
+            { icon: Mail, label: "Email", value: "Destiny@CBlakeEnt.com", href: "mailto:Destiny@CBlakeEnt.com" },
+            { icon: Clock, label: "Hours", value: "Mon–Fri 9AM–6PM", href: null },
+            { icon: CalendarDays, label: "Consult", value: "By Appointment", href: "#contact" },
           ].map((item, i) => (
             <motion.div
               key={item.label}
@@ -99,9 +99,19 @@ const ContactSection = () => {
               transition={{ delay: i * 0.1, duration: 0.4 }}
               className="text-center p-5 rounded-xl bg-card border border-border"
             >
-              <item.icon size={22} className="text-primary mx-auto mb-3" />
-              <p className="text-xs text-muted-foreground uppercase tracking-widest mb-1">{item.label}</p>
-              <p className="text-sm font-medium">{item.value}</p>
+              {item.href ? (
+                <a href={item.href} className="block hover:opacity-80 transition-opacity">
+                  <item.icon size={22} className="text-primary mx-auto mb-3" />
+                  <p className="text-xs text-muted-foreground uppercase tracking-widest mb-1">{item.label}</p>
+                  <p className="text-sm font-medium">{item.value}</p>
+                </a>
+              ) : (
+                <>
+                  <item.icon size={22} className="text-primary mx-auto mb-3" />
+                  <p className="text-xs text-muted-foreground uppercase tracking-widest mb-1">{item.label}</p>
+                  <p className="text-sm font-medium">{item.value}</p>
+                </>
+              )}
             </motion.div>
           ))}
         </div>
