@@ -13,7 +13,6 @@ export function useAuth(requiredRole?: string) {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (session?.user) {
         setUser(session.user);
-        // Fetch role
         const { data: roles } = await supabase
           .from("user_roles")
           .select("role")

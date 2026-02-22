@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import cblakeLogo from "@/assets/cblake-logo.png";
@@ -23,22 +23,8 @@ const Auth = () => {
   const { toast } = useToast();
 
   useEffect(() => {
-    const redirectByRole = async (userId: string) => {
-      try {
-        const { data: roles } = await supabase.from("user_roles").select("role").eq("user_id", userId);
-        const role = roles?.[0]?.role;
-        if (role === "admin") navigate("/admin");
-        else if (role === "investor") navigate("/investor");
-        else navigate("/resident");
-      } catch (err) {
-        console.error("Role lookup failed:", err);
-      }
-    };
-
-    // Check session in background without blocking UI
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session?.user) redirectByRole(session.user.id);
-    });
+    // Sign out any existing session so users must always log in fresh
+    supabase.auth.signOut();
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (event === "SIGNED_IN" && session?.user) {
@@ -48,6 +34,18 @@ const Auth = () => {
 
     return () => subscription.unsubscribe();
   }, [navigate]);
+
+  const redirectByRole = async (userId: string) => {
+    try {
+      const { data: roles } = await supabase.from("user_roles").select("role").eq("user_id", userId);
+      const userRoles = roles?.map((r) => r.role) || [];
+      if (userRoles.includes("admin")) navigate("/admin");
+      else if (userRoles.includes("investor")) navigate("/investor");
+      else navigate("/resident");
+    } catch (err) {
+      console.error("Role lookup failed:", err);
+    }
+  };
 
   const handleForgotPassword = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -75,7 +73,6 @@ const Auth = () => {
         password: loginPassword,
       });
       if (error) throw error;
-      // Redirect handled by onAuthStateChange
     } catch (error: any) {
       toast({ title: "Login failed", description: error.message, variant: "destructive" });
     } finally {
@@ -87,7 +84,7 @@ const Auth = () => {
     e.preventDefault();
     setIsLoading(true);
     try {
-      const { data, error } = await supabase.auth.signUp({
+      const { error } = await supabase.auth.signUp({
         email: signupEmail,
         password: signupPassword,
         options: {
@@ -96,7 +93,6 @@ const Auth = () => {
         },
       });
       if (error) throw error;
-
       toast({
         title: "Account created!",
         description: "Please check your email to verify your account before logging in.",
@@ -107,7 +103,6 @@ const Auth = () => {
       setIsLoading(false);
     }
   };
-
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center px-4">
