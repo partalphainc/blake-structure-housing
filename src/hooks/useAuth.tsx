@@ -18,10 +18,13 @@ export function useAuth(requiredRole?: string) {
           .from("user_roles")
           .select("role")
           .eq("user_id", session.user.id);
-        const userRole = roles?.[0]?.role || null;
-        setRole(userRole);
+        const userRoles: string[] = roles?.map((r) => r.role as string) || [];
+        const matchedRole = requiredRole && userRoles.includes(requiredRole)
+          ? requiredRole
+          : userRoles[0] || null;
+        setRole(matchedRole);
 
-        if (requiredRole && userRole !== requiredRole) {
+        if (requiredRole && !userRoles.includes(requiredRole)) {
           navigate("/auth");
         }
       } else {
