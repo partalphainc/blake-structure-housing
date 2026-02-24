@@ -8,6 +8,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const housingModels = [
   { icon: Home, title: "Private Room Housing", desc: "Private rooms in a shared residential setting — never shared bedrooms. Every resident gets their own secure, private space." },
@@ -30,7 +32,9 @@ const evaluationPoints = [
 
 const ForResidentsSection = () => {
   const [showApplication, setShowApplication] = useState(false);
+  const [expandedMobile, setExpandedMobile] = useState<number | null>(null);
   const { toast } = useToast();
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     const handleOpen = () => setShowApplication(true);
@@ -64,27 +68,60 @@ const ForResidentsSection = () => {
           </p>
         </motion.div>
 
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-          {housingModels.map((o, i) => (
-            <motion.div
-              key={o.title}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.06, duration: 0.5 }}
-              className="group relative p-6 rounded-xl bg-card border border-border hover:border-primary/40 transition-all overflow-hidden"
-            >
-              <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-              <div className="relative z-10">
-                <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-4 group-hover:bg-primary/20 transition-colors">
-                  <o.icon size={22} className="text-primary" />
+        {/* Mobile: compact tappable chips; Desktop: full cards */}
+        {isMobile ? (
+          <div className="flex flex-wrap gap-2 justify-center mb-12">
+            <TooltipProvider delayDuration={0}>
+              {housingModels.map((o, i) => (
+                <Tooltip key={o.title}>
+                  <TooltipTrigger asChild>
+                    <button
+                      onClick={() => setExpandedMobile(expandedMobile === i ? null : i)}
+                      className="flex items-center gap-2 px-4 py-2.5 rounded-full bg-card border border-border text-sm font-medium transition-colors hover:border-primary/40"
+                    >
+                      <o.icon size={16} className="text-primary shrink-0" />
+                      <span>{o.title}</span>
+                    </button>
+                  </TooltipTrigger>
+                  <TooltipContent side="bottom" className="max-w-[260px] text-center">
+                    <p className="text-xs">{o.desc}</p>
+                  </TooltipContent>
+                </Tooltip>
+              ))}
+            </TooltipProvider>
+            {expandedMobile !== null && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                className="w-full mt-2 p-4 rounded-xl bg-card border border-primary/20 text-center"
+              >
+                <p className="font-semibold mb-1">{housingModels[expandedMobile].title}</p>
+                <p className="text-sm text-muted-foreground">{housingModels[expandedMobile].desc}</p>
+              </motion.div>
+            )}
+          </div>
+        ) : (
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+            {housingModels.map((o, i) => (
+              <motion.div
+                key={o.title}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.06, duration: 0.5 }}
+                className="relative p-6 rounded-xl bg-card border border-border overflow-hidden"
+              >
+                <div className="relative z-10">
+                  <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-4">
+                    <o.icon size={22} className="text-primary" />
+                  </div>
+                  <h3 className="font-semibold text-lg mb-2">{o.title}</h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed">{o.desc}</p>
                 </div>
-                <h3 className="font-semibold text-lg mb-2">{o.title}</h3>
-                <p className="text-sm text-muted-foreground leading-relaxed">{o.desc}</p>
-              </div>
-            </motion.div>
-          ))}
-        </div>
+              </motion.div>
+            ))}
+          </div>
+        )}
 
         {/* Evaluation criteria */}
         <motion.div

@@ -84,7 +84,7 @@ const HeroSection = () => {
             <Button variant="hero" size="lg" asChild>
               <a href="#units">Find Housing</a>
             </Button>
-            <Button variant="heroOutline" size="lg" asChild>
+            <Button variant="heroOutline" size="lg" className="text-white border-white/30 hover:text-white" asChild>
               <a href="tel:+16362066037">Partner With Us</a>
             </Button>
           </div>

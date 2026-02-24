@@ -191,7 +191,7 @@ const AvailableUnitsSection = () => {
           {units.map((u, i) => (
             <div
               key={i}
-              className="p-6 rounded-xl bg-card border border-border hover:border-primary/30 transition-all"
+              className="p-6 rounded-xl bg-[hsl(0,0%,10%)] border border-white/10 hover:border-primary/30 transition-all"
             >
               <ImageCarousel images={u.images} />
 
@@ -216,9 +216,12 @@ const AvailableUnitsSection = () => {
 
               <div className="space-y-2 text-sm text-muted-foreground">
                 <div className="flex items-center gap-2">
-                  <DollarSign size={14} className="text-primary" />
-                  <span className="text-foreground font-semibold">{u.rate}</span>
-                  <span>· {u.deposit}</span>
+                  <DollarSign size={14} className="text-primary shrink-0" />
+                  <span className="text-foreground font-semibold whitespace-nowrap">{u.rate}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <DollarSign size={14} className="text-primary/50 shrink-0" />
+                  <span>{u.deposit}</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <Droplets size={14} className="text-primary" />
