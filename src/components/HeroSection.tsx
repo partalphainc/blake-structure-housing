@@ -14,7 +14,7 @@ const HeroSection = () => {
   };
 
   return (
-    <section id="home" className="relative min-h-screen flex items-center pt-24 overflow-hidden">
+    <section id="home" className="relative min-h-screen flex items-start pt-28 overflow-hidden bg-[hsl(0,0%,4%)] text-white">
       {/* Background video faded */}
       <div className="absolute inset-0">
         <video
@@ -25,7 +25,7 @@ const HeroSection = () => {
           playsInline
           className="w-full h-full object-cover opacity-70"
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-background/40 via-background/20 to-background" />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/20 to-[hsl(0,0%,4%)]" />
       </div>
 
       {/* Abstract bg glow */}
@@ -34,7 +34,7 @@ const HeroSection = () => {
         <div className="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] rounded-full bg-accent-magenta/6 blur-[100px]" />
       </div>
 
-      <div className="container mx-auto relative z-10 px-4 py-20 md:py-32">
+      <div className="container mx-auto relative z-10 px-4 py-10 md:py-16">
         <motion.div
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
@@ -50,11 +50,11 @@ const HeroSection = () => {
             <span className="text-gradient">Strategic Returns.</span>
           </h1>
 
-          <p className="text-lg md:text-xl text-foreground font-medium leading-relaxed mb-4 max-w-3xl mx-auto">
+          <p className="text-lg md:text-xl text-white/90 font-medium leading-relaxed mb-4 max-w-3xl mx-auto">
             Built with wisdom. Managed with purpose.
           </p>
 
-          <div className="text-base md:text-lg text-muted-foreground leading-relaxed mb-4 max-w-3xl mx-auto space-y-4">
+          <div className="text-base md:text-lg text-white/60 leading-relaxed mb-4 max-w-3xl mx-auto space-y-4">
             <p>
               We serve traveling nurses and physicians.{" "}
               Government and contract professionals.{" "}
@@ -74,7 +74,7 @@ const HeroSection = () => {
               Whether short-term, contract-based, or traditional,{" "}
               we provide structured housing with standards in place.
             </p>
-            <p className="font-semibold text-foreground">
+            <p className="font-semibold text-white">
               Stability for residents.{" "}
               <span className="text-gradient">Strategy for owners.</span>
             </p>
@@ -99,7 +99,7 @@ const HeroSection = () => {
         >
           <button
             onClick={startDestinyCall}
-            className="flex items-center gap-3 text-muted-foreground hover:text-foreground transition-colors"
+            className="flex items-center gap-3 text-white/50 hover:text-white transition-colors"
           >
             <span className="relative inline-flex items-center justify-center w-7 h-7 ring-pulse">
               <Phone size={16} className="text-primary" />
@@ -108,7 +108,7 @@ const HeroSection = () => {
           </button>
           <a
             href="tel:+16362066037"
-            className="flex items-center gap-3 text-muted-foreground hover:text-foreground transition-colors"
+            className="flex items-center gap-3 text-white/50 hover:text-white transition-colors"
           >
             <span className="relative inline-flex items-center justify-center w-7 h-7 ring-pulse">
               <Phone size={16} className="text-accent-lavender" />
@@ -117,7 +117,7 @@ const HeroSection = () => {
           </a>
           <button
             onClick={openDestinyChat}
-            className="flex items-center gap-3 text-muted-foreground hover:text-foreground transition-colors"
+            className="flex items-center gap-3 text-white/50 hover:text-white transition-colors"
           >
             <span className="relative inline-flex items-center justify-center w-7 h-7 ring-pulse">
               <Bot size={16} className="text-primary" />

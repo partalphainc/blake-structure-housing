@@ -44,6 +44,8 @@ const partners = [
   { name: "State Farm", logo: "https://logo.clearbit.com/statefarm.com" },
   { name: "Timberland Partners", logo: "https://logo.clearbit.com/timberlandpartners.com" },
   { name: "St. Patrick Center", logo: "https://logo.clearbit.com/stpatrickcenter.org" },
+  { name: "Part Alpha Inc", logo: null },
+  { name: "Caring Mothers Without Caring Mothers", logo: null },
   { name: "KeyCheck Screening", logo: null },
   { name: "St. Louis Housing Authority", logo: null },
   { name: "Metro Insurance Partners", logo: null },
@@ -110,7 +112,7 @@ const ReviewsSection = () => {
           </h3>
         </motion.div>
 
-        <div className="flex flex-wrap justify-center gap-4 max-w-4xl mx-auto">
+        <div className="flex flex-wrap justify-center gap-6 max-w-5xl mx-auto">
           {partners.map((p, i) => (
             <motion.div
               key={p.name}
@@ -118,17 +120,21 @@ const ReviewsSection = () => {
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true }}
               transition={{ delay: i * 0.06, duration: 0.4 }}
-              className="flex items-center gap-3 px-6 py-3 rounded-full bg-card border border-border text-sm font-medium"
+              className="flex flex-col items-center gap-2 px-6 py-4 rounded-xl bg-card border border-border text-sm font-medium min-w-[140px]"
             >
-              {p.logo && (
+              {p.logo ? (
                 <img
                   src={p.logo}
                   alt={p.name}
-                  className="w-6 h-6 object-contain rounded"
+                  className="w-10 h-10 object-contain rounded"
                   onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
                 />
+              ) : (
+                <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-lg">
+                  {p.name.charAt(0)}
+                </div>
               )}
-              {p.name}
+              <span className="text-center text-xs">{p.name}</span>
             </motion.div>
           ))}
         </div>
