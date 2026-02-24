@@ -113,7 +113,7 @@ const HeroSection = () => {
             <span className="relative inline-flex items-center justify-center w-7 h-7 ring-pulse">
               <Phone size={16} className="text-accent-lavender" />
             </span>
-            <span className="text-sm">Speak With an Investment Advisor</span>
+            <span className="text-sm">Speak With an Investor Advisor</span>
           </a>
           <button
             onClick={openDestinyChat}

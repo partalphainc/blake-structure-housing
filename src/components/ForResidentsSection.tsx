@@ -56,7 +56,7 @@ const ForResidentsSection = () => {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
-          className="text-center mb-14"
+          className="text-center mb-6 md:mb-14"
         >
           <p className="text-sm font-semibold uppercase tracking-widest text-primary mb-3">For Residents</p>
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-serif font-bold mb-4">
@@ -70,7 +70,7 @@ const ForResidentsSection = () => {
 
         {/* Mobile: compact tappable chips; Desktop: full cards */}
         {isMobile ? (
-          <div className="flex flex-wrap gap-2 justify-center mb-12">
+          <div className="flex flex-wrap gap-2 justify-center mb-12 mt-4">
             <TooltipProvider delayDuration={0}>
               {housingModels.map((o, i) => (
                 <Tooltip key={o.title}>

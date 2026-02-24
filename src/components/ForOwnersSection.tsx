@@ -86,10 +86,10 @@ const ForOwnersSection = () => {
             {allServices.map((s, i) => (
               <motion.div
                 key={`${s.label}-${i}`}
-                initial={{ opacity: 0, x: 20 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.04, duration: 0.4 }}
+                initial={{ opacity: 0, x: 40, scale: 0.95 }}
+                whileInView={{ opacity: 1, x: 0, scale: 1 }}
+                viewport={{ once: true, margin: "-50px" }}
+                transition={{ delay: i * 0.08, duration: 0.5, ease: "easeOut" }}
                 className="flex items-center gap-4 p-4 rounded-lg bg-card border border-border hover:border-primary/30 transition-colors"
               >
                 <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
