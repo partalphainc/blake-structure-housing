@@ -112,6 +112,59 @@
     background: linear-gradient(90deg, transparent, hsl(330 85% 55% / 0.4), transparent);
   }
 
+  .section-fade-overlap {
+    position: relative;
+  }
+
+  .section-fade-overlap::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 120px;
+    background: linear-gradient(to bottom, hsl(var(--background)), transparent);
+    z-index: 1;
+    pointer-events: none;
+  }
+
+  .section-fade-overlap::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 120px;
+    background: linear-gradient(to top, hsl(var(--background)), transparent);
+    z-index: 1;
+    pointer-events: none;
+  }
+
+  .section-dark {
+    --section-bg: 0 0% 6%;
+  }
+
+  .section-dark .section-fade-overlap::before {
+    background: linear-gradient(to bottom, hsl(0 0% 6%), transparent);
+  }
+
+  .section-dark .section-fade-overlap::after {
+    background: linear-gradient(to top, hsl(0 0% 6%), transparent);
+  }
+
+  @keyframes scrollPartners {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+
+  .partners-scroll {
+    animation: scrollPartners 30s linear infinite;
+  }
+
+  .partners-scroll:hover {
+    animation-play-state: paused;
+  }
+
   @keyframes ringPulse {
     0% { transform: scale(1); opacity: 0.5; }
     100% { transform: scale(2); opacity: 0; }

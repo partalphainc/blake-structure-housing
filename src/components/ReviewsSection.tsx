@@ -54,6 +54,9 @@ const partners = [
 ];
 
 const ReviewsSection = () => {
+  // Duplicate partners for seamless loop
+  const scrollPartners = [...partners, ...partners];
+
   return (
     <section id="reviews" className="section-padding">
       <div className="container mx-auto">
@@ -99,7 +102,7 @@ const ReviewsSection = () => {
           ))}
         </div>
 
-        {/* Partners */}
+        {/* Partners — scrolling carousel */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -112,31 +115,29 @@ const ReviewsSection = () => {
           </h3>
         </motion.div>
 
-        <div className="flex flex-wrap justify-center gap-6 max-w-5xl mx-auto">
-          {partners.map((p, i) => (
-            <motion.div
-              key={p.name}
-              initial={{ opacity: 0, scale: 0.9 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.06, duration: 0.4 }}
-              className="flex flex-col items-center gap-2 px-6 py-4 rounded-xl bg-card border border-border text-sm font-medium min-w-[140px]"
-            >
-              {p.logo ? (
-                <img
-                  src={p.logo}
-                  alt={p.name}
-                  className="w-10 h-10 object-contain rounded"
-                  onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
-                />
-              ) : (
-                <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-lg">
-                  {p.name.charAt(0)}
-                </div>
-              )}
-              <span className="text-center text-xs">{p.name}</span>
-            </motion.div>
-          ))}
+        <div className="overflow-hidden">
+          <div className="partners-scroll flex items-center gap-12 w-max">
+            {scrollPartners.map((p, i) => (
+              <div
+                key={`${p.name}-${i}`}
+                className="flex flex-col items-center gap-2 shrink-0 min-w-[120px]"
+              >
+                {p.logo ? (
+                  <img
+                    src={p.logo}
+                    alt={p.name}
+                    className="w-12 h-12 object-contain rounded"
+                    onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+                  />
+                ) : (
+                  <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-lg">
+                    {p.name.charAt(0)}
+                  </div>
+                )}
+                <span className="text-xs font-medium text-center">{p.name}</span>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </section>

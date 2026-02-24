@@ -1,4 +1,3 @@
-import { motion } from "framer-motion";
 import Navbar from "@/components/Navbar";
 import HeroSection from "@/components/HeroSection";
 import ForResidentsSection from "@/components/ForResidentsSection";
@@ -9,42 +8,26 @@ import ContactSection from "@/components/ContactSection";
 import Footer from "@/components/Footer";
 import DestinyChat from "@/components/DestinyChat";
 
-const sectionFade = {
-  initial: { opacity: 0, y: 40 },
-  whileInView: { opacity: 1, y: 0 },
-  viewport: { once: true, margin: "-100px" },
-  transition: { duration: 1, ease: "easeOut" as const },
-};
-
-const SectionDivider = () => (
-  <div className="separator-pink my-0" />
-);
-
 const Index = () => {
   return (
     <div className="min-h-screen bg-background text-foreground">
       <Navbar />
       <HeroSection />
-      <SectionDivider />
-      <motion.div {...sectionFade}>
+      <div className="section-fade-overlap">
         <ForResidentsSection />
-      </motion.div>
-      <SectionDivider />
-      <motion.div {...sectionFade}>
+      </div>
+      <div className="section-fade-overlap">
         <ForOwnersSection />
-      </motion.div>
-      <SectionDivider />
-      <motion.div {...sectionFade}>
+      </div>
+      <div className="section-fade-overlap bg-[hsl(0,0%,6%)] text-white">
         <AvailableUnitsSection />
-      </motion.div>
-      <SectionDivider />
-      <motion.div {...sectionFade}>
+      </div>
+      <div className="section-fade-overlap">
         <ReviewsSection />
-      </motion.div>
-      <SectionDivider />
-      <motion.div {...sectionFade}>
+      </div>
+      <div className="section-fade-overlap">
         <ContactSection />
-      </motion.div>
+      </div>
       <Footer />
       <DestinyChat />
     </div>
