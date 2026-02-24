@@ -1,11 +1,22 @@
-import { motion } from "framer-motion";
+import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Phone, Mail, Clock, CalendarDays, Home, BarChart3 } from "lucide-react";
+import { useIsMobile } from "@/hooks/use-mobile";
+
+const contactItems = [
+  { icon: Phone, label: "Phone", value: "(636) 206-6037", href: "tel:+16362066037" },
+  { icon: Mail, label: "Email", value: "Destiny@CBlakeEnt.com", href: "mailto:Destiny@CBlakeEnt.com" },
+  { icon: Clock, label: "Hours", value: "Mon–Fri 9AM–6PM", href: null },
+  { icon: CalendarDays, label: "Consult", value: "By Appointment", href: "#contact" },
+];
 
 const ContactSection = () => {
   const startDestinyCall = () => {
     window.dispatchEvent(new CustomEvent("startDestinyCall"));
   };
+  const isMobile = useIsMobile();
+  const [activeIcon, setActiveIcon] = useState<number | null>(null);
 
   return (
     <section id="contact" className="section-padding bg-gradient-brand">
@@ -83,38 +94,71 @@ const ContactSection = () => {
           </motion.div>
         </div>
 
-        {/* Contact info strip */}
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-4xl mx-auto">
-          {[
-            { icon: Phone, label: "Phone", value: "(636) 206-6037", href: "tel:+16362066037" },
-            { icon: Mail, label: "Email", value: "Destiny@CBlakeEnt.com", href: "mailto:Destiny@CBlakeEnt.com" },
-            { icon: Clock, label: "Hours", value: "Mon–Fri 9AM–6PM", href: null },
-            { icon: CalendarDays, label: "Consult", value: "By Appointment", href: "#contact" },
-          ].map((item, i) => (
-            <motion.div
-              key={item.label}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.1, duration: 0.4 }}
-              className="text-center p-5 rounded-xl bg-card border border-border"
-            >
-              {item.href ? (
-                <a href={item.href} className="block hover:opacity-80 transition-opacity">
-                  <item.icon size={22} className="text-primary mx-auto mb-3" />
-                  <p className="text-xs text-muted-foreground uppercase tracking-widest mb-1">{item.label}</p>
-                  <p className="text-sm font-medium">{item.value}</p>
-                </a>
-              ) : (
-                <>
-                  <item.icon size={22} className="text-primary mx-auto mb-3" />
-                  <p className="text-xs text-muted-foreground uppercase tracking-widest mb-1">{item.label}</p>
-                  <p className="text-sm font-medium">{item.value}</p>
-                </>
+        {/* Contact info strip — mobile: small icons; desktop: full cards */}
+        {isMobile ? (
+          <div className="flex flex-col items-center gap-3">
+            <div className="flex justify-center gap-4">
+              {contactItems.map((item, i) => (
+                <button
+                  key={item.label}
+                  onClick={() => {
+                    if (item.href && item.href.startsWith("tel:")) {
+                      window.location.href = item.href;
+                    } else if (item.href && item.href.startsWith("mailto:")) {
+                      window.location.href = item.href;
+                    } else {
+                      setActiveIcon(activeIcon === i ? null : i);
+                    }
+                  }}
+                  className="w-11 h-11 rounded-full bg-card border border-border flex items-center justify-center transition-colors hover:border-primary/40"
+                  aria-label={item.label}
+                >
+                  <item.icon size={18} className="text-primary" />
+                </button>
+              ))}
+            </div>
+            <AnimatePresence>
+              {activeIcon !== null && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: "auto" }}
+                  exit={{ opacity: 0, height: 0 }}
+                  className="text-center"
+                >
+                  <p className="text-xs text-muted-foreground uppercase tracking-widest">{contactItems[activeIcon].label}</p>
+                  <p className="text-sm font-medium">{contactItems[activeIcon].value}</p>
+                </motion.div>
               )}
-            </motion.div>
-          ))}
-        </div>
+            </AnimatePresence>
+          </div>
+        ) : (
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-4xl mx-auto">
+            {contactItems.map((item, i) => (
+              <motion.div
+                key={item.label}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.1, duration: 0.4 }}
+                className="text-center p-5 rounded-xl bg-card border border-border"
+              >
+                {item.href ? (
+                  <a href={item.href} className="block hover:opacity-80 transition-opacity">
+                    <item.icon size={22} className="text-primary mx-auto mb-3" />
+                    <p className="text-xs text-muted-foreground uppercase tracking-widest mb-1">{item.label}</p>
+                    <p className="text-sm font-medium">{item.value}</p>
+                  </a>
+                ) : (
+                  <>
+                    <item.icon size={22} className="text-primary mx-auto mb-3" />
+                    <p className="text-xs text-muted-foreground uppercase tracking-widest mb-1">{item.label}</p>
+                    <p className="text-sm font-medium">{item.value}</p>
+                  </>
+                )}
+              </motion.div>
+            ))}
+          </div>
+        )}
       </div>
     </section>
   );

@@ -8,7 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+
 import { useIsMobile } from "@/hooks/use-mobile";
 
 const housingModels = [
@@ -70,35 +70,27 @@ const ForResidentsSection = () => {
 
         {/* Mobile: compact tappable chips; Desktop: full cards */}
         {isMobile ? (
-          <div className="flex flex-wrap gap-2 justify-center mb-12 mt-4">
-            <TooltipProvider delayDuration={0}>
-              {housingModels.map((o, i) => (
-                <Tooltip key={o.title}>
-                  <TooltipTrigger asChild>
-                    <button
-                      onClick={() => setExpandedMobile(expandedMobile === i ? null : i)}
-                      className="flex items-center gap-2 px-4 py-2.5 rounded-full bg-card border border-border text-sm font-medium transition-colors hover:border-primary/40"
-                    >
-                      <o.icon size={16} className="text-primary shrink-0" />
-                      <span>{o.title}</span>
-                    </button>
-                  </TooltipTrigger>
-                  <TooltipContent side="bottom" className="max-w-[260px] text-center">
-                    <p className="text-xs">{o.desc}</p>
-                  </TooltipContent>
-                </Tooltip>
-              ))}
-            </TooltipProvider>
-            {expandedMobile !== null && (
-              <motion.div
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: "auto" }}
-                className="w-full mt-2 p-4 rounded-xl bg-card border border-primary/20 text-center"
-              >
-                <p className="font-semibold mb-1">{housingModels[expandedMobile].title}</p>
-                <p className="text-sm text-muted-foreground">{housingModels[expandedMobile].desc}</p>
-              </motion.div>
-            )}
+          <div className="flex flex-col gap-2 mb-12 mt-2">
+            {housingModels.map((o, i) => (
+              <div key={o.title}>
+                <button
+                  onClick={() => setExpandedMobile(expandedMobile === i ? null : i)}
+                  className={`flex items-center gap-2 px-4 py-2.5 rounded-full bg-card border text-sm font-medium transition-colors w-full ${expandedMobile === i ? "border-primary/40" : "border-border"}`}
+                >
+                  <o.icon size={16} className="text-primary shrink-0" />
+                  <span>{o.title}</span>
+                </button>
+                {expandedMobile === i && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    className="mt-1 ml-4 p-3 rounded-xl bg-card border border-primary/20 text-left"
+                  >
+                    <p className="text-sm text-muted-foreground">{o.desc}</p>
+                  </motion.div>
+                )}
+              </div>
+            ))}
           </div>
         ) : (
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
@@ -132,10 +124,10 @@ const ForResidentsSection = () => {
         >
           <h4 className="font-serif font-bold text-lg mb-2">How We Evaluate Applicants</h4>
           <p className="text-sm text-muted-foreground mb-4">We don't guess. We verify.</p>
-          <ul className="space-y-2 mb-4">
+          <ul className="space-y-2 mb-4 text-left max-w-md mx-auto">
             {evaluationPoints.map((point) => (
-              <li key={point} className="flex items-center justify-center gap-2 text-sm">
-                <div className="w-1.5 h-1.5 rounded-full bg-primary shrink-0" />
+              <li key={point} className="flex items-start gap-2 text-sm">
+                <div className="w-1.5 h-1.5 rounded-full bg-primary shrink-0 mt-1.5" />
                 <span>{point}</span>
               </li>
             ))}
