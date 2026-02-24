@@ -62,7 +62,7 @@ const units = [
   {
     title: "1 Bed 1 Bath Full Unit – Unfurnished (2nd Chance Eligible)",
     location: "Lake St. Louis, Missouri",
-    rate: "$1,625/month",
+    rate: "$1,990/month",
     deposit: "$300 move-in deposit",
     amenities: "Unfurnished, Parking",
     utilities: "Utilities Not Included — Must Be in Tenant Name",
@@ -204,36 +204,36 @@ const AvailableUnitsSection = () => {
                 ))}
               </div>
 
-              <h3 className="font-serif font-bold text-lg mb-1 flex items-center gap-2">
+              <h3 className="font-serif font-bold text-lg mb-1 flex items-center gap-2 text-white">
                 <Home size={16} className="text-primary" />
                 {u.title}
               </h3>
 
               <div className="flex items-center gap-2 mb-4">
                 <MapPin size={14} className="text-primary" />
-                <span className="text-sm text-muted-foreground">{u.location}</span>
+                <span className="text-sm text-white/60">{u.location}</span>
               </div>
 
-              <div className="space-y-2 text-sm text-muted-foreground">
-                <div className="flex items-center gap-2">
-                  <DollarSign size={14} className="text-primary shrink-0" />
-                  <span className="text-foreground font-semibold whitespace-nowrap">{u.rate}</span>
+              <div className="space-y-2 text-sm text-white/70">
+                <div className="flex items-start gap-2">
+                  <DollarSign size={14} className="text-primary shrink-0 mt-0.5" />
+                  <span className="text-white font-semibold">{u.rate}</span>
                 </div>
-                <div className="flex items-center gap-2">
-                  <DollarSign size={14} className="text-primary/50 shrink-0" />
+                <div className="flex items-start gap-2">
+                  <DollarSign size={14} className="text-primary/50 shrink-0 mt-0.5" />
                   <span>{u.deposit}</span>
                 </div>
-                <div className="flex items-center gap-2">
-                  <Droplets size={14} className="text-primary" />
+                <div className="flex items-start gap-2">
+                  <Droplets size={14} className="text-primary shrink-0 mt-0.5" />
                   <span>{u.utilities}</span>
                 </div>
-                <div className="flex items-center gap-2">
-                  <CalendarDays size={14} className="text-primary" />
+                <div className="flex items-start gap-2">
+                  <CalendarDays size={14} className="text-primary shrink-0 mt-0.5" />
                   <span>{u.minStay}</span>
                 </div>
               </div>
               <div className="mt-5">
-                <Button variant="heroOutline" size="sm" onClick={() => { setSelectedUnit(`${u.title} — ${u.location}`); setInquiryOpen(true); }}>
+                <Button variant="heroOutline" size="sm" className="text-white border-white/30 hover:text-white" onClick={() => { setSelectedUnit(`${u.title} — ${u.location}`); setInquiryOpen(true); }}>
                   Inquire
                 </Button>
               </div>
