@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 // Private room images
 import privateBedroom from "@/assets/units/private-bedroom.jpg";
@@ -125,6 +126,7 @@ const AvailableUnitsSection = () => {
   const [email, setEmail] = useState("");
   const [isSending, setIsSending] = useState(false);
   const { toast } = useToast();
+  const isMobile = useIsMobile();
 
   const handleInquiry = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -187,7 +189,7 @@ const AvailableUnitsSection = () => {
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-serif font-bold">Available Units</h2>
         </motion.div>
 
-        <div className="grid md:grid-cols-2 gap-6">
+        <div className={`grid ${isMobile ? "grid-cols-1" : "md:grid-cols-2"} gap-6`}>
           {units.map((u, i) => (
             <div
               key={i}
@@ -209,30 +211,59 @@ const AvailableUnitsSection = () => {
                 {u.title}
               </h3>
 
-              <div className="flex items-center gap-2 mb-4">
+              <div className="flex items-center gap-2 mb-3">
                 <MapPin size={14} className="text-primary" />
                 <span className="text-sm text-white/60">{u.location}</span>
               </div>
 
-              <div className="space-y-2 text-sm text-white/70">
-                <div className="flex items-start gap-2">
-                  <DollarSign size={14} className="text-primary shrink-0 mt-0.5" />
-                  <span className="text-white font-semibold">{u.rate}</span>
+              {/* On mobile: pricing details scroll-reveal */}
+              {isMobile ? (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: false, amount: 0.5 }}
+                  transition={{ duration: 0.5 }}
+                  className="space-y-2 text-sm text-white/70 mb-4"
+                >
+                  <div className="flex items-start gap-2">
+                    <DollarSign size={14} className="text-primary shrink-0 mt-0.5" />
+                    <span className="text-white font-semibold">{u.rate}</span>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <Droplets size={14} className="text-primary shrink-0 mt-0.5" />
+                    <span>{u.utilities}</span>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <DollarSign size={14} className="text-primary/50 shrink-0 mt-0.5" />
+                    <span>{u.deposit}</span>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <CalendarDays size={14} className="text-primary shrink-0 mt-0.5" />
+                    <span>{u.minStay}</span>
+                  </div>
+                </motion.div>
+              ) : (
+                <div className="space-y-2 text-sm text-white/70 mb-4">
+                  <div className="flex items-start gap-2">
+                    <DollarSign size={14} className="text-primary shrink-0 mt-0.5" />
+                    <span className="text-white font-semibold">{u.rate}</span>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <DollarSign size={14} className="text-primary/50 shrink-0 mt-0.5" />
+                    <span>{u.deposit}</span>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <Droplets size={14} className="text-primary shrink-0 mt-0.5" />
+                    <span>{u.utilities}</span>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <CalendarDays size={14} className="text-primary shrink-0 mt-0.5" />
+                    <span>{u.minStay}</span>
+                  </div>
                 </div>
-                <div className="flex items-start gap-2">
-                  <DollarSign size={14} className="text-primary/50 shrink-0 mt-0.5" />
-                  <span>{u.deposit}</span>
-                </div>
-                <div className="flex items-start gap-2">
-                  <Droplets size={14} className="text-primary shrink-0 mt-0.5" />
-                  <span>{u.utilities}</span>
-                </div>
-                <div className="flex items-start gap-2">
-                  <CalendarDays size={14} className="text-primary shrink-0 mt-0.5" />
-                  <span>{u.minStay}</span>
-                </div>
-              </div>
-              <div className="mt-5">
+              )}
+
+              <div className="mt-2">
                 <Button variant="heroOutline" size="sm" className="text-white border-white/30 hover:text-white" onClick={() => { setSelectedUnit(`${u.title} — ${u.location}`); setInquiryOpen(true); }}>
                   Inquire
                 </Button>
