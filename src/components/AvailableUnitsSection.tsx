@@ -92,7 +92,7 @@ const ImageCarousel = ({ images }: { images: string[] }) => {
   }, [next]);
 
   return (
-    <div className="relative w-full aspect-[4/3] rounded-lg overflow-hidden mb-4 group">
+    <div className="relative w-full aspect-[3/2] rounded-lg overflow-hidden mb-4 group max-h-52">
       {images.map((img, i) => (
         <img
           key={i}

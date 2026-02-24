@@ -25,7 +25,7 @@ const Navbar = () => {
         </p>
       </div>
 
-      <nav className="fixed top-8 left-0 right-0 z-50 bg-background/80 backdrop-blur-xl border-b border-border">
+      <nav className="fixed top-8 left-0 right-0 z-50 bg-white/90 backdrop-blur-xl border-b border-border">
         <div className="container mx-auto flex items-center justify-between h-16 px-4">
           <Link to="/admin-login" className="flex items-center gap-3">
             <img src={cblakeLogo} alt="C. Blake Enterprise" className="w-10 h-10 object-contain" />
