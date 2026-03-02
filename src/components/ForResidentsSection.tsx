@@ -42,10 +42,34 @@ const ForResidentsSection = () => {
     return () => window.removeEventListener("openApplication", handleOpen);
   }, []);
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setIsSubmitting(true);
+    const form = e.currentTarget;
+    const formData = {
+      name: (form.querySelector("#name") as HTMLInputElement).value,
+      phone: (form.querySelector("#phone") as HTMLInputElement).value,
+      email: (form.querySelector("#email") as HTMLInputElement).value,
+      preference: form.querySelector("[data-value]")?.getAttribute("data-value") || "",
+      message: (form.querySelector("#message") as HTMLTextAreaElement).value,
+      timestamp: new Date().toISOString(),
+      source: "cblake-website-application",
+    };
+    try {
+      await fetch("https://hooks.zapier.com/hooks/catch/25749233/ucvla5n/", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        mode: "no-cors",
+        body: JSON.stringify(formData),
+      });
+    } catch (err) {
+      console.error("Zapier webhook error:", err);
+    }
     toast({ title: "Application Submitted", description: "A housing representative will contact you shortly." });
     setShowApplication(false);
+    setIsSubmitting(false);
   };
 
   return (
@@ -187,7 +211,9 @@ const ForResidentsSection = () => {
                 <Label htmlFor="message">Additional Info</Label>
                 <Textarea id="message" placeholder="Tell us about your housing needs..." />
               </div>
-              <Button type="submit" variant="hero" className="w-full">Submit Application</Button>
+              <Button type="submit" variant="hero" className="w-full" disabled={isSubmitting}>
+                {isSubmitting ? "Submitting..." : "Submit Application"}
+              </Button>
             </form>
           </DialogContent>
         </Dialog>
