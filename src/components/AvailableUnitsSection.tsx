@@ -37,6 +37,7 @@ const units = [
     minStay: "30 days minimum",
     tags: ["Private Room", "Furnished"],
     images: privateRoomImages,
+    webhookUrl: "https://hooks.zapier.com/hooks/catch/25749233/ucxxg26/",
   },
   {
     title: "Private Room – Furnished",
@@ -48,6 +49,7 @@ const units = [
     minStay: "30 days minimum",
     tags: ["Private Room", "Furnished"],
     images: privateRoomImages,
+    webhookUrl: "https://hooks.zapier.com/hooks/catch/25749233/ucx7hdp/",
   },
   {
     title: "1 Bed 1 Bath Full Unit – Furnished",
@@ -59,6 +61,7 @@ const units = [
     minStay: "60 days minimum",
     tags: ["Full Unit", "Furnished"],
     images: furnishedUnitImages,
+    webhookUrl: "https://hooks.zapier.com/hooks/catch/25749233/ucxjutc/",
   },
   {
     title: "1 Bed 1 Bath Full Unit – Unfurnished (2nd Chance Eligible)",
@@ -70,6 +73,7 @@ const units = [
     minStay: "Month-to-month lease",
     tags: ["Full Unit", "Unfurnished", "2nd Chance"],
     images: unfurnishedUnitImages,
+    webhookUrl: "https://hooks.zapier.com/hooks/catch/25749233/ucxj7o1/",
   },
 ];
 
@@ -121,6 +125,7 @@ const ImageCarousel = ({ images }: { images: string[] }) => {
 const AvailableUnitsSection = () => {
   const [inquiryOpen, setInquiryOpen] = useState(false);
   const [selectedUnit, setSelectedUnit] = useState("");
+  const [selectedWebhook, setSelectedWebhook] = useState("");
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
@@ -132,10 +137,16 @@ const AvailableUnitsSection = () => {
     e.preventDefault();
     setIsSending(true);
     try {
-      const { error } = await supabase.functions.invoke("send-inquiry", {
-        body: { name, phone, email, unit: selectedUnit },
+      await fetch(selectedWebhook, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        mode: "no-cors",
+        body: JSON.stringify({
+          name, phone, email, unit: selectedUnit,
+          timestamp: new Date().toISOString(),
+          source: "cblake-website",
+        }),
       });
-      if (error) throw error;
       toast({ title: "Inquiry sent!", description: `We'll be in touch about ${selectedUnit}.` });
       setInquiryOpen(false);
       setName(""); setPhone(""); setEmail("");
@@ -264,7 +275,7 @@ const AvailableUnitsSection = () => {
               )}
 
               <div className="mt-2">
-                <Button variant="heroOutline" size="sm" className="text-white border-white/30 hover:text-white" onClick={() => { setSelectedUnit(`${u.title} — ${u.location}`); setInquiryOpen(true); }}>
+                <Button variant="heroOutline" size="sm" className="text-white border-white/30 hover:text-white" onClick={() => { setSelectedUnit(`${u.title} — ${u.location}`); setSelectedWebhook(u.webhookUrl); setInquiryOpen(true); }}>
                   Inquire
                 </Button>
               </div>

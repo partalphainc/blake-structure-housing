@@ -1,5 +1,9 @@
 import { motion } from "framer-motion";
 import { Star, Quote } from "lucide-react";
+import communityActionLogo from "@/assets/partners/community-action-agency.png";
+import midwestRelocationLogo from "@/assets/partners/midwest-relocation-services.png";
+import stPatrickLogo from "@/assets/partners/st-patrick-center.png";
+import stLouisHousingLogo from "@/assets/partners/st-louis-housing-authority.png";
 
 const reviews = [
   {
@@ -43,14 +47,14 @@ const reviews = [
 const partners = [
   { name: "State Farm", logo: "https://logo.clearbit.com/statefarm.com" },
   { name: "Timberland Partners", logo: "https://logo.clearbit.com/timberlandpartners.com" },
-  { name: "St. Patrick Center", logo: "https://logo.clearbit.com/stpatrickcenter.org" },
+  { name: "St. Patrick Center", logo: stPatrickLogo },
   { name: "Part Alpha Inc", logo: null },
   { name: "Caring Mothers Without Caring Mothers", logo: null },
   { name: "KeyCheck Screening", logo: null },
-  { name: "St. Louis Housing Authority", logo: null },
+  { name: "St. Louis Housing Authority", logo: stLouisHousingLogo },
   { name: "Metro Insurance Partners", logo: null },
-  { name: "Community Action Agency", logo: null },
-  { name: "Midwest Relocation Services", logo: null },
+  { name: "Community Action Agency", logo: communityActionLogo },
+  { name: "Midwest Relocation Services", logo: midwestRelocationLogo },
 ];
 
 const ReviewsSection = () => {
