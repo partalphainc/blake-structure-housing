@@ -155,19 +155,20 @@ const Auth = () => {
                     Forgot password?
                   </button>
 
+                </form>
+
                   {showForgot && (
-                    <form onSubmit={handleForgotPassword} className="mt-4 p-4 rounded-lg border border-border bg-muted/30 space-y-3">
+                    <div className="mt-4 p-4 rounded-lg border border-border bg-muted/30 space-y-3">
                       <p className="text-sm font-medium">Reset your password</p>
                       <Input type="email" required value={forgotEmail} onChange={(e) => setForgotEmail(e.target.value)} placeholder="you@example.com" />
                       <div className="flex gap-2">
-                        <Button type="submit" size="sm" variant="cta" disabled={isLoading} className="flex-1">
+                        <Button type="button" size="sm" variant="cta" disabled={isLoading || !forgotEmail} className="flex-1" onClick={handleForgotPassword as any}>
                           {isLoading ? "Sending..." : "Send Reset Link"}
                         </Button>
                         <Button type="button" size="sm" variant="outline" onClick={() => setShowForgot(false)}>Cancel</Button>
                       </div>
-                    </form>
+                    </div>
                   )}
-                </form>
               </TabsContent>
 
               <TabsContent value="signup">
