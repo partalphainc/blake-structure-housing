@@ -34,9 +34,6 @@ const Auth = () => {
       window.history.replaceState(null, "", window.location.pathname);
     }
 
-    // Sign out any existing session so users must always log in fresh
-    supabase.auth.signOut();
-
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (event === "SIGNED_IN" && session?.user) {
         await redirectByRole(session.user.id);
