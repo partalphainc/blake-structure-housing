@@ -10,7 +10,6 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { ArrowLeft, Search, Plus, Pencil, Trash2 } from "lucide-react";
@@ -30,7 +29,6 @@ const AdminTenants = () => {
   const queryClient = useQueryClient();
   const { toast } = useToast();
 
-  // Get all users with 'resident' role
   const { data: tenants } = useQuery({
     queryKey: ["admin-tenants"],
     enabled: !!user,
@@ -45,7 +43,6 @@ const AdminTenants = () => {
 
   const selectedTenant = tenants?.find((t: any) => t.user_id === selectedTenantId);
 
-  // Detail queries
   const { data: tenantPayments } = useQuery({
     queryKey: ["admin-tenant-payments", selectedTenantId],
     enabled: !!selectedTenantId,
@@ -90,20 +87,13 @@ const AdminTenants = () => {
   const handleAddTenant = async () => {
     setIsSaving(true);
     try {
-      // Create user via admin signup — admin creates the account
-      const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
-        email: formData.email,
-        password: "TempPass123!", // Temporary password, user resets via email
-        options: { data: { full_name: formData.full_name, role: "resident" } },
+      const { data, error } = await supabase.functions.invoke("admin-create-tenant", {
+        body: { email: formData.email, full_name: formData.full_name, phone: formData.phone, role: "resident" },
       });
-      if (signUpError) throw signUpError;
+      if (error) throw error;
+      if (data?.error) throw new Error(data.error);
 
-      if (signUpData.user) {
-        // Update profile phone
-        await supabase.from("profiles").update({ phone: formData.phone }).eq("user_id", signUpData.user.id);
-      }
-
-      toast({ title: "Tenant added", description: `${formData.full_name} has been added. They'll need to verify their email and reset their password.` });
+      toast({ title: "Tenant added", description: `${formData.full_name} has been added. They'll receive an email to set their password.` });
       setAddOpen(false);
       setFormData({ full_name: "", phone: "", email: "", status: "active" });
       queryClient.invalidateQueries({ queryKey: ["admin-tenants"] });
@@ -137,8 +127,7 @@ const AdminTenants = () => {
     if (!deletingTenant) return;
     setIsSaving(true);
     try {
-      // Remove role (effectively removes tenant access)
-      const { error } = await supabase.from("user_roles").delete().eq("user_id", deletingTenant.user_id).eq("role", "resident");
+      const { error } = await supabase.from("user_roles").delete().eq("user_id", deletingTenant.user_id).eq("role", "resident" as any);
       if (error) throw error;
       toast({ title: "Tenant removed", description: `${deletingTenant.full_name || "Tenant"} access has been revoked.` });
       setDeleteOpen(false);
@@ -164,7 +153,6 @@ const AdminTenants = () => {
 
   if (loading) return <div className="min-h-screen flex items-center justify-center text-muted-foreground">Loading...</div>;
 
-  // Detail view
   if (selectedTenantId && selectedTenant) {
     return (
       <PortalLayout title="Admin Portal" navItems={adminNav} onSignOut={signOut} userName={user?.email || ""}>
@@ -247,15 +235,13 @@ const AdminTenants = () => {
     );
   }
 
-  // List view
   return (
     <PortalLayout title="Admin Portal" navItems={adminNav} onSignOut={signOut} userName={user?.email || ""}>
-      {/* Add Tenant Dialog */}
       <Dialog open={addOpen} onOpenChange={setAddOpen}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Add New Tenant</DialogTitle>
-            <DialogDescription>Create a new resident account. They will receive an email to verify and set their password.</DialogDescription>
+            <DialogDescription>Create a new resident account. They will receive an email to set their password.</DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
             <div className="space-y-2">
@@ -280,12 +266,9 @@ const AdminTenants = () => {
         </DialogContent>
       </Dialog>
 
-      {/* Edit Tenant Dialog */}
       <Dialog open={editOpen} onOpenChange={setEditOpen}>
         <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Edit Tenant</DialogTitle>
-          </DialogHeader>
+          <DialogHeader><DialogTitle>Edit Tenant</DialogTitle></DialogHeader>
           <div className="space-y-4">
             <div className="space-y-2">
               <Label>Full Name</Label>
@@ -305,7 +288,6 @@ const AdminTenants = () => {
         </DialogContent>
       </Dialog>
 
-      {/* Delete Confirmation Dialog */}
       <Dialog open={deleteOpen} onOpenChange={setDeleteOpen}>
         <DialogContent>
           <DialogHeader>

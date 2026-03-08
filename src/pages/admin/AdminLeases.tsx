@@ -30,6 +30,19 @@ const AdminLeases = () => {
     },
   });
 
+  // Fetch tenants (residents) for the dropdown
+  const { data: tenants } = useQuery({
+    queryKey: ["admin-tenants-for-lease"],
+    enabled: !!user,
+    queryFn: async () => {
+      const { data: roles } = await supabase.from("user_roles").select("user_id").eq("role", "resident");
+      if (!roles?.length) return [];
+      const userIds = roles.map((r) => r.user_id);
+      const { data: profiles } = await supabase.from("profiles").select("user_id, full_name").in("user_id", userIds);
+      return profiles || [];
+    },
+  });
+
   const { data: leases } = useQuery({
     queryKey: ["admin-leases"],
     enabled: !!user,
@@ -60,6 +73,12 @@ const AdminLeases = () => {
     onError: (e: any) => toast({ title: "Error", description: e.message, variant: "destructive" }),
   });
 
+  // Find tenant name by user_id
+  const getTenantName = (tenantId: string) => {
+    const tenant = tenants?.find((t: any) => t.user_id === tenantId);
+    return tenant?.full_name || tenantId.slice(0, 8);
+  };
+
   if (loading) return <div className="min-h-screen flex items-center justify-center text-muted-foreground">Loading...</div>;
 
   return (
@@ -73,7 +92,19 @@ const AdminLeases = () => {
           <DialogContent>
             <DialogHeader><DialogTitle>Create Lease</DialogTitle></DialogHeader>
             <form onSubmit={(e) => { e.preventDefault(); addLease.mutate(); }} className="space-y-3">
-              <div><Label>Tenant User ID</Label><Input required placeholder="UUID of the tenant" value={form.tenant_id} onChange={(e) => setForm({ ...form, tenant_id: e.target.value })} /></div>
+              <div>
+                <Label>Tenant</Label>
+                <Select value={form.tenant_id} onValueChange={(v) => setForm({ ...form, tenant_id: v })}>
+                  <SelectTrigger><SelectValue placeholder="Select tenant" /></SelectTrigger>
+                  <SelectContent>
+                    {tenants?.map((t: any) => (
+                      <SelectItem key={t.user_id} value={t.user_id}>
+                        {t.full_name || t.user_id.slice(0, 8)}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
               <div>
                 <Label>Unit</Label>
                 <Select value={form.unit_id} onValueChange={(v) => setForm({ ...form, unit_id: v })}>
@@ -100,7 +131,10 @@ const AdminLeases = () => {
         {leases?.map((l: any) => (
           <Card key={l.id}>
             <CardHeader className="pb-2 flex flex-row items-center justify-between">
-              <CardTitle className="text-base">{l.units?.unit_name} – {l.units?.properties?.name}</CardTitle>
+              <div>
+                <CardTitle className="text-base">{l.units?.unit_name} – {l.units?.properties?.name}</CardTitle>
+                <p className="text-xs text-muted-foreground mt-1">Tenant: {getTenantName(l.tenant_id)}</p>
+              </div>
               <Badge variant={l.status === "active" ? "default" : "secondary"}>{l.status}</Badge>
             </CardHeader>
             <CardContent>
