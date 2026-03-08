@@ -66,7 +66,7 @@ const AdminDocuments = () => {
 
       const { error } = await supabase.from("documents").insert({
         file_name: form.name || file.name,
-        file_url: urlData.publicUrl,
+        file_url: signedData.signedUrl,
         owner_type: form.owner_type,
         owner_id: form.owner_id,
         category: form.category || null,
