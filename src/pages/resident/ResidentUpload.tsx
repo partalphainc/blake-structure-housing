@@ -45,9 +45,11 @@ const ResidentUpload = () => {
 
       if (uploadError) throw uploadError;
 
-      const { data: urlData } = supabase.storage
+      const { data: signedData, error: signedError } = await supabase.storage
         .from("resident-documents")
-        .getPublicUrl(filePath);
+        .createSignedUrl(filePath, 60 * 60 * 24 * 365); // 1 year
+      if (signedError) throw signedError;
+      const fileUrl = signedData.signedUrl;
 
       const { error: dbError } = await supabase.from("documents").insert({
         owner_type: "tenant",
