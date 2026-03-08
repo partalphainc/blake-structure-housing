@@ -59,11 +59,14 @@ const AdminDocuments = () => {
       const path = `${form.owner_type}/${form.owner_id}/${Date.now()}.${ext}`;
       const { error: uploadError } = await supabase.storage.from("resident-documents").upload(path, file);
       if (uploadError) throw uploadError;
-      const { data: urlData } = supabase.storage.from("resident-documents").getPublicUrl(path);
+      const { data: signedData, error: signedError } = await supabase.storage
+        .from("resident-documents")
+        .createSignedUrl(path, 60 * 60 * 24 * 365); // 1 year
+      if (signedError) throw signedError;
 
       const { error } = await supabase.from("documents").insert({
         file_name: form.name || file.name,
-        file_url: urlData.publicUrl,
+        file_url: signedData.signedUrl,
         owner_type: form.owner_type,
         owner_id: form.owner_id,
         category: form.category || null,

@@ -51,8 +51,9 @@ const AdminPayments = () => {
         const path = `${form.tenant_id}/${Date.now()}.${ext}`;
         const { error: uploadError } = await supabase.storage.from("receipts").upload(path, receiptFile);
         if (uploadError) throw uploadError;
-        const { data: urlData } = supabase.storage.from("receipts").getPublicUrl(path);
-        receipt_url = urlData.publicUrl;
+        const { data: signedData, error: signedError } = await supabase.storage.from("receipts").createSignedUrl(path, 60 * 60 * 24 * 365);
+        if (signedError) throw signedError;
+        receipt_url = signedData.signedUrl;
       }
 
       const { error } = await supabase.from("payments").insert({

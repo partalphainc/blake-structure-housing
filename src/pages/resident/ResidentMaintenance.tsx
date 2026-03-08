@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { DollarSign, Wrench, FileText, Upload, LayoutDashboard, Plus } from "lucide-react";
+import { useEffect, useState, useRef } from "react";
+import { DollarSign, Wrench, FileText, Upload, LayoutDashboard, Plus, ImagePlus } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import PortalLayout from "@/components/portal/PortalLayout";
@@ -28,7 +28,9 @@ const ResidentMaintenance = () => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [priority, setPriority] = useState("medium");
+  const [photos, setPhotos] = useState<File[]>([]);
   const [submitting, setSubmitting] = useState(false);
+  const fileRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
 
   const fetchData = async () => {
@@ -48,15 +50,34 @@ const ResidentMaintenance = () => {
     if (!user) return;
     setSubmitting(true);
     try {
+      // Upload photos if any
+      const imageUrls: string[] = [];
+      for (const photo of photos) {
+        const filePath = `${user.id}/${Date.now()}_${photo.name}`;
+        const { error: uploadError } = await supabase.storage
+          .from("maintenance-images")
+          .upload(filePath, photo);
+        if (uploadError) throw uploadError;
+
+        // Create signed URL for private bucket
+        const { data: signedData, error: signedError } = await supabase.storage
+          .from("maintenance-images")
+          .createSignedUrl(filePath, 60 * 60 * 24 * 365); // 1 year
+        if (signedError) throw signedError;
+        imageUrls.push(signedData.signedUrl);
+      }
+
       const { error } = await supabase.from("maintenance_requests").insert({
         tenant_id: user.id,
         title,
         description,
         priority,
+        image_urls: imageUrls.length > 0 ? imageUrls : null,
       });
       if (error) throw error;
       toast({ title: "Request submitted", description: "We'll address your maintenance request as soon as possible." });
-      setTitle(""); setDescription(""); setPriority("medium"); setShowForm(false);
+      setTitle(""); setDescription(""); setPriority("medium"); setPhotos([]); setShowForm(false);
+      if (fileRef.current) fileRef.current.value = "";
       fetchData();
     } catch (error: any) {
       toast({ title: "Error", description: error.message, variant: "destructive" });
@@ -111,6 +132,26 @@ const ResidentMaintenance = () => {
                     </SelectContent>
                   </Select>
                 </div>
+                <div className="space-y-2">
+                  <Label className="flex items-center gap-2">
+                    <ImagePlus className="w-4 h-4" /> Photos (optional)
+                  </Label>
+                  <Input
+                    ref={fileRef}
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    onChange={(e) => setPhotos(Array.from(e.target.files || []))}
+                  />
+                  <p className="text-xs text-muted-foreground">Upload photos of the issue. Max 5 images.</p>
+                  {photos.length > 0 && (
+                    <div className="flex gap-2 flex-wrap mt-2">
+                      {photos.map((p, i) => (
+                        <div key={i} className="text-xs bg-muted px-2 py-1 rounded">{p.name}</div>
+                      ))}
+                    </div>
+                  )}
+                </div>
                 <div className="flex gap-2">
                   <Button type="submit" variant="cta" disabled={submitting}>
                     {submitting ? "Submitting..." : "Submit Request"}
@@ -140,6 +181,15 @@ const ResidentMaintenance = () => {
                       <Badge variant="outline" className="text-xs">{r.priority}</Badge>
                     </div>
                   </div>
+                  {r.image_urls && r.image_urls.length > 0 && (
+                    <div className="mt-3 flex gap-2 flex-wrap">
+                      {r.image_urls.map((url: string, i: number) => (
+                        <a key={i} href={url} target="_blank" rel="noopener noreferrer">
+                          <img src={url} alt={`Issue photo ${i + 1}`} className="w-20 h-20 object-cover rounded border border-border" />
+                        </a>
+                      ))}
+                    </div>
+                  )}
                   {r.admin_notes && (
                     <div className="mt-3 pt-3 border-t border-border">
                       <p className="text-xs text-muted-foreground"><strong>Admin note:</strong> {r.admin_notes}</p>
