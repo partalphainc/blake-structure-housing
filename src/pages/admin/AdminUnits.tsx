@@ -37,7 +37,7 @@ const AdminUnits = () => {
     queryKey: ["admin-units"],
     enabled: !!user,
     queryFn: async () => {
-      const { data, error } = await supabase.from("units").select("*, properties(name)").order("created_at", { ascending: false });
+      const { data, error } = await supabase.from("units").select("*, properties(name)").is("deleted_at", null).order("created_at", { ascending: false });
       if (error) throw error;
       return data;
     },
@@ -73,7 +73,7 @@ const AdminUnits = () => {
 
   const deleteUnit = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase.from("units").delete().eq("id", id);
+      const { error } = await supabase.from("units").update({ deleted_at: new Date().toISOString() }).eq("id", id);
       if (error) throw error;
     },
     onSuccess: () => {
@@ -158,7 +158,7 @@ const AdminUnits = () => {
                     <AlertDialogContent>
                       <AlertDialogHeader>
                         <AlertDialogTitle>Delete "{u.unit_name}"?</AlertDialogTitle>
-                        <AlertDialogDescription>This will permanently delete this unit. Active leases on this unit may be affected.</AlertDialogDescription>
+                        <AlertDialogDescription>This will archive this unit (soft delete). Active leases on this unit may still reference it.</AlertDialogDescription>
                       </AlertDialogHeader>
                       <AlertDialogFooter>
                         <AlertDialogCancel>Cancel</AlertDialogCancel>

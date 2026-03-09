@@ -42,7 +42,7 @@ const AdminProperties = () => {
     queryKey: ["admin-properties"],
     enabled: !!user,
     queryFn: async () => {
-      const { data, error } = await supabase.from("properties").select("*").order("created_at", { ascending: false });
+      const { data, error } = await supabase.from("properties").select("*").is("deleted_at", null).order("created_at", { ascending: false });
       if (error) throw error;
       return data;
     },
@@ -80,7 +80,7 @@ const AdminProperties = () => {
 
   const deleteProperty = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase.from("properties").delete().eq("id", id);
+      const { error } = await supabase.from("properties").update({ deleted_at: new Date().toISOString() }).eq("id", id);
       if (error) throw error;
     },
     onSuccess: () => {
@@ -180,7 +180,7 @@ const AdminProperties = () => {
                     <AlertDialogContent>
                       <AlertDialogHeader>
                         <AlertDialogTitle>Delete "{p.name}"?</AlertDialogTitle>
-                        <AlertDialogDescription>This will permanently delete this property and cannot be undone.</AlertDialogDescription>
+                        <AlertDialogDescription>This will archive this property (soft delete). It can be restored later if needed. Active leases or units may still reference it.</AlertDialogDescription>
                       </AlertDialogHeader>
                       <AlertDialogFooter>
                         <AlertDialogCancel>Cancel</AlertDialogCancel>

@@ -8,6 +8,8 @@ import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 import AdminLogin from "./pages/AdminLogin";
 import ResetPassword from "./pages/ResetPassword";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import TermsOfService from "./pages/TermsOfService";
 import ResidentDashboard from "./pages/resident/ResidentDashboard";
 import ResidentPayments from "./pages/resident/ResidentPayments";
 import ResidentMaintenance from "./pages/resident/ResidentMaintenance";
@@ -43,6 +45,8 @@ const App = () => (
           <Route path="/auth" element={<Auth />} />
           <Route path="/admin-login" element={<AdminLogin />} />
           <Route path="/reset-password" element={<ResetPassword />} />
+          <Route path="/privacy" element={<PrivacyPolicy />} />
+          <Route path="/terms" element={<TermsOfService />} />
           
           {/* Resident Portal */}
           <Route path="/resident" element={<ResidentDashboard />} />
