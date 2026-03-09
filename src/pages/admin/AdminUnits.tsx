@@ -37,7 +37,7 @@ const AdminUnits = () => {
     queryKey: ["admin-units"],
     enabled: !!user,
     queryFn: async () => {
-      const { data, error } = await supabase.from("units").select("*, properties(name)").order("created_at", { ascending: false });
+      const { data, error } = await supabase.from("units").select("*, properties(name)").is("deleted_at", null).order("created_at", { ascending: false });
       if (error) throw error;
       return data;
     },
