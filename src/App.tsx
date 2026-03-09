@@ -45,6 +45,8 @@ const App = () => (
           <Route path="/auth" element={<Auth />} />
           <Route path="/admin-login" element={<AdminLogin />} />
           <Route path="/reset-password" element={<ResetPassword />} />
+          <Route path="/privacy" element={<PrivacyPolicy />} />
+          <Route path="/terms" element={<TermsOfService />} />
           
           {/* Resident Portal */}
           <Route path="/resident" element={<ResidentDashboard />} />
