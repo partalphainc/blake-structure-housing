@@ -8,6 +8,8 @@ import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 import AdminLogin from "./pages/AdminLogin";
 import ResetPassword from "./pages/ResetPassword";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import TermsOfService from "./pages/TermsOfService";
 import ResidentDashboard from "./pages/resident/ResidentDashboard";
 import ResidentPayments from "./pages/resident/ResidentPayments";
 import ResidentMaintenance from "./pages/resident/ResidentMaintenance";
