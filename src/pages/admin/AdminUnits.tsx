@@ -75,10 +75,19 @@ const AdminUnits = () => {
     mutationFn: async (id: string) => {
       const { error } = await supabase.from("units").update({ deleted_at: new Date().toISOString() }).eq("id", id);
       if (error) throw error;
+      // Audit log
+      await supabase.from("activity_log").insert({
+        actor_type: "admin",
+        actor_id: user!.id,
+        action: "Archived unit",
+        entity_type: "unit",
+        entity_id: id,
+        metadata: { soft_delete: true },
+      });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin-units"] });
-      toast({ title: "Unit deleted" });
+      toast({ title: "Unit archived" });
     },
     onError: (e: any) => toast({ title: "Error", description: e.message, variant: "destructive" }),
   });

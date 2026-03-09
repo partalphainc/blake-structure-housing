@@ -82,10 +82,19 @@ const AdminProperties = () => {
     mutationFn: async (id: string) => {
       const { error } = await supabase.from("properties").update({ deleted_at: new Date().toISOString() }).eq("id", id);
       if (error) throw error;
+      // Audit log
+      await supabase.from("activity_log").insert({
+        actor_type: "admin",
+        actor_id: user!.id,
+        action: "Archived property",
+        entity_type: "property",
+        entity_id: id,
+        metadata: { soft_delete: true },
+      });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin-properties"] });
-      toast({ title: "Property deleted" });
+      toast({ title: "Property archived" });
     },
     onError: (e: any) => toast({ title: "Error", description: e.message, variant: "destructive" }),
   });

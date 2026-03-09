@@ -44,10 +44,17 @@ const ForResidentsSection = () => {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [preference, setPreference] = useState("");
+  const [lastSubmitTime, setLastSubmitTime] = useState(0);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    const now = Date.now();
+    if (now - lastSubmitTime < 60000) {
+      toast({ title: "Please wait", description: "You can submit another application in 1 minute.", variant: "destructive" });
+      return;
+    }
     setIsSubmitting(true);
+    setLastSubmitTime(now);
     const form = e.currentTarget;
     const formData = {
       name: (form.querySelector("#name") as HTMLInputElement).value,
