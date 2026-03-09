@@ -195,7 +195,7 @@ const ForResidentsSection = () => {
               </div>
               <div>
                 <Label htmlFor="preference">Housing Preference</Label>
-                <Select>
+                <Select value={preference} onValueChange={setPreference}>
                   <SelectTrigger>
                     <SelectValue placeholder="Select type" />
                   </SelectTrigger>
