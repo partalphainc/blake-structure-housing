@@ -73,7 +73,7 @@ const AdminUnits = () => {
 
   const deleteUnit = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase.from("units").delete().eq("id", id);
+      const { error } = await supabase.from("units").update({ deleted_at: new Date().toISOString() }).eq("id", id);
       if (error) throw error;
     },
     onSuccess: () => {
