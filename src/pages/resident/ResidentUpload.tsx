@@ -32,9 +32,15 @@ const ResidentUpload = () => {
     supabase.from("profiles").select("full_name").eq("user_id", user.id).single().then(({ data }) => setProfile(data));
   }, [user]);
 
+  const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
+
   const handleUpload = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user || !file) return;
+    if (file.size > MAX_FILE_SIZE) {
+      toast({ title: "File too large", description: "Maximum file size is 10MB.", variant: "destructive" });
+      return;
+    }
     setUploading(true);
 
     try {

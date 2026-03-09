@@ -45,9 +45,16 @@ const ResidentMaintenance = () => {
 
   useEffect(() => { fetchData(); }, [user]);
 
+  const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user) return;
+    const oversized = photos.find(p => p.size > MAX_FILE_SIZE);
+    if (oversized) {
+      toast({ title: "File too large", description: `"${oversized.name}" exceeds 10MB limit.`, variant: "destructive" });
+      return;
+    }
     setSubmitting(true);
     try {
       // Upload photos if any

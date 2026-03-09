@@ -180,7 +180,7 @@ const AdminProperties = () => {
                     <AlertDialogContent>
                       <AlertDialogHeader>
                         <AlertDialogTitle>Delete "{p.name}"?</AlertDialogTitle>
-                        <AlertDialogDescription>This will permanently delete this property and cannot be undone.</AlertDialogDescription>
+                        <AlertDialogDescription>This will archive this property (soft delete). It can be restored later if needed. Active leases or units may still reference it.</AlertDialogDescription>
                       </AlertDialogHeader>
                       <AlertDialogFooter>
                         <AlertDialogCancel>Cancel</AlertDialogCancel>

@@ -52,9 +52,12 @@ const AdminDocuments = () => {
     },
   });
 
+  const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
+
   const uploadDocument = useMutation({
     mutationFn: async () => {
       if (!file) throw new Error("No file selected");
+      if (file.size > MAX_FILE_SIZE) throw new Error("File exceeds 10MB limit");
       const ext = file.name.split(".").pop();
       const path = `${form.owner_type}/${form.owner_id}/${Date.now()}.${ext}`;
       const { error: uploadError } = await supabase.storage.from("resident-documents").upload(path, file);

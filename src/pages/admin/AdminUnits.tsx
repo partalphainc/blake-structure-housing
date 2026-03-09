@@ -158,7 +158,7 @@ const AdminUnits = () => {
                     <AlertDialogContent>
                       <AlertDialogHeader>
                         <AlertDialogTitle>Delete "{u.unit_name}"?</AlertDialogTitle>
-                        <AlertDialogDescription>This will permanently delete this unit. Active leases on this unit may be affected.</AlertDialogDescription>
+                        <AlertDialogDescription>This will archive this unit (soft delete). Active leases on this unit may still reference it.</AlertDialogDescription>
                       </AlertDialogHeader>
                       <AlertDialogFooter>
                         <AlertDialogCancel>Cancel</AlertDialogCancel>
