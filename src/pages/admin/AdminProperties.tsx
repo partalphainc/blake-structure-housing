@@ -80,7 +80,7 @@ const AdminProperties = () => {
 
   const deleteProperty = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase.from("properties").delete().eq("id", id);
+      const { error } = await supabase.from("properties").update({ deleted_at: new Date().toISOString() }).eq("id", id);
       if (error) throw error;
     },
     onSuccess: () => {
