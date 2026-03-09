@@ -43,6 +43,7 @@ const ForResidentsSection = () => {
   }, []);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [preference, setPreference] = useState("");
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -52,7 +53,7 @@ const ForResidentsSection = () => {
       name: (form.querySelector("#name") as HTMLInputElement).value,
       phone: (form.querySelector("#phone") as HTMLInputElement).value,
       email: (form.querySelector("#email") as HTMLInputElement).value,
-      preference: form.querySelector("[data-value]")?.getAttribute("data-value") || "",
+      preference,
       message: (form.querySelector("#message") as HTMLTextAreaElement).value,
       timestamp: new Date().toISOString(),
       source: "cblake-website-application",
