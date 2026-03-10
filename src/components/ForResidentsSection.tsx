@@ -3,11 +3,7 @@ import { motion } from "framer-motion";
 import { Home, Sofa, Building, Shield, Briefcase, RefreshCw, Zap, CalendarDays } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useToast } from "@/hooks/use-toast";
+import HousingApplicationForm from "@/components/HousingApplicationForm";
 
 import { useIsMobile } from "@/hooks/use-mobile";
 
@@ -33,7 +29,6 @@ const evaluationPoints = [
 const ForResidentsSection = () => {
   const [showApplication, setShowApplication] = useState(false);
   const [expandedMobile, setExpandedMobile] = useState<number | null>(null);
-  const { toast } = useToast();
   const isMobile = useIsMobile();
 
   useEffect(() => {
@@ -41,44 +36,6 @@ const ForResidentsSection = () => {
     window.addEventListener("openApplication", handleOpen);
     return () => window.removeEventListener("openApplication", handleOpen);
   }, []);
-
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [preference, setPreference] = useState("");
-  const [lastSubmitTime, setLastSubmitTime] = useState(0);
-
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const now = Date.now();
-    if (now - lastSubmitTime < 60000) {
-      toast({ title: "Please wait", description: "You can submit another application in 1 minute.", variant: "destructive" });
-      return;
-    }
-    setIsSubmitting(true);
-    setLastSubmitTime(now);
-    const form = e.currentTarget;
-    const formData = {
-      name: (form.querySelector("#name") as HTMLInputElement).value,
-      phone: (form.querySelector("#phone") as HTMLInputElement).value,
-      email: (form.querySelector("#email") as HTMLInputElement).value,
-      preference,
-      message: (form.querySelector("#message") as HTMLTextAreaElement).value,
-      timestamp: new Date().toISOString(),
-      source: "cblake-website-application",
-    };
-    try {
-      await fetch("https://hooks.zapier.com/hooks/catch/25749233/ucvla5n/", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        mode: "no-cors",
-        body: JSON.stringify(formData),
-      });
-    } catch (err) {
-      console.error("Zapier webhook error:", err);
-    }
-    toast({ title: "Application Submitted", description: "A housing representative will contact you shortly." });
-    setShowApplication(false);
-    setIsSubmitting(false);
-  };
 
   return (
     <section id="residents" className="section-padding">
@@ -183,46 +140,11 @@ const ForResidentsSection = () => {
 
         {/* Application Dialog */}
         <Dialog open={showApplication} onOpenChange={setShowApplication}>
-          <DialogContent className="sm:max-w-md">
+          <DialogContent className="sm:max-w-lg">
             <DialogHeader>
               <DialogTitle className="font-serif">Housing Application</DialogTitle>
             </DialogHeader>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div>
-                <Label htmlFor="name">Full Name</Label>
-                <Input id="name" required placeholder="Your full name" />
-              </div>
-              <div>
-                <Label htmlFor="phone">Phone</Label>
-                <Input id="phone" required type="tel" placeholder="(555) 123-4567" />
-              </div>
-              <div>
-                <Label htmlFor="email">Email</Label>
-                <Input id="email" required type="email" placeholder="you@example.com" />
-              </div>
-              <div>
-                <Label htmlFor="preference">Housing Preference</Label>
-                <Select value={preference} onValueChange={setPreference}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select type" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="private-room">Private Room</SelectItem>
-                    <SelectItem value="furnished">Furnished Unit</SelectItem>
-                    <SelectItem value="unfurnished">Unfurnished Unit</SelectItem>
-                    <SelectItem value="insurance">Insurance Replacement</SelectItem>
-                    <SelectItem value="second-chance">Second-Chance Placement</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div>
-                <Label htmlFor="message">Additional Info</Label>
-                <Textarea id="message" placeholder="Tell us about your housing needs..." />
-              </div>
-              <Button type="submit" variant="hero" className="w-full" disabled={isSubmitting}>
-                {isSubmitting ? "Submitting..." : "Submit Application"}
-              </Button>
-            </form>
+            <HousingApplicationForm onClose={() => setShowApplication(false)} />
           </DialogContent>
         </Dialog>
       </div>
