@@ -3,7 +3,6 @@ import { motion } from "framer-motion";
 import { Home, Sofa, Building, Shield, Briefcase, RefreshCw, Zap, CalendarDays } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { useToast } from "@/hooks/use-toast";
 import HousingApplicationForm from "@/components/HousingApplicationForm";
 
 import { useIsMobile } from "@/hooks/use-mobile";
