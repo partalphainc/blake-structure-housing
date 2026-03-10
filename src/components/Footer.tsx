@@ -37,6 +37,12 @@ const Footer = () => {
             <span>🏠</span> Equal Housing Opportunity
           </p>
         </div>
+
+        <div className="mt-6 flex flex-wrap items-center justify-center gap-4 text-xs text-muted-foreground">
+          <a href="https://crystalb.lovable.app/" target="_blank" rel="noopener noreferrer" className="hover:text-foreground transition-colors underline underline-offset-2">crystalb.lovable.app</a>
+          <span className="hidden sm:inline">·</span>
+          <a href="https://alpha-ai-architect.lovable.app" target="_blank" rel="noopener noreferrer" className="hover:text-foreground transition-colors underline underline-offset-2">alpha-ai-architect.lovable.app</a>
+        </div>
       </div>
     </footer>
   );
