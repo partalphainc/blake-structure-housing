@@ -141,46 +141,11 @@ const ForResidentsSection = () => {
 
         {/* Application Dialog */}
         <Dialog open={showApplication} onOpenChange={setShowApplication}>
-          <DialogContent className="sm:max-w-md">
+          <DialogContent className="sm:max-w-lg">
             <DialogHeader>
               <DialogTitle className="font-serif">Housing Application</DialogTitle>
             </DialogHeader>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div>
-                <Label htmlFor="name">Full Name</Label>
-                <Input id="name" required placeholder="Your full name" />
-              </div>
-              <div>
-                <Label htmlFor="phone">Phone</Label>
-                <Input id="phone" required type="tel" placeholder="(555) 123-4567" />
-              </div>
-              <div>
-                <Label htmlFor="email">Email</Label>
-                <Input id="email" required type="email" placeholder="you@example.com" />
-              </div>
-              <div>
-                <Label htmlFor="preference">Housing Preference</Label>
-                <Select value={preference} onValueChange={setPreference}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select type" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="private-room">Private Room</SelectItem>
-                    <SelectItem value="furnished">Furnished Unit</SelectItem>
-                    <SelectItem value="unfurnished">Unfurnished Unit</SelectItem>
-                    <SelectItem value="insurance">Insurance Replacement</SelectItem>
-                    <SelectItem value="second-chance">Second-Chance Placement</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div>
-                <Label htmlFor="message">Additional Info</Label>
-                <Textarea id="message" placeholder="Tell us about your housing needs..." />
-              </div>
-              <Button type="submit" variant="hero" className="w-full" disabled={isSubmitting}>
-                {isSubmitting ? "Submitting..." : "Submit Application"}
-              </Button>
-            </form>
+            <HousingApplicationForm onClose={() => setShowApplication(false)} />
           </DialogContent>
         </Dialog>
       </div>
