@@ -30,7 +30,6 @@ const evaluationPoints = [
 const ForResidentsSection = () => {
   const [showApplication, setShowApplication] = useState(false);
   const [expandedMobile, setExpandedMobile] = useState<number | null>(null);
-  const { toast } = useToast();
   const isMobile = useIsMobile();
 
   useEffect(() => {
@@ -38,44 +37,6 @@ const ForResidentsSection = () => {
     window.addEventListener("openApplication", handleOpen);
     return () => window.removeEventListener("openApplication", handleOpen);
   }, []);
-
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [preference, setPreference] = useState("");
-  const [lastSubmitTime, setLastSubmitTime] = useState(0);
-
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const now = Date.now();
-    if (now - lastSubmitTime < 60000) {
-      toast({ title: "Please wait", description: "You can submit another application in 1 minute.", variant: "destructive" });
-      return;
-    }
-    setIsSubmitting(true);
-    setLastSubmitTime(now);
-    const form = e.currentTarget;
-    const formData = {
-      name: (form.querySelector("#name") as HTMLInputElement).value,
-      phone: (form.querySelector("#phone") as HTMLInputElement).value,
-      email: (form.querySelector("#email") as HTMLInputElement).value,
-      preference,
-      message: (form.querySelector("#message") as HTMLTextAreaElement).value,
-      timestamp: new Date().toISOString(),
-      source: "cblake-website-application",
-    };
-    try {
-      await fetch("https://hooks.zapier.com/hooks/catch/25749233/ucvla5n/", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        mode: "no-cors",
-        body: JSON.stringify(formData),
-      });
-    } catch (err) {
-      console.error("Zapier webhook error:", err);
-    }
-    toast({ title: "Application Submitted", description: "A housing representative will contact you shortly." });
-    setShowApplication(false);
-    setIsSubmitting(false);
-  };
 
   return (
     <section id="residents" className="section-padding">
