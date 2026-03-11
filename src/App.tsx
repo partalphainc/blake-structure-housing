@@ -33,6 +33,12 @@ import AdminDocuments from "./pages/admin/AdminDocuments";
 import AdminActivityLog from "./pages/admin/AdminActivityLog";
 import AdminNotifications from "./pages/admin/AdminNotifications";
 import AdminOAuthCallback from "./pages/admin/AdminOAuthCallback";
+import AdminApplications from "./pages/admin/AdminApplications";
+import AdminVendors from "./pages/admin/AdminVendors";
+import AdminAccounting from "./pages/admin/AdminAccounting";
+import AdminReports from "./pages/admin/AdminReports";
+import AdminInspections from "./pages/admin/AdminInspections";
+import InvestorInspections from "./pages/investor/InvestorInspections";
 
 const queryClient = new QueryClient();
 
@@ -63,6 +69,7 @@ const App = () => (
           <Route path="/investor/financials" element={<InvestorFinancials />} />
           <Route path="/investor/tenants" element={<InvestorTenants />} />
           <Route path="/investor/documents" element={<InvestorDocuments />} />
+          <Route path="/investor/inspections" element={<InvestorInspections />} />
           
           {/* Admin Portal */}
           <Route path="/admin" element={<AdminDashboard />} />
@@ -78,6 +85,11 @@ const App = () => (
           <Route path="/admin/notifications" element={<AdminNotifications />} />
           <Route path="/admin/users" element={<AdminUsers />} />
           <Route path="/admin/oauth-callback" element={<AdminOAuthCallback />} />
+          <Route path="/admin/applications" element={<AdminApplications />} />
+          <Route path="/admin/vendors" element={<AdminVendors />} />
+          <Route path="/admin/accounting" element={<AdminAccounting />} />
+          <Route path="/admin/reports" element={<AdminReports />} />
+          <Route path="/admin/inspections" element={<AdminInspections />} />
           
           <Route path="*" element={<NotFound />} />
         </Routes>

@@ -4,14 +4,16 @@
 -- Run this in your Supabase SQL Editor
 -- =============================================
 
+SET search_path TO public;
+
 -- Add late fee column to payments
-ALTER TABLE payments ADD COLUMN IF NOT EXISTS late_fee numeric DEFAULT 0;
+ALTER TABLE public.payments ADD COLUMN IF NOT EXISTS late_fee numeric DEFAULT 0;
 
 -- Add lease configuration fields
-ALTER TABLE leases ADD COLUMN IF NOT EXISTS due_day integer DEFAULT 1;         -- day of month rent is due (1-28)
-ALTER TABLE leases ADD COLUMN IF NOT EXISTS late_fee_amount numeric DEFAULT 0; -- flat late fee charge
-ALTER TABLE leases ADD COLUMN IF NOT EXISTS late_fee_days integer DEFAULT 5;   -- grace period in days
-ALTER TABLE leases ADD COLUMN IF NOT EXISTS notes text;                        -- internal notes
+ALTER TABLE public.leases ADD COLUMN IF NOT EXISTS due_day integer DEFAULT 1;         -- day of month rent is due (1-28)
+ALTER TABLE public.leases ADD COLUMN IF NOT EXISTS late_fee_amount numeric DEFAULT 0; -- flat late fee charge
+ALTER TABLE public.leases ADD COLUMN IF NOT EXISTS late_fee_days integer DEFAULT 5;   -- grace period in days
+ALTER TABLE public.leases ADD COLUMN IF NOT EXISTS notes text;                        -- internal notes
 
 -- Notifications table (rent reminders, announcements, alerts)
 CREATE TABLE IF NOT EXISTS notifications (

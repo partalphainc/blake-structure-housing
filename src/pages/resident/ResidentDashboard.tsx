@@ -38,6 +38,52 @@ const ResidentDashboard = () => {
     fetchData();
   }, [user]);
 
+  const getPaymentStanding = () => {
+    if (!lease) return null;
+    const now = new Date();
+    const currentMonth = now.toISOString().slice(0, 7);
+    const dueDay = (lease as any).due_day || 1;
+    const lateFeeGrace = Number((lease as any).late_fee_days || 5);
+
+    const paidThisMonth = recentPayments.some(
+      (p) => p.payment_date?.startsWith(currentMonth) && p.status === "recorded"
+    );
+
+    if (paidThisMonth) return "current";
+
+    const dueDate = new Date(now.getFullYear(), now.getMonth(), dueDay);
+    const graceCutoff = new Date(dueDate);
+    graceCutoff.setDate(graceCutoff.getDate() + lateFeeGrace);
+
+    if (now > graceCutoff) return "late";
+
+    const dueSoonCutoff = new Date(dueDate);
+    dueSoonCutoff.setDate(dueSoonCutoff.getDate() - 5);
+    if (now >= dueSoonCutoff) return "due-soon";
+
+    return "current";
+  };
+
+  const standing = getPaymentStanding();
+
+  const standingStyles: Record<string, string> = {
+    current: "border-green-300 bg-green-50",
+    late: "border-red-300 bg-red-50",
+    "due-soon": "border-yellow-300 bg-yellow-50",
+  };
+
+  const standingLabel: Record<string, string> = {
+    current: "Paid / Current",
+    late: "Past Due",
+    "due-soon": "Due Soon",
+  };
+
+  const standingBadgeClass: Record<string, string> = {
+    current: "border-green-300 text-green-700",
+    late: "border-red-300 text-red-700",
+    "due-soon": "border-yellow-300 text-yellow-700",
+  };
+
   if (loading) return <div className="min-h-screen bg-background flex items-center justify-center text-muted-foreground">Loading...</div>;
 
   return (
@@ -49,7 +95,7 @@ const ResidentDashboard = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <Card>
+          <Card className={standing ? standingStyles[standing] : ""}>
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
                 <DollarSign className="w-4 h-4" /> Rent Status
@@ -59,10 +105,15 @@ const ResidentDashboard = () => {
               {lease ? (
                 <>
                   <p className="text-2xl font-bold">${Number(lease.rent_amount).toFixed(0)}<span className="text-sm text-muted-foreground font-normal">/{lease.payment_frequency === "weekly" ? "wk" : "mo"}</span></p>
-                  <Badge variant="outline" className="mt-2 text-xs border-primary/30 text-primary">Active Lease</Badge>
+                  <Badge
+                    variant="outline"
+                    className={`mt-2 text-xs ${standing ? standingBadgeClass[standing] : "border-primary/30 text-primary"}`}
+                  >
+                    {standing ? standingLabel[standing] : "Active Agreement"}
+                  </Badge>
                 </>
               ) : (
-                <p className="text-sm text-muted-foreground">No active lease found</p>
+                <p className="text-sm text-muted-foreground">No active agreement found</p>
               )}
             </CardContent>
           </Card>

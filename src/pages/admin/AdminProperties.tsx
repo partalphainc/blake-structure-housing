@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -14,7 +15,24 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 import { Plus, Pencil, Trash2 } from "lucide-react";
 
-const emptyForm = { name: "", address: "", city: "", state: "", zip: "", property_type: "residential", total_units: "1", owner_id: "" };
+const TAG_OPTIONS = [
+  { value: "second_chance", label: "Second Chance" },
+  { value: "furnished", label: "Furnished" },
+  { value: "unfurnished", label: "Unfurnished" },
+];
+
+const emptyForm = {
+  name: "",
+  address: "",
+  city: "",
+  state: "",
+  zip: "",
+  property_type: "residential",
+  total_units: "1",
+  owner_id: "",
+  occupancy_status: "vacant",
+  property_tags: [] as string[],
+};
 
 const AdminProperties = () => {
   const { user, loading, signOut } = useAuth("admin");
@@ -48,6 +66,15 @@ const AdminProperties = () => {
     },
   });
 
+  const toggleTag = (tag: string) => {
+    setForm((prev) => ({
+      ...prev,
+      property_tags: prev.property_tags.includes(tag)
+        ? prev.property_tags.filter((t) => t !== tag)
+        : [...prev.property_tags, tag],
+    }));
+  };
+
   const saveProperty = useMutation({
     mutationFn: async () => {
       const payload = {
@@ -59,7 +86,9 @@ const AdminProperties = () => {
         property_type: form.property_type,
         total_units: parseInt(form.total_units) || 1,
         owner_id: form.owner_id || user!.id,
-      };
+        occupancy_status: form.occupancy_status,
+        property_tags: form.property_tags,
+      } as any;
       if (editingId) {
         const { error } = await supabase.from("properties").update(payload).eq("id", editingId);
         if (error) throw error;
@@ -110,6 +139,8 @@ const AdminProperties = () => {
       property_type: p.property_type || "residential",
       total_units: String(p.total_units || 1),
       owner_id: p.owner_id || "",
+      occupancy_status: p.occupancy_status || "vacant",
+      property_tags: Array.isArray(p.property_tags) ? p.property_tags : (p.property_tags ? String(p.property_tags).split(",").filter(Boolean) : []),
     });
     setOpen(true);
   };
@@ -125,6 +156,8 @@ const AdminProperties = () => {
     return inv?.full_name || null;
   };
 
+  const getTagLabel = (tag: string) => TAG_OPTIONS.find((t) => t.value === tag)?.label || tag;
+
   if (loading) return <div className="min-h-screen flex items-center justify-center text-muted-foreground">Loading...</div>;
 
   return (
@@ -135,7 +168,7 @@ const AdminProperties = () => {
           <DialogTrigger asChild>
             <Button variant="cta" size="sm" onClick={openAdd}><Plus className="w-4 h-4 mr-2" />Add Property</Button>
           </DialogTrigger>
-          <DialogContent>
+          <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
             <DialogHeader><DialogTitle>{editingId ? "Edit Property" : "Add Property"}</DialogTitle></DialogHeader>
             <form onSubmit={(e) => { e.preventDefault(); saveProperty.mutate(); }} className="space-y-3">
               <div><Label>Name</Label><Input required value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} /></div>
@@ -148,6 +181,35 @@ const AdminProperties = () => {
               <div className="grid grid-cols-2 gap-2">
                 <div><Label>Type</Label><Input value={form.property_type} onChange={(e) => setForm({ ...form, property_type: e.target.value })} /></div>
                 <div><Label>Total Units</Label><Input type="number" min="1" value={form.total_units} onChange={(e) => setForm({ ...form, total_units: e.target.value })} /></div>
+              </div>
+              <div>
+                <Label>Occupancy Status</Label>
+                <Select value={form.occupancy_status} onValueChange={(v) => setForm({ ...form, occupancy_status: v })}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="vacant">Vacant</SelectItem>
+                    <SelectItem value="occupied">Occupied</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label className="mb-2 block">Property Tags</Label>
+                <div className="flex flex-wrap gap-2">
+                  {TAG_OPTIONS.map((tag) => (
+                    <button
+                      key={tag.value}
+                      type="button"
+                      onClick={() => toggleTag(tag.value)}
+                      className={`px-3 py-1 rounded-full text-xs border transition-colors ${
+                        form.property_tags.includes(tag.value)
+                          ? "bg-primary text-primary-foreground border-primary"
+                          : "bg-background text-muted-foreground border-border hover:border-primary"
+                      }`}
+                    >
+                      {tag.label}
+                    </button>
+                  ))}
+                </div>
               </div>
               <div>
                 <Label>Owner / Investor</Label>
@@ -171,46 +233,65 @@ const AdminProperties = () => {
       </div>
 
       <div className="grid gap-4">
-        {properties?.map((p) => (
-          <Card key={p.id}>
-            <CardHeader className="pb-2">
-              <div className="flex items-center justify-between">
-                <CardTitle className="text-base">{p.name}</CardTitle>
-                <div className="flex gap-1">
-                  <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => openEdit(p)}>
-                    <Pencil className="w-4 h-4" />
-                  </Button>
-                  <AlertDialog>
-                    <AlertDialogTrigger asChild>
-                      <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive hover:text-destructive">
-                        <Trash2 className="w-4 h-4" />
-                      </Button>
-                    </AlertDialogTrigger>
-                    <AlertDialogContent>
-                      <AlertDialogHeader>
-                        <AlertDialogTitle>Delete "{p.name}"?</AlertDialogTitle>
-                        <AlertDialogDescription>This will archive this property (soft delete). It can be restored later if needed. Active leases or units may still reference it.</AlertDialogDescription>
-                      </AlertDialogHeader>
-                      <AlertDialogFooter>
-                        <AlertDialogCancel>Cancel</AlertDialogCancel>
-                        <AlertDialogAction onClick={() => deleteProperty.mutate(p.id)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">Delete</AlertDialogAction>
-                      </AlertDialogFooter>
-                    </AlertDialogContent>
-                  </AlertDialog>
+        {properties?.map((p) => {
+          const tags = Array.isArray((p as any).property_tags)
+            ? (p as any).property_tags
+            : ((p as any).property_tags ? String((p as any).property_tags).split(",").filter(Boolean) : []);
+          const isOccupied = (p as any).occupancy_status === "occupied";
+
+          return (
+            <Card key={p.id}>
+              <CardHeader className="pb-2">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <CardTitle className="text-base">{p.name}</CardTitle>
+                    <Badge
+                      className={`text-xs ${isOccupied ? "bg-green-100 text-green-800" : "bg-gray-100 text-gray-600"}`}
+                    >
+                      {isOccupied ? "Occupied" : "Vacant"}
+                    </Badge>
+                    {tags.map((tag: string) => (
+                      <Badge key={tag} variant="outline" className="text-xs capitalize">
+                        {getTagLabel(tag)}
+                      </Badge>
+                    ))}
+                  </div>
+                  <div className="flex gap-1 shrink-0">
+                    <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => openEdit(p)}>
+                      <Pencil className="w-4 h-4" />
+                    </Button>
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive hover:text-destructive">
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Delete "{p.name}"?</AlertDialogTitle>
+                          <AlertDialogDescription>This will archive this property (soft delete). It can be restored later if needed. Active leases or units may still reference it.</AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                          <AlertDialogAction onClick={() => deleteProperty.mutate(p.id)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">Delete</AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  </div>
                 </div>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-muted-foreground">{p.address}, {p.city} {p.state} {p.zip}</p>
-              <div className="flex gap-4 mt-2 text-xs text-muted-foreground">
-                <span>Type: {p.property_type}</span>
-                <span>Units: {p.total_units}</span>
-                <span>Status: {p.status}</span>
-                {investorName(p.owner_id) && <span>Owner: {investorName(p.owner_id)}</span>}
-              </div>
-            </CardContent>
-          </Card>
-        ))}
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm text-muted-foreground">{p.address}, {p.city} {p.state} {p.zip}</p>
+                <div className="flex gap-4 mt-2 text-xs text-muted-foreground">
+                  <span>Type: {p.property_type}</span>
+                  <span>Units: {p.total_units}</span>
+                  <span>Status: {p.status}</span>
+                  {investorName(p.owner_id) && <span>Owner: {investorName(p.owner_id)}</span>}
+                </div>
+              </CardContent>
+            </Card>
+          );
+        })}
         {properties?.length === 0 && <p className="text-muted-foreground text-sm">No properties yet.</p>}
       </div>
     </PortalLayout>

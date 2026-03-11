@@ -94,7 +94,7 @@ const AdminLeases = () => {
       queryClient.invalidateQueries({ queryKey: ["admin-leases"] });
       setOpen(false);
       setForm({ tenant_id: "", unit_id: "", rent_amount: "", start_date: "", end_date: "", payment_frequency: "monthly", due_day: "1", late_fee_amount: "0", late_fee_days: "5", notes: "" });
-      toast({ title: "Lease created" });
+      toast({ title: "Agreement created" });
     },
     onError: (e: any) => toast({ title: "Error", description: e.message, variant: "destructive" }),
   });
@@ -106,7 +106,7 @@ const AdminLeases = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin-leases"] });
-      toast({ title: "Lease status updated" });
+      toast({ title: "Agreement status updated" });
     },
     onError: (e: any) => toast({ title: "Error", description: e.message, variant: "destructive" }),
   });
@@ -145,7 +145,7 @@ const AdminLeases = () => {
     <PortalLayout title="Admin Portal" navItems={adminNav} onSignOut={signOut} userName={user?.email || ""}>
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
         <h1 className="text-2xl font-serif font-bold flex items-center gap-2">
-          <FileText className="w-6 h-6" /> Leases
+          <FileText className="w-6 h-6" /> Agreements
         </h1>
         <div className="flex items-center gap-2">
           <Select value={statusFilter} onValueChange={setStatusFilter}>
@@ -163,12 +163,12 @@ const AdminLeases = () => {
           <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
               <Button variant="cta" size="sm">
-                <Plus className="w-4 h-4 mr-2" />Add Lease
+                <Plus className="w-4 h-4 mr-2" />Add Agreement
               </Button>
             </DialogTrigger>
             <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
               <DialogHeader>
-                <DialogTitle>Create Lease</DialogTitle>
+                <DialogTitle>Create Agreement</DialogTitle>
               </DialogHeader>
               <form onSubmit={(e) => { e.preventDefault(); addLease.mutate(); }} className="space-y-3">
                 <div>
@@ -274,7 +274,7 @@ const AdminLeases = () => {
                 </div>
 
                 <Button type="submit" variant="cta" className="w-full" disabled={addLease.isPending}>
-                  {addLease.isPending ? "Creating..." : "Create Lease"}
+                  {addLease.isPending ? "Creating..." : "Create Agreement"}
                 </Button>
               </form>
             </DialogContent>
@@ -306,7 +306,7 @@ const AdminLeases = () => {
                       <Badge className="bg-yellow-100 text-yellow-800 text-xs">Expired</Badge>
                     )}
                     <Badge variant={l.status === "active" ? "default" : "secondary"} className="text-xs capitalize">
-                      {l.status}
+                      {l.status === "active" ? "Active Agreement" : l.status}
                     </Badge>
                   </div>
                 </div>
@@ -380,7 +380,7 @@ const AdminLeases = () => {
           );
         })}
         {filteredLeases?.length === 0 && (
-          <p className="text-muted-foreground text-sm">No leases found.</p>
+          <p className="text-muted-foreground text-sm">No agreements found.</p>
         )}
       </div>
     </PortalLayout>

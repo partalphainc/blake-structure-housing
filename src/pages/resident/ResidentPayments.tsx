@@ -134,7 +134,7 @@ const ResidentPayments = () => {
           </div>
         )}
 
-        {/* Current Lease Summary */}
+        {/* Current Agreement Summary */}
         {lease && (
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <Card className={balance.amount > 0 ? (balance.isLate ? "border-red-300 bg-red-50" : "border-yellow-300 bg-yellow-50") : "border-green-200 bg-green-50"}>
@@ -174,21 +174,32 @@ const ResidentPayments = () => {
           </div>
         )}
 
-        {/* Pay Button */}
+        {/* Pay Buttons */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
           <div>
             <h1 className="text-2xl font-serif font-bold">Payment History</h1>
-            <p className="text-muted-foreground text-sm mt-1">All recorded payments for your account.</p>
+            <p className="text-muted-foreground text-sm mt-1">All recorded payments for your agreement.</p>
           </div>
-          <Button variant="cta" size="sm" asChild>
-            <a
-              href="https://enroll.zellepay.com/qr-codes?data=ewogICJ0b2tlbiI6ICJEZXN0aW55QENibGFrZUVudC5jb20iLAogICJhY3Rpb24iOiAicGF5bWVudCIsCiAgIm5hbWUiOiAiQy4gQmxha2UgRW50ZXJwcmlzZSIKfQ=="
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <CreditCard className="w-4 h-4 mr-1" /> Pay via Zelle
-            </a>
-          </Button>
+          <div className="flex flex-wrap items-center gap-2">
+            <Button variant="cta" size="sm" asChild>
+              <a
+                href="https://cash.app/$CBlakeEnt"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <CreditCard className="w-4 h-4 mr-1" /> Pay via Cash App
+              </a>
+            </Button>
+            <Button variant="outline" size="sm" asChild>
+              <a
+                href="https://enroll.zellepay.com/qr-codes?data=ewogICJ0b2tlbiI6ICJEZXN0aW55QENibGFrZUVudC5jb20iLAogICJhY3Rpb24iOiAicGF5bWVudCIsCiAgIm5hbWUiOiAiQy4gQmxha2UgRW50ZXJwcmlzZSIKfQ=="
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Pay via Zelle
+              </a>
+            </Button>
+          </div>
         </div>
 
         {/* Payment History Table */}
