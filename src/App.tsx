@@ -32,6 +32,7 @@ import AdminInvestors from "./pages/admin/AdminInvestors";
 import AdminDocuments from "./pages/admin/AdminDocuments";
 import AdminActivityLog from "./pages/admin/AdminActivityLog";
 import AdminNotifications from "./pages/admin/AdminNotifications";
+import AdminOAuthCallback from "./pages/admin/AdminOAuthCallback";
 
 const queryClient = new QueryClient();
 
@@ -76,6 +77,7 @@ const App = () => (
           <Route path="/admin/activity" element={<AdminActivityLog />} />
           <Route path="/admin/notifications" element={<AdminNotifications />} />
           <Route path="/admin/users" element={<AdminUsers />} />
+          <Route path="/admin/oauth-callback" element={<AdminOAuthCallback />} />
           
           <Route path="*" element={<NotFound />} />
         </Routes>

@@ -24,12 +24,12 @@ export function useAuth(requiredRole?: string) {
         setRole(matchedRole);
 
         if (requiredRole && !userRoles.includes(requiredRole)) {
-          navigate("/auth");
+          navigate(requiredRole === "admin" ? "/admin-login" : "/auth");
         }
       } else {
         setUser(null);
         setRole(null);
-        navigate("/auth");
+        navigate(requiredRole === "admin" ? "/admin-login" : "/auth");
       }
       setLoading(false);
     });
@@ -37,7 +37,7 @@ export function useAuth(requiredRole?: string) {
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (!session) {
         setLoading(false);
-        navigate("/auth");
+        navigate(requiredRole === "admin" ? "/admin-login" : "/auth");
       }
     });
 
@@ -46,7 +46,7 @@ export function useAuth(requiredRole?: string) {
 
   const signOut = async () => {
     await supabase.auth.signOut();
-    navigate("/auth");
+    navigate(requiredRole === "admin" ? "/admin-login" : "/auth");
   };
 
   return { user, role, loading, signOut };
