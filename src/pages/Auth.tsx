@@ -36,17 +36,26 @@ const Auth = () => {
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (event === "SIGNED_IN" && session?.user) {
-        await redirectByRole(session.user.id);
+        await redirectByRole(session.user.id, session.user.email);
       }
     });
 
     return () => subscription.unsubscribe();
   }, [navigate]);
 
-  const redirectByRole = async (userId: string) => {
+  const redirectByRole = async (userId: string, userEmail?: string) => {
     try {
       const { data: roles } = await supabase.from("user_roles").select("role").eq("user_id", userId);
-      const userRoles = roles?.map((r) => r.role) || [];
+      let userRoles = roles?.map((r) => r.role) || [];
+
+      // Auto-assign admin role for @cblakeent.com accounts on first sign-in
+      const email = (userEmail || "").toLowerCase();
+      const isAdminEmail = email.endsWith("@cblakeent.com") || email === "partalphaincorporation@gmail.com";
+      if (isAdminEmail && !userRoles.includes("admin")) {
+        await supabase.from("user_roles").insert({ user_id: userId, role: "admin" });
+        userRoles = ["admin"];
+      }
+
       if (userRoles.includes("admin")) navigate("/admin");
       else if (userRoles.includes("investor")) navigate("/investor");
       else navigate("/resident");

@@ -38,7 +38,7 @@ const AdminLogin = () => {
       const { error } = await supabase.auth.signInWithOtp({
         email,
         options: {
-          emailRedirectTo: `${window.location.origin}/admin/oauth-callback`,
+          emailRedirectTo: `${window.location.origin}/auth`,
           shouldCreateUser: true,
         },
       });
