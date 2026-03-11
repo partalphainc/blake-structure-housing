@@ -16,8 +16,10 @@ BEGIN
   IF lower(v_email) LIKE '%@cblakeent.com'
      OR lower(v_email) = 'partalphaincorporation@gmail.com' THEN
     INSERT INTO public.user_roles (user_id, role)
-    VALUES (v_uid, 'admin')
-    ON CONFLICT (user_id, role) DO NOTHING;
+    SELECT v_uid, 'admin'
+    WHERE NOT EXISTS (
+      SELECT 1 FROM public.user_roles WHERE user_id = v_uid AND role = 'admin'
+    );
   END IF;
 END;
 $$;
