@@ -52,28 +52,22 @@ const AdminLogin = () => {
     }
   };
 
-  // Password login
+  // Password login — auto-assigns admin role via SECURITY DEFINER function
   const handlePasswordLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!isAdminEmail(email)) {
+      toast({ title: "Access denied", description: "Only @cblakeent.com accounts are permitted.", variant: "destructive" });
+      return;
+    }
     setIsLoading(true);
     try {
       const { error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) throw error;
 
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user) {
-        const { data: roles } = await supabase
-          .from("user_roles")
-          .select("role")
-          .eq("user_id", user.id);
+      // Assign admin role (bypasses RLS via SECURITY DEFINER)
+      await supabase.rpc("assign_admin_role_if_eligible");
 
-        if (roles?.some((r) => r.role === "admin")) {
-          navigate("/admin");
-        } else {
-          await supabase.auth.signOut();
-          toast({ title: "Access denied", description: "No admin role found for this account.", variant: "destructive" });
-        }
-      }
+      navigate("/admin");
     } catch (error: any) {
       toast({ title: "Login failed", description: error.message, variant: "destructive" });
     } finally {

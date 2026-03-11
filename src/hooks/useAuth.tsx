@@ -13,6 +13,12 @@ export function useAuth(requiredRole?: string) {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (session?.user) {
         setUser(session.user);
+
+        // Auto-assign admin role for @cblakeent.com — bypasses RLS via SECURITY DEFINER
+        if (requiredRole === "admin") {
+          await supabase.rpc("assign_admin_role_if_eligible");
+        }
+
         const { data: roles } = await supabase
           .from("user_roles")
           .select("role")
