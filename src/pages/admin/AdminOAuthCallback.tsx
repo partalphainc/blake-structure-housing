@@ -16,7 +16,7 @@ const AdminOAuthCallback = () => {
       handled.current = true;
 
       if (!session?.user) {
-        toast({ title: "Sign-in failed", description: "Could not complete Google sign-in.", variant: "destructive" });
+        toast({ title: "Sign-in failed", description: "Could not complete sign-in. Please try again.", variant: "destructive" });
         navigate("/admin-login");
         return;
       }
@@ -40,7 +40,7 @@ const AdminOAuthCallback = () => {
         .eq("user_id", session.user.id);
 
       if (!roles?.some((r: any) => r.role === "admin")) {
-        await (supabase as any)
+        await supabase
           .from("user_roles")
           .insert({ user_id: session.user.id, role: "admin" });
       }
