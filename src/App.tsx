@@ -31,6 +31,7 @@ import AdminTenants from "./pages/admin/AdminTenants";
 import AdminInvestors from "./pages/admin/AdminInvestors";
 import AdminDocuments from "./pages/admin/AdminDocuments";
 import AdminActivityLog from "./pages/admin/AdminActivityLog";
+import AdminNotifications from "./pages/admin/AdminNotifications";
 
 const queryClient = new QueryClient();
 
@@ -73,6 +74,7 @@ const App = () => (
           <Route path="/admin/maintenance" element={<AdminMaintenance />} />
           <Route path="/admin/documents" element={<AdminDocuments />} />
           <Route path="/admin/activity" element={<AdminActivityLog />} />
+          <Route path="/admin/notifications" element={<AdminNotifications />} />
           <Route path="/admin/users" element={<AdminUsers />} />
           
           <Route path="*" element={<NotFound />} />
