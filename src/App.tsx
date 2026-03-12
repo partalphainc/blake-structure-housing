@@ -15,11 +15,16 @@ import ResidentPayments from "./pages/resident/ResidentPayments";
 import ResidentMaintenance from "./pages/resident/ResidentMaintenance";
 import ResidentDocuments from "./pages/resident/ResidentDocuments";
 import ResidentUpload from "./pages/resident/ResidentUpload";
+import ResidentMessages from "./pages/resident/ResidentMessages";
+import ResidentReview from "./pages/resident/ResidentReview";
 import InvestorDashboard from "./pages/investor/InvestorDashboard";
 import InvestorProperties from "./pages/investor/InvestorProperties";
 import InvestorFinancials from "./pages/investor/InvestorFinancials";
 import InvestorTenants from "./pages/investor/InvestorTenants";
 import InvestorDocuments from "./pages/investor/InvestorDocuments";
+import InvestorInspections from "./pages/investor/InvestorInspections";
+import InvestorMessages from "./pages/investor/InvestorMessages";
+import InvestorReview from "./pages/investor/InvestorReview";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminProperties from "./pages/admin/AdminProperties";
 import AdminUnits from "./pages/admin/AdminUnits";
@@ -38,7 +43,9 @@ import AdminVendors from "./pages/admin/AdminVendors";
 import AdminAccounting from "./pages/admin/AdminAccounting";
 import AdminReports from "./pages/admin/AdminReports";
 import AdminInspections from "./pages/admin/AdminInspections";
-import InvestorInspections from "./pages/investor/InvestorInspections";
+import AdminMessaging from "./pages/admin/AdminMessaging";
+import AdminReviews from "./pages/admin/AdminReviews";
+import AdminCRM from "./pages/admin/AdminCRM";
 
 const queryClient = new QueryClient();
 
@@ -55,14 +62,16 @@ const App = () => (
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/privacy" element={<PrivacyPolicy />} />
           <Route path="/terms" element={<TermsOfService />} />
-          
+
           {/* Resident Portal */}
           <Route path="/resident" element={<ResidentDashboard />} />
           <Route path="/resident/payments" element={<ResidentPayments />} />
           <Route path="/resident/maintenance" element={<ResidentMaintenance />} />
+          <Route path="/resident/messages" element={<ResidentMessages />} />
           <Route path="/resident/documents" element={<ResidentDocuments />} />
           <Route path="/resident/upload" element={<ResidentUpload />} />
-          
+          <Route path="/resident/review" element={<ResidentReview />} />
+
           {/* Investor Portal */}
           <Route path="/investor" element={<InvestorDashboard />} />
           <Route path="/investor/properties" element={<InvestorProperties />} />
@@ -70,7 +79,9 @@ const App = () => (
           <Route path="/investor/tenants" element={<InvestorTenants />} />
           <Route path="/investor/documents" element={<InvestorDocuments />} />
           <Route path="/investor/inspections" element={<InvestorInspections />} />
-          
+          <Route path="/investor/messages" element={<InvestorMessages />} />
+          <Route path="/investor/review" element={<InvestorReview />} />
+
           {/* Admin Portal */}
           <Route path="/admin" element={<AdminDashboard />} />
           <Route path="/admin/tenants" element={<AdminTenants />} />
@@ -90,7 +101,10 @@ const App = () => (
           <Route path="/admin/accounting" element={<AdminAccounting />} />
           <Route path="/admin/reports" element={<AdminReports />} />
           <Route path="/admin/inspections" element={<AdminInspections />} />
-          
+          <Route path="/admin/messaging" element={<AdminMessaging />} />
+          <Route path="/admin/reviews" element={<AdminReviews />} />
+          <Route path="/admin/crm" element={<AdminCRM />} />
+
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

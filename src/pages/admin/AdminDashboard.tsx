@@ -3,11 +3,12 @@ import PortalLayout from "@/components/portal/PortalLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
-import { Building2, Users, FileText, Wrench, DollarSign, LayoutDashboard, UserCheck, Briefcase, ClipboardList, Bell, Store, ClipboardCheck, BarChart3 } from "lucide-react";
+import { Building2, Users, FileText, Wrench, DollarSign, LayoutDashboard, UserCheck, Briefcase, ClipboardList, Bell, Store, ClipboardCheck, BarChart3, MessageSquare, Star, UserPlus } from "lucide-react";
 
 const adminNav = [
   { label: "Dashboard", href: "/admin", icon: <LayoutDashboard className="w-4 h-4" /> },
   { label: "Applications", href: "/admin/applications", icon: <ClipboardCheck className="w-4 h-4" /> },
+  { label: "CRM", href: "/admin/crm", icon: <UserPlus className="w-4 h-4" /> },
   { label: "Tenants", href: "/admin/tenants", icon: <UserCheck className="w-4 h-4" /> },
   { label: "Investors", href: "/admin/investors", icon: <Briefcase className="w-4 h-4" /> },
   { label: "Properties", href: "/admin/properties", icon: <Building2 className="w-4 h-4" /> },
@@ -15,12 +16,14 @@ const adminNav = [
   { label: "Agreements", href: "/admin/leases", icon: <FileText className="w-4 h-4" /> },
   { label: "Payments", href: "/admin/payments", icon: <DollarSign className="w-4 h-4" /> },
   { label: "Accounting", href: "/admin/accounting", icon: <BarChart3 className="w-4 h-4" /> },
+  { label: "Messaging", href: "/admin/messaging", icon: <MessageSquare className="w-4 h-4" /> },
   { label: "Notifications", href: "/admin/notifications", icon: <Bell className="w-4 h-4" /> },
   { label: "Maintenance", href: "/admin/maintenance", icon: <Wrench className="w-4 h-4" /> },
   { label: "Vendors", href: "/admin/vendors", icon: <Store className="w-4 h-4" /> },
   { label: "Inspections", href: "/admin/inspections", icon: <ClipboardList className="w-4 h-4" /> },
   { label: "Documents", href: "/admin/documents", icon: <FileText className="w-4 h-4" /> },
   { label: "Reports", href: "/admin/reports", icon: <BarChart3 className="w-4 h-4" /> },
+  { label: "Reviews", href: "/admin/reviews", icon: <Star className="w-4 h-4" /> },
   { label: "Activity Log", href: "/admin/activity", icon: <ClipboardList className="w-4 h-4" /> },
   { label: "Users", href: "/admin/users", icon: <Users className="w-4 h-4" /> },
 ];

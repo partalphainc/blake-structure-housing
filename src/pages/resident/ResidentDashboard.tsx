@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { DollarSign, Wrench, FileText, Upload, LayoutDashboard } from "lucide-react";
+import { DollarSign, Wrench, FileText, Upload, LayoutDashboard, MessageSquare, Star } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import PortalLayout from "@/components/portal/PortalLayout";
@@ -10,8 +10,10 @@ const navItems = [
   { label: "Dashboard", href: "/resident", icon: <LayoutDashboard className="w-4 h-4" /> },
   { label: "Payments", href: "/resident/payments", icon: <DollarSign className="w-4 h-4" /> },
   { label: "Maintenance", href: "/resident/maintenance", icon: <Wrench className="w-4 h-4" /> },
+  { label: "Messages", href: "/resident/messages", icon: <MessageSquare className="w-4 h-4" /> },
   { label: "Documents", href: "/resident/documents", icon: <FileText className="w-4 h-4" /> },
   { label: "Upload Docs", href: "/resident/upload", icon: <Upload className="w-4 h-4" /> },
+  { label: "Leave Review", href: "/resident/review", icon: <Star className="w-4 h-4" /> },
 ];
 
 const ResidentDashboard = () => {

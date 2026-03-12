@@ -1,10 +1,11 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Mic, MicOff, Send } from "lucide-react";
+import { X, Mic, MicOff, Send, Phone } from "lucide-react";
 import destinyAvatar from "@/assets/destiny-avatar.png";
 
 const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/destiny-chat`;
 const ZAPIER_WEBHOOK_URL = "";
+const VAPI_ASSISTANT_ID = "a51e4ffa-4659-4cf9-a491-5f7b91739c40";
 
 interface ChatMessage {
   role: "user" | "assistant";
@@ -239,10 +240,17 @@ const DestinyChat = () => {
                 <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-primary/40">
                   <img src={destinyAvatar} alt="Destiny" className="w-full h-full object-cover" />
                 </div>
-                <div>
+                <div className="flex-1">
                   <p className="font-serif font-bold text-sm">Destiny — AI Leasing Rep</p>
                   <p className="text-xs text-muted-foreground">Powered by PART Alpha Incorporation</p>
                 </div>
+                <a
+                  href="tel:+16362066037"
+                  className="flex items-center gap-1.5 text-xs bg-primary/10 hover:bg-primary/20 text-primary px-3 py-1.5 rounded-full transition-colors"
+                  title="Call Destiny"
+                >
+                  <Phone className="w-3 h-3" /> Call
+                </a>
               </div>
             </div>
 

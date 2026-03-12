@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Building2, BarChart3, FileText, Users, LayoutDashboard, DollarSign } from "lucide-react";
+import { Building2, BarChart3, FileText, Users, LayoutDashboard, DollarSign, MessageSquare, ClipboardList, Star } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import PortalLayout from "@/components/portal/PortalLayout";
@@ -11,7 +11,10 @@ const navItems = [
   { label: "Properties", href: "/investor/properties", icon: <Building2 className="w-4 h-4" /> },
   { label: "Financials", href: "/investor/financials", icon: <BarChart3 className="w-4 h-4" /> },
   { label: "Tenants", href: "/investor/tenants", icon: <Users className="w-4 h-4" /> },
+  { label: "Inspections", href: "/investor/inspections", icon: <ClipboardList className="w-4 h-4" /> },
+  { label: "Messages", href: "/investor/messages", icon: <MessageSquare className="w-4 h-4" /> },
   { label: "Documents", href: "/investor/documents", icon: <FileText className="w-4 h-4" /> },
+  { label: "Leave Review", href: "/investor/review", icon: <Star className="w-4 h-4" /> },
 ];
 
 const InvestorDashboard = () => {
