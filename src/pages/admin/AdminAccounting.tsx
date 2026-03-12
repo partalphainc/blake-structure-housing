@@ -13,7 +13,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
-import { BarChart3, DollarSign, TrendingUp, TrendingDown, Plus } from "lucide-react";
+import { BarChart3, DollarSign, TrendingUp, TrendingDown, Plus, Sparkles, CreditCard, Link2 } from "lucide-react";
+import AIRentCalculator from "@/components/AIRentCalculator";
 
 const AdminAccounting = () => {
   const { user, loading, signOut } = useAuth("admin");
@@ -86,7 +87,8 @@ const AdminAccounting = () => {
     <PortalLayout title="Admin Portal" navItems={adminNav} onSignOut={signOut} userName={user?.email || ""}>
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
         <h1 className="text-2xl font-serif font-bold flex items-center gap-2"><BarChart3 className="w-6 h-6" /> Accounting</h1>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
+          <AIRentCalculator />
           <Input type="month" value={monthFilter} onChange={(e) => setMonthFilter(e.target.value)} className="h-8 text-xs w-36" />
           <Dialog open={expenseOpen} onOpenChange={setExpenseOpen}>
             <DialogTrigger asChild>
@@ -143,6 +145,56 @@ const AdminAccounting = () => {
             <CardContent><p className="text-xl font-bold">{s.value}</p></CardContent>
           </Card>
         ))}
+      </div>
+
+      {/* AI Insights + Integrations */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+        <Card className="border-primary/20 bg-primary/5 md:col-span-2">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm flex items-center gap-2"><Sparkles className="w-4 h-4 text-primary" /> AI Financial Snapshot</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-2 text-sm">
+            {netIncome >= 0 ? (
+              <p className="text-green-600 font-medium">✓ Portfolio is profitable this month — net income of ${netIncome.toLocaleString()}</p>
+            ) : (
+              <p className="text-red-500 font-medium">⚠ Expenses exceed income this month by ${Math.abs(netIncome).toLocaleString()}</p>
+            )}
+            {monthRevenue > 0 && <p className="text-muted-foreground">Expense ratio: {((monthExpenses / monthRevenue) * 100).toFixed(1)}% of revenue spent on operations</p>}
+            {filteredPayments.length > 0 && <p className="text-muted-foreground">Average payment: ${(monthRevenue / filteredPayments.length).toFixed(2)} across {filteredPayments.length} transaction{filteredPayments.length !== 1 ? "s" : ""}</p>}
+            <p className="text-xs text-muted-foreground pt-1">Use the Rent Calculator to estimate prorated rent, move-in costs, and late fees.</p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm flex items-center gap-2"><Link2 className="w-4 h-4" /> Integrations</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <CreditCard className="w-4 h-4 text-muted-foreground" />
+                <span className="text-xs font-medium">QuickBooks</span>
+              </div>
+              <a href="https://quickbooks.intuit.com" target="_blank" rel="noopener noreferrer">
+                <button className="text-xs bg-primary/10 hover:bg-primary/20 text-primary px-3 py-1 rounded-full transition-colors">Connect</button>
+              </a>
+            </div>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <BarChart3 className="w-4 h-4 text-muted-foreground" />
+                <span className="text-xs font-medium">Bank Sync</span>
+              </div>
+              <span className="text-xs text-muted-foreground bg-muted px-3 py-1 rounded-full">Coming Soon</span>
+            </div>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <DollarSign className="w-4 h-4 text-muted-foreground" />
+                <span className="text-xs font-medium">ACH Payments</span>
+              </div>
+              <span className="text-xs text-muted-foreground bg-muted px-3 py-1 rounded-full">Coming Soon</span>
+            </div>
+          </CardContent>
+        </Card>
       </div>
 
       {/* Payments This Month */}

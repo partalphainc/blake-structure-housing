@@ -48,7 +48,7 @@ const Navbar = () => {
             <Button variant="outline" size="sm" asChild>
               <Link to="/auth">
                 <LogIn size={16} className="mr-2" />
-                Portal Login
+                Login
               </Link>
             </Button>
           </div>
@@ -86,7 +86,7 @@ const Navbar = () => {
                 <Button variant="outline" size="sm" className="w-full mt-2" asChild>
                   <Link to="/auth" onClick={() => setOpen(false)}>
                     <LogIn size={16} className="mr-2" />
-                    Portal Login
+                    Login
                   </Link>
                 </Button>
               </div>

@@ -3,7 +3,7 @@ import PortalLayout from "@/components/portal/PortalLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
-import { Building2, Users, FileText, Wrench, DollarSign, LayoutDashboard, UserCheck, Briefcase, ClipboardList, Bell, Store, ClipboardCheck, BarChart3, MessageSquare, Star, UserPlus } from "lucide-react";
+import { Building2, Users, FileText, Wrench, DollarSign, LayoutDashboard, UserCheck, Briefcase, ClipboardList, Bell, Store, ClipboardCheck, BarChart3, MessageSquare, Star, UserPlus, Video } from "lucide-react";
 
 const adminNav = [
   { label: "Dashboard", href: "/admin", icon: <LayoutDashboard className="w-4 h-4" /> },
@@ -23,6 +23,7 @@ const adminNav = [
   { label: "Inspections", href: "/admin/inspections", icon: <ClipboardList className="w-4 h-4" /> },
   { label: "Documents", href: "/admin/documents", icon: <FileText className="w-4 h-4" /> },
   { label: "Reports", href: "/admin/reports", icon: <BarChart3 className="w-4 h-4" /> },
+  { label: "Media", href: "/admin/media", icon: <Video className="w-4 h-4" /> },
   { label: "Reviews", href: "/admin/reviews", icon: <Star className="w-4 h-4" /> },
   { label: "Activity Log", href: "/admin/activity", icon: <ClipboardList className="w-4 h-4" /> },
   { label: "Users", href: "/admin/users", icon: <Users className="w-4 h-4" /> },

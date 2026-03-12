@@ -46,6 +46,7 @@ import AdminInspections from "./pages/admin/AdminInspections";
 import AdminMessaging from "./pages/admin/AdminMessaging";
 import AdminReviews from "./pages/admin/AdminReviews";
 import AdminCRM from "./pages/admin/AdminCRM";
+import AdminMedia from "./pages/admin/AdminMedia";
 
 const queryClient = new QueryClient();
 
@@ -104,6 +105,7 @@ const App = () => (
           <Route path="/admin/messaging" element={<AdminMessaging />} />
           <Route path="/admin/reviews" element={<AdminReviews />} />
           <Route path="/admin/crm" element={<AdminCRM />} />
+          <Route path="/admin/media" element={<AdminMedia />} />
 
           <Route path="*" element={<NotFound />} />
         </Routes>
