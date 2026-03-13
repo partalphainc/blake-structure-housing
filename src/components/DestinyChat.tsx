@@ -1,11 +1,15 @@
-import { useState, useRef, useEffect, useCallback } from "react";
+import React, { useState, useRef, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Mic, MicOff, Send, Phone } from "lucide-react";
+import { X, Mic, MicOff, Send, Phone, PhoneOff, Loader2 } from "lucide-react";
+import Vapi from "@vapi-ai/web";
 import destinyAvatar from "@/assets/destiny-avatar.png";
 
 const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/destiny-chat`;
 const ZAPIER_WEBHOOK_URL = "";
 const VAPI_ASSISTANT_ID = "a51e4ffa-4659-4cf9-a491-5f7b91739c40";
+const VAPI_PUBLIC_KEY = import.meta.env.VITE_VAPI_PUBLIC_KEY as string;
+
+type CallStatus = "idle" | "connecting" | "active" | "ended";
 
 interface ChatMessage {
   role: "user" | "assistant";
@@ -19,8 +23,12 @@ const DestinyChat = () => {
   const [textInput, setTextInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isListening, setIsListening] = useState(false);
+  const [callStatus, setCallStatus] = useState<CallStatus>("idle");
+  const [isMuted, setIsMuted] = useState(false);
+  const [isAssistantSpeaking, setIsAssistantSpeaking] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const recognitionRef = useRef<any>(null);
+  const vapiRef = useRef<Vapi | null>(null);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -29,6 +37,87 @@ const DestinyChat = () => {
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
+
+  // Initialize VAPI instance
+  const getVapi = useCallback(() => {
+    if (!vapiRef.current && VAPI_PUBLIC_KEY && VAPI_PUBLIC_KEY !== "YOUR_VAPI_PUBLIC_KEY_HERE") {
+      const vapi = new Vapi(VAPI_PUBLIC_KEY);
+
+      vapi.on("call-start", () => {
+        setCallStatus("active");
+      });
+
+      vapi.on("call-end", () => {
+        setCallStatus("ended");
+        setIsMuted(false);
+        setIsAssistantSpeaking(false);
+        setTimeout(() => setCallStatus("idle"), 2000);
+      });
+
+      vapi.on("speech-start", () => {
+        setIsAssistantSpeaking(true);
+      });
+
+      vapi.on("speech-end", () => {
+        setIsAssistantSpeaking(false);
+      });
+
+      vapi.on("error", (err: any) => {
+        console.error("VAPI error:", err);
+        setCallStatus("idle");
+        setIsMuted(false);
+        setIsAssistantSpeaking(false);
+      });
+
+      vapiRef.current = vapi;
+    }
+    return vapiRef.current;
+  }, []);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (vapiRef.current) {
+        vapiRef.current.stop();
+      }
+    };
+  }, []);
+
+  const startVapiCall = useCallback(async () => {
+    const vapi = getVapi();
+    if (!vapi) {
+      console.error("VAPI not initialized — check VITE_VAPI_PUBLIC_KEY in .env");
+      alert("Voice call is not configured yet. Please call us directly at (636) 206-6037.");
+      return;
+    }
+    if (callStatus !== "idle") return;
+
+    setCallStatus("connecting");
+    try {
+      await vapi.start(VAPI_ASSISTANT_ID);
+    } catch (err) {
+      console.error("Failed to start VAPI call:", err);
+      setCallStatus("idle");
+      alert("Could not connect the call. Please try again or call (636) 206-6037.");
+    }
+  }, [callStatus, getVapi]);
+
+  const endVapiCall = useCallback(() => {
+    if (vapiRef.current) {
+      vapiRef.current.stop();
+    }
+    setCallStatus("idle");
+    setIsMuted(false);
+    setIsAssistantSpeaking(false);
+  }, []);
+
+  const toggleMute = useCallback(() => {
+    if (vapiRef.current) {
+      const newMuted = !isMuted;
+      vapiRef.current.setMuted(newMuted);
+      setIsMuted(newMuted);
+    }
+  }, [isMuted]);
 
   const sendToZapier = useCallback(async (chatMessages: ChatMessage[]) => {
     if (!ZAPIER_WEBHOOK_URL) return;
@@ -50,15 +139,21 @@ const DestinyChat = () => {
     }
   }, []);
 
+  // Event listeners from HeroSection buttons
   useEffect(() => {
-    const handleOpen = () => setIsOpen(true);
-    window.addEventListener("openDestinyChat", handleOpen);
-    window.addEventListener("startDestinyCall", handleOpen);
-    return () => {
-      window.removeEventListener("openDestinyChat", handleOpen);
-      window.removeEventListener("startDestinyCall", handleOpen);
+    const handleOpenChat = () => setIsOpen(true);
+    const handleStartCall = () => {
+      // If call is idle, start VAPI voice call directly
+      startVapiCall();
     };
-  }, []);
+
+    window.addEventListener("openDestinyChat", handleOpenChat);
+    window.addEventListener("startDestinyCall", handleStartCall);
+    return () => {
+      window.removeEventListener("openDestinyChat", handleOpenChat);
+      window.removeEventListener("startDestinyCall", handleStartCall);
+    };
+  }, [startVapiCall]);
 
   // Speech-to-text using Web Speech API
   const toggleListening = () => {
@@ -190,8 +285,111 @@ const DestinyChat = () => {
     }
   };
 
+  const callActive = callStatus === "active" || callStatus === "connecting";
+
   return (
     <>
+      {/* VAPI Voice Call Overlay */}
+      <AnimatePresence>
+        {callActive && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.9 }}
+            className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 backdrop-blur-sm"
+          >
+            <motion.div
+              className="relative bg-card border border-border rounded-3xl p-8 w-80 text-center shadow-2xl"
+              style={{ boxShadow: "0 0 60px hsl(330 85% 55% / 0.3)" }}
+            >
+              {/* Pulsing avatar */}
+              <div className="relative mx-auto w-28 h-28 mb-6">
+                {callStatus === "active" && isAssistantSpeaking && (
+                  <>
+                    <motion.div
+                      className="absolute inset-0 rounded-full border-2 border-primary/50"
+                      animate={{ scale: [1, 1.4, 1.7], opacity: [0.7, 0.3, 0] }}
+                      transition={{ duration: 1.5, repeat: Infinity, ease: "easeOut" }}
+                    />
+                    <motion.div
+                      className="absolute inset-0 rounded-full border-2 border-accent-magenta/40"
+                      animate={{ scale: [1, 1.2, 1.5], opacity: [0.5, 0.2, 0] }}
+                      transition={{ duration: 1.5, repeat: Infinity, ease: "easeOut", delay: 0.3 }}
+                    />
+                  </>
+                )}
+                <div className="w-28 h-28 rounded-full overflow-hidden border-2 border-primary/50">
+                  <img src={destinyAvatar} alt="Destiny" className="w-full h-full object-cover" />
+                </div>
+              </div>
+
+              <p className="font-serif font-bold text-lg mb-1">Destiny</p>
+              <p className="text-sm text-muted-foreground mb-2">AI Leasing Representative</p>
+
+              <div className="flex items-center justify-center gap-2 mb-8">
+                {callStatus === "connecting" ? (
+                  <>
+                    <Loader2 size={14} className="animate-spin text-primary" />
+                    <span className="text-sm text-primary">Connecting...</span>
+                  </>
+                ) : (
+                  <>
+                    <motion.span
+                      className="inline-block w-2 h-2 rounded-full bg-green-500"
+                      animate={{ opacity: [1, 0.3, 1] }}
+                      transition={{ duration: 1.2, repeat: Infinity }}
+                    />
+                    <span className="text-sm text-green-400">
+                      {isAssistantSpeaking ? "Destiny is speaking..." : "Listening..."}
+                    </span>
+                  </>
+                )}
+              </div>
+
+              {/* Call controls */}
+              <div className="flex items-center justify-center gap-6">
+                <motion.button
+                  onClick={toggleMute}
+                  disabled={callStatus !== "active"}
+                  className={`w-14 h-14 rounded-full flex items-center justify-center transition-colors ${
+                    isMuted
+                      ? "bg-destructive/20 text-destructive border border-destructive/50"
+                      : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
+                  } disabled:opacity-40`}
+                  whileTap={{ scale: 0.92 }}
+                  title={isMuted ? "Unmute" : "Mute"}
+                >
+                  {isMuted ? <MicOff size={22} /> : <Mic size={22} />}
+                </motion.button>
+
+                <motion.button
+                  onClick={endVapiCall}
+                  className="w-16 h-16 rounded-full bg-destructive text-destructive-foreground flex items-center justify-center shadow-lg"
+                  whileTap={{ scale: 0.92 }}
+                  title="End call"
+                >
+                  <PhoneOff size={24} />
+                </motion.button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Call ended toast */}
+      <AnimatePresence>
+        {callStatus === "ended" && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 20 }}
+            className="fixed bottom-28 right-6 z-50 bg-card border border-border rounded-xl px-4 py-3 text-sm shadow-lg"
+          >
+            Call ended. Thanks for speaking with Destiny!
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Floating button with ring */}
       <div className="fixed bottom-6 right-6 z-50">
         <motion.div
@@ -244,13 +442,20 @@ const DestinyChat = () => {
                   <p className="font-serif font-bold text-sm">Destiny — AI Leasing Rep</p>
                   <p className="text-xs text-muted-foreground">Powered by PART Alpha Incorporation</p>
                 </div>
-                <a
-                  href="tel:+16362066037"
-                  className="flex items-center gap-1.5 text-xs bg-primary/10 hover:bg-primary/20 text-primary px-3 py-1.5 rounded-full transition-colors"
-                  title="Call Destiny"
+                <motion.button
+                  onClick={startVapiCall}
+                  disabled={callActive}
+                  className="flex items-center gap-1.5 text-xs bg-primary/10 hover:bg-primary/20 text-primary px-3 py-1.5 rounded-full transition-colors disabled:opacity-50"
+                  title="Start voice call with Destiny"
+                  whileTap={{ scale: 0.95 }}
                 >
-                  <Phone className="w-3 h-3" /> Call
-                </a>
+                  {callStatus === "connecting" ? (
+                    <Loader2 className="w-3 h-3 animate-spin" />
+                  ) : (
+                    <Phone className="w-3 h-3" />
+                  )}
+                  {callStatus === "connecting" ? "Connecting..." : "Call"}
+                </motion.button>
               </div>
             </div>
 
@@ -265,6 +470,14 @@ const DestinyChat = () => {
                   <p className="text-xs text-muted-foreground">
                     Type a message or tap the mic to speak. I can help you find housing, answer questions, or schedule a tour.
                   </p>
+                  <motion.button
+                    onClick={startVapiCall}
+                    disabled={callActive}
+                    className="mt-4 flex items-center gap-2 bg-primary/10 hover:bg-primary/20 text-primary text-xs px-4 py-2 rounded-full transition-colors disabled:opacity-50"
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    <Phone size={12} /> Start Voice Call
+                  </motion.button>
                 </div>
               ) : (
                 messages.map((msg, i) => (
