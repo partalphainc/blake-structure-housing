@@ -1,15 +1,10 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Mic, MicOff, Send, Phone, PhoneOff, Loader2 } from "lucide-react";
-import Vapi from "@vapi-ai/web";
+import { X, Mic, MicOff, Send, Phone, PhoneOff, Volume2, VolumeX } from "lucide-react";
 import destinyAvatar from "@/assets/destiny-avatar.png";
 
 const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/destiny-chat`;
 const ZAPIER_WEBHOOK_URL = "";
-const VAPI_ASSISTANT_ID = "a51e4ffa-4659-4cf9-a491-5f7b91739c40";
-const VAPI_PUBLIC_KEY = import.meta.env.VITE_VAPI_PUBLIC_KEY as string;
-
-type CallStatus = "idle" | "connecting" | "active" | "ended";
 
 interface ChatMessage {
   role: "user" | "assistant";
@@ -17,112 +12,51 @@ interface ChatMessage {
   timestamp: Date;
 }
 
+type VoiceStatus = "idle" | "listening" | "thinking" | "speaking";
+
+// Pick a natural-sounding female voice from the browser
+function getDestinyVoice(): SpeechSynthesisVoice | null {
+  const voices = speechSynthesis.getVoices();
+  const preferred = [
+    "Samantha", "Karen", "Victoria", "Moira", "Fiona",
+    "Google US English", "Microsoft Zira", "Microsoft Jenny",
+    "en-US-Neural2-F", "en-US-Wavenet-F",
+  ];
+  for (const name of preferred) {
+    const v = voices.find((vx) => vx.name.includes(name));
+    if (v) return v;
+  }
+  return voices.find((v) => v.lang.startsWith("en") && v.name.toLowerCase().includes("female")) ?? voices[0] ?? null;
+}
+
 const DestinyChat = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [textInput, setTextInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [isListening, setIsListening] = useState(false);
-  const [callStatus, setCallStatus] = useState<CallStatus>("idle");
+
+  // Voice call state
+  const [isVoiceMode, setIsVoiceMode] = useState(false);
+  const [voiceStatus, setVoiceStatus] = useState<VoiceStatus>("idle");
   const [isMuted, setIsMuted] = useState(false);
-  const [isAssistantSpeaking, setIsAssistantSpeaking] = useState(false);
+  const [voiceTranscript, setVoiceTranscript] = useState("");
+
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const recognitionRef = useRef<any>(null);
-  const vapiRef = useRef<Vapi | null>(null);
+  const voiceLoopRef = useRef(true); // controls auto-listen loop
+  const messagesRef = useRef<ChatMessage[]>([]);
 
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
+  // Keep ref in sync with state for use inside async callbacks
+  useEffect(() => { messagesRef.current = messages; }, [messages]);
 
-  useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
+  const scrollToBottom = () => messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  useEffect(() => { scrollToBottom(); }, [messages]);
 
-  // Initialize VAPI instance
-  const getVapi = useCallback(() => {
-    if (!vapiRef.current && VAPI_PUBLIC_KEY && VAPI_PUBLIC_KEY !== "YOUR_VAPI_PUBLIC_KEY_HERE") {
-      const vapi = new Vapi(VAPI_PUBLIC_KEY);
-
-      vapi.on("call-start", () => {
-        setCallStatus("active");
-      });
-
-      vapi.on("call-end", () => {
-        setCallStatus("ended");
-        setIsMuted(false);
-        setIsAssistantSpeaking(false);
-        setTimeout(() => setCallStatus("idle"), 2000);
-      });
-
-      vapi.on("speech-start", () => {
-        setIsAssistantSpeaking(true);
-      });
-
-      vapi.on("speech-end", () => {
-        setIsAssistantSpeaking(false);
-      });
-
-      vapi.on("error", (err: any) => {
-        console.error("VAPI error:", err);
-        setCallStatus("idle");
-        setIsMuted(false);
-        setIsAssistantSpeaking(false);
-      });
-
-      vapiRef.current = vapi;
-    }
-    return vapiRef.current;
-  }, []);
-
-  // Cleanup on unmount
-  useEffect(() => {
-    return () => {
-      if (vapiRef.current) {
-        vapiRef.current.stop();
-      }
-    };
-  }, []);
-
-  const startVapiCall = useCallback(async () => {
-    const vapi = getVapi();
-    if (!vapi) {
-      console.error("VAPI not initialized — check VITE_VAPI_PUBLIC_KEY in .env");
-      alert("Voice call is not configured yet. Please call us directly at (636) 206-6037.");
-      return;
-    }
-    if (callStatus !== "idle") return;
-
-    setCallStatus("connecting");
-    try {
-      await vapi.start(VAPI_ASSISTANT_ID);
-    } catch (err) {
-      console.error("Failed to start VAPI call:", err);
-      setCallStatus("idle");
-      alert("Could not connect the call. Please try again or call (636) 206-6037.");
-    }
-  }, [callStatus, getVapi]);
-
-  const endVapiCall = useCallback(() => {
-    if (vapiRef.current) {
-      vapiRef.current.stop();
-    }
-    setCallStatus("idle");
-    setIsMuted(false);
-    setIsAssistantSpeaking(false);
-  }, []);
-
-  const toggleMute = useCallback(() => {
-    if (vapiRef.current) {
-      const newMuted = !isMuted;
-      vapiRef.current.setMuted(newMuted);
-      setIsMuted(newMuted);
-    }
-  }, [isMuted]);
+  // ─── Text Chat ───────────────────────────────────────────────────────────────
 
   const sendToZapier = useCallback(async (chatMessages: ChatMessage[]) => {
     if (!ZAPIER_WEBHOOK_URL) return;
     try {
-      const summary = chatMessages.map(m => `${m.role}: ${m.content}`).join("\n");
       await fetch(ZAPIER_WEBHOOK_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -130,7 +64,7 @@ const DestinyChat = () => {
         body: JSON.stringify({
           timestamp: new Date().toISOString(),
           triggered_from: window.location.origin,
-          summary,
+          summary: chatMessages.map((m) => `${m.role}: ${m.content}`).join("\n"),
           message_count: chatMessages.length,
         }),
       });
@@ -139,60 +73,8 @@ const DestinyChat = () => {
     }
   }, []);
 
-  // Event listeners from HeroSection buttons
-  useEffect(() => {
-    const handleOpenChat = () => setIsOpen(true);
-    const handleStartCall = () => {
-      // If call is idle, start VAPI voice call directly
-      startVapiCall();
-    };
-
-    window.addEventListener("openDestinyChat", handleOpenChat);
-    window.addEventListener("startDestinyCall", handleStartCall);
-    return () => {
-      window.removeEventListener("openDestinyChat", handleOpenChat);
-      window.removeEventListener("startDestinyCall", handleStartCall);
-    };
-  }, [startVapiCall]);
-
-  // Speech-to-text using Web Speech API
-  const toggleListening = () => {
-    if (isListening) {
-      recognitionRef.current?.stop();
-      setIsListening(false);
-      return;
-    }
-
-    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
-    if (!SpeechRecognition) {
-      alert("Speech recognition is not supported in this browser.");
-      return;
-    }
-
-    const recognition = new SpeechRecognition();
-    recognition.continuous = false;
-    recognition.interimResults = true;
-    recognition.lang = "en-US";
-
-    recognition.onresult = (event: any) => {
-      let transcript = "";
-      for (let i = 0; i < event.results.length; i++) {
-        transcript += event.results[i][0].transcript;
-      }
-      setTextInput(transcript);
-    };
-
-    recognition.onend = () => setIsListening(false);
-    recognition.onerror = () => setIsListening(false);
-
-    recognitionRef.current = recognition;
-    recognition.start();
-    setIsListening(true);
-  };
-
-  const streamAIResponse = async (allMessages: ChatMessage[]) => {
-    const apiMessages = allMessages.map(m => ({ role: m.role, content: m.content }));
-
+  const fetchDestinyResponse = useCallback(async (allMessages: ChatMessage[]): Promise<string> => {
+    const apiMessages = allMessages.map((m) => ({ role: m.role, content: m.content }));
     const resp = await fetch(CHAT_URL, {
       method: "POST",
       headers: {
@@ -201,169 +83,379 @@ const DestinyChat = () => {
       },
       body: JSON.stringify({ messages: apiMessages }),
     });
-
-    if (!resp.ok || !resp.body) throw new Error("Failed to start stream");
+    if (!resp.ok || !resp.body) throw new Error("Failed to connect to Destiny");
 
     const reader = resp.body.getReader();
     const decoder = new TextDecoder();
     let textBuffer = "";
-    let assistantSoFar = "";
-    let streamDone = false;
+    let assistantText = "";
+    let done = false;
 
-    while (!streamDone) {
-      const { done, value } = await reader.read();
-      if (done) break;
+    while (!done) {
+      const { done: streamDone, value } = await reader.read();
+      if (streamDone) break;
       textBuffer += decoder.decode(value, { stream: true });
 
       let newlineIndex: number;
       while ((newlineIndex = textBuffer.indexOf("\n")) !== -1) {
         let line = textBuffer.slice(0, newlineIndex);
         textBuffer = textBuffer.slice(newlineIndex + 1);
-
         if (line.endsWith("\r")) line = line.slice(0, -1);
         if (line.startsWith(":") || line.trim() === "") continue;
         if (!line.startsWith("data: ")) continue;
-
         const jsonStr = line.slice(6).trim();
-        if (jsonStr === "[DONE]") { streamDone = true; break; }
-
+        if (jsonStr === "[DONE]") { done = true; break; }
         try {
           const parsed = JSON.parse(jsonStr);
-          const content = parsed.choices?.[0]?.delta?.content as string | undefined;
-          if (content) {
-            assistantSoFar += content;
-            setMessages(prev => {
-              const last = prev[prev.length - 1];
-              if (last?.role === "assistant" && last === prev[prev.length - 1]) {
-                return prev.map((m, i) => i === prev.length - 1 ? { ...m, content: assistantSoFar } : m);
-              }
-              return [...prev, { role: "assistant", content: assistantSoFar, timestamp: new Date() }];
-            });
-          }
-        } catch {
-          textBuffer = line + "\n" + textBuffer;
-          break;
-        }
+          const chunk = parsed.choices?.[0]?.delta?.content as string | undefined;
+          if (chunk) assistantText += chunk;
+        } catch { /* skip */ }
       }
     }
+    return assistantText;
+  }, []);
 
-    return assistantSoFar;
-  };
-
-  const handleSendText = async () => {
-    const trimmed = textInput.trim();
+  const handleSendText = async (overrideInput?: string) => {
+    const trimmed = (overrideInput ?? textInput).trim();
     if (!trimmed || isLoading) return;
 
     const userMsg: ChatMessage = { role: "user", content: trimmed, timestamp: new Date() };
-    const updatedMessages = [...messages, userMsg];
-    setMessages(updatedMessages);
+    const updated = [...messagesRef.current, userMsg];
+    setMessages(updated);
     setTextInput("");
     setIsLoading(true);
 
+    let assistantText = "";
     try {
-      await streamAIResponse(updatedMessages);
-      setMessages(prev => {
-        sendToZapier(prev);
-        return prev;
+      // Add placeholder assistant message for streaming display
+      const placeholder: ChatMessage = { role: "assistant", content: "", timestamp: new Date() };
+      setMessages([...updated, placeholder]);
+
+      assistantText = await fetchDestinyResponse(updated);
+
+      const finalMsg: ChatMessage = { role: "assistant", content: assistantText, timestamp: new Date() };
+      setMessages((prev) => {
+        const next = [...prev.slice(0, -1), finalMsg];
+        sendToZapier(next);
+        return next;
       });
-    } catch (err) {
-      console.error("AI response error:", err);
-      setMessages(prev => [...prev, {
+    } catch {
+      const errMsg: ChatMessage = {
         role: "assistant",
-        content: "I'm having trouble connecting right now. Please try again or call us at (636) 206-6037.",
+        content: "I'm having trouble connecting right now. Please call us at (636) 206-6037.",
         timestamp: new Date(),
-      }]);
+      };
+      setMessages((prev) => [...prev.slice(0, -1), errMsg]);
+      assistantText = errMsg.content;
     } finally {
       setIsLoading(false);
     }
+    return assistantText;
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault();
-      handleSendText();
-    }
+    if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); handleSendText(); }
   };
 
-  const callActive = callStatus === "active" || callStatus === "connecting";
+  // ─── Voice Mode (Browser-Native, No API Key) ─────────────────────────────────
+
+  const speak = useCallback((text: string): Promise<void> => {
+    return new Promise((resolve) => {
+      speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.rate = 0.95;
+      utterance.pitch = 1.05;
+      utterance.volume = 1;
+      // Wait for voices to load then assign
+      const assignVoice = () => {
+        const v = getDestinyVoice();
+        if (v) utterance.voice = v;
+      };
+      if (speechSynthesis.getVoices().length > 0) {
+        assignVoice();
+      } else {
+        speechSynthesis.onvoiceschanged = assignVoice;
+      }
+      utterance.onend = () => resolve();
+      utterance.onerror = () => resolve();
+      setVoiceStatus("speaking");
+      speechSynthesis.speak(utterance);
+    });
+  }, []);
+
+  const listenOnce = useCallback((): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const SpeechRecognition =
+        (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+      if (!SpeechRecognition) { reject(new Error("speech-not-supported")); return; }
+
+      const recognition = new SpeechRecognition();
+      recognition.lang = "en-US";
+      recognition.continuous = false;
+      recognition.interimResults = true;
+      recognitionRef.current = recognition;
+
+      let finalTranscript = "";
+
+      recognition.onresult = (event: any) => {
+        let t = "";
+        for (let i = 0; i < event.results.length; i++) {
+          t += event.results[i][0].transcript;
+        }
+        finalTranscript = t;
+        setVoiceTranscript(t);
+      };
+
+      recognition.onend = () => resolve(finalTranscript);
+      recognition.onerror = (e: any) => {
+        if (e.error === "no-speech") resolve("");
+        else reject(e);
+      };
+
+      setVoiceStatus("listening");
+      setVoiceTranscript("");
+      recognition.start();
+    });
+  }, []);
+
+  const runVoiceLoop = useCallback(async () => {
+    // Greet on first call
+    const greetings = [
+      "Hi there, I'm Destiny, your AI leasing representative at C. Blake Enterprise. How can I help you today?",
+    ];
+    await speak(greetings[0]);
+
+    while (voiceLoopRef.current) {
+      let transcript = "";
+      try {
+        transcript = await listenOnce();
+      } catch (err: any) {
+        if (err.message === "speech-not-supported") {
+          await speak("Voice input is not supported in this browser. Please use the chat instead.");
+          setIsVoiceMode(false);
+          return;
+        }
+        break;
+      }
+
+      if (!voiceLoopRef.current) break;
+      if (!transcript.trim()) continue; // silence — listen again
+
+      setVoiceStatus("thinking");
+
+      const userMsg: ChatMessage = { role: "user", content: transcript, timestamp: new Date() };
+      const updated = [...messagesRef.current, userMsg];
+      setMessages(updated);
+      setVoiceTranscript("");
+
+      let response = "";
+      try {
+        response = await fetchDestinyResponse(updated);
+        const finalMsg: ChatMessage = { role: "assistant", content: response, timestamp: new Date() };
+        setMessages([...updated, finalMsg]);
+        sendToZapier([...updated, finalMsg]);
+      } catch {
+        response = "I'm having a bit of trouble right now. Is there anything else I can help with?";
+        setMessages([...updated, { role: "assistant", content: response, timestamp: new Date() }]);
+      }
+
+      if (!voiceLoopRef.current) break;
+      await speak(response);
+    }
+
+    setVoiceStatus("idle");
+  }, [speak, listenOnce, fetchDestinyResponse, sendToZapier]);
+
+  const startVoiceCall = useCallback(() => {
+    voiceLoopRef.current = true;
+    setIsVoiceMode(true);
+    setIsMuted(false);
+    setVoiceTranscript("");
+    setVoiceStatus("thinking");
+    runVoiceLoop();
+  }, [runVoiceLoop]);
+
+  const endVoiceCall = useCallback(() => {
+    voiceLoopRef.current = false;
+    recognitionRef.current?.stop();
+    speechSynthesis.cancel();
+    setIsVoiceMode(false);
+    setVoiceStatus("idle");
+    setVoiceTranscript("");
+    setIsMuted(false);
+  }, []);
+
+  const toggleMute = useCallback(() => {
+    const next = !isMuted;
+    setIsMuted(next);
+    if (next) {
+      recognitionRef.current?.stop();
+      speechSynthesis.cancel();
+      setVoiceStatus("idle");
+    } else {
+      // Resume listening
+      if (voiceLoopRef.current) setVoiceStatus("listening");
+    }
+  }, [isMuted]);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      voiceLoopRef.current = false;
+      recognitionRef.current?.stop();
+      speechSynthesis.cancel();
+    };
+  }, []);
+
+  // Mic toggle for text chat panel
+  const toggleTextMic = () => {
+    if (recognitionRef.current && voiceStatus === "listening") {
+      recognitionRef.current.stop();
+      return;
+    }
+    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    if (!SpeechRecognition) { alert("Speech recognition is not supported in this browser."); return; }
+    const recognition = new SpeechRecognition();
+    recognition.continuous = false;
+    recognition.interimResults = true;
+    recognition.lang = "en-US";
+    recognition.onresult = (event: any) => {
+      let t = "";
+      for (let i = 0; i < event.results.length; i++) t += event.results[i][0].transcript;
+      setTextInput(t);
+    };
+    recognition.onend = () => setVoiceStatus("idle");
+    recognition.onerror = () => setVoiceStatus("idle");
+    recognitionRef.current = recognition;
+    recognition.start();
+    setVoiceStatus("listening");
+  };
+
+  // Listen for events from HeroSection buttons
+  useEffect(() => {
+    const handleOpenChat = () => setIsOpen(true);
+    const handleStartCall = () => startVoiceCall();
+    window.addEventListener("openDestinyChat", handleOpenChat);
+    window.addEventListener("startDestinyCall", handleStartCall);
+    return () => {
+      window.removeEventListener("openDestinyChat", handleOpenChat);
+      window.removeEventListener("startDestinyCall", handleStartCall);
+    };
+  }, [startVoiceCall]);
+
+  // ─── Render ──────────────────────────────────────────────────────────────────
+
+  const voiceStatusLabel = {
+    idle: "Call ended",
+    listening: isMuted ? "Muted" : "Listening…",
+    thinking: "Destiny is thinking…",
+    speaking: "Destiny is speaking…",
+  }[voiceStatus];
 
   return (
     <>
-      {/* VAPI Voice Call Overlay */}
+      {/* ── Voice Call Overlay ── */}
       <AnimatePresence>
-        {callActive && (
+        {isVoiceMode && (
           <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.9 }}
-            className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 backdrop-blur-sm"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100] flex items-center justify-center bg-black/75 backdrop-blur-sm"
           >
             <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
               className="relative bg-card border border-border rounded-3xl p-8 w-80 text-center shadow-2xl"
               style={{ boxShadow: "0 0 60px hsl(330 85% 55% / 0.3)" }}
             >
-              {/* Pulsing avatar */}
+              {/* Avatar with pulse */}
               <div className="relative mx-auto w-28 h-28 mb-6">
-                {callStatus === "active" && isAssistantSpeaking && (
+                {voiceStatus === "speaking" && (
                   <>
                     <motion.div
                       className="absolute inset-0 rounded-full border-2 border-primary/50"
-                      animate={{ scale: [1, 1.4, 1.7], opacity: [0.7, 0.3, 0] }}
-                      transition={{ duration: 1.5, repeat: Infinity, ease: "easeOut" }}
+                      animate={{ scale: [1, 1.5, 1.8], opacity: [0.7, 0.3, 0] }}
+                      transition={{ duration: 1.4, repeat: Infinity, ease: "easeOut" }}
                     />
                     <motion.div
                       className="absolute inset-0 rounded-full border-2 border-accent-magenta/40"
-                      animate={{ scale: [1, 1.2, 1.5], opacity: [0.5, 0.2, 0] }}
-                      transition={{ duration: 1.5, repeat: Infinity, ease: "easeOut", delay: 0.3 }}
+                      animate={{ scale: [1, 1.25, 1.5], opacity: [0.5, 0.2, 0] }}
+                      transition={{ duration: 1.4, repeat: Infinity, ease: "easeOut", delay: 0.35 }}
                     />
                   </>
+                )}
+                {voiceStatus === "listening" && !isMuted && (
+                  <motion.div
+                    className="absolute inset-0 rounded-full border-2 border-green-400/50"
+                    animate={{ scale: [1, 1.3, 1], opacity: [0.8, 0.3, 0.8] }}
+                    transition={{ duration: 1.2, repeat: Infinity }}
+                  />
                 )}
                 <div className="w-28 h-28 rounded-full overflow-hidden border-2 border-primary/50">
                   <img src={destinyAvatar} alt="Destiny" className="w-full h-full object-cover" />
                 </div>
               </div>
 
-              <p className="font-serif font-bold text-lg mb-1">Destiny</p>
-              <p className="text-sm text-muted-foreground mb-2">AI Leasing Representative</p>
+              <p className="font-serif font-bold text-lg mb-0.5">Destiny</p>
+              <p className="text-xs text-muted-foreground mb-3">AI Leasing Representative</p>
 
-              <div className="flex items-center justify-center gap-2 mb-8">
-                {callStatus === "connecting" ? (
-                  <>
-                    <Loader2 size={14} className="animate-spin text-primary" />
-                    <span className="text-sm text-primary">Connecting...</span>
-                  </>
-                ) : (
+              {/* Status */}
+              <div className="flex items-center justify-center gap-2 mb-2 h-6">
+                {voiceStatus === "thinking" && (
+                  <motion.span
+                    className="text-sm text-primary"
+                    animate={{ opacity: [1, 0.4, 1] }}
+                    transition={{ duration: 0.8, repeat: Infinity }}
+                  >
+                    {voiceStatusLabel}
+                  </motion.span>
+                )}
+                {voiceStatus === "listening" && (
                   <>
                     <motion.span
-                      className="inline-block w-2 h-2 rounded-full bg-green-500"
-                      animate={{ opacity: [1, 0.3, 1] }}
-                      transition={{ duration: 1.2, repeat: Infinity }}
+                      className={`inline-block w-2 h-2 rounded-full ${isMuted ? "bg-muted-foreground" : "bg-green-400"}`}
+                      animate={{ opacity: isMuted ? 1 : [1, 0.3, 1] }}
+                      transition={{ duration: 1, repeat: Infinity }}
                     />
-                    <span className="text-sm text-green-400">
-                      {isAssistantSpeaking ? "Destiny is speaking..." : "Listening..."}
-                    </span>
+                    <span className="text-sm text-green-400">{voiceStatusLabel}</span>
+                  </>
+                )}
+                {voiceStatus === "speaking" && (
+                  <>
+                    <motion.span
+                      className="inline-block w-2 h-2 rounded-full bg-primary"
+                      animate={{ opacity: [1, 0.3, 1] }}
+                      transition={{ duration: 0.6, repeat: Infinity }}
+                    />
+                    <span className="text-sm text-primary">{voiceStatusLabel}</span>
                   </>
                 )}
               </div>
 
-              {/* Call controls */}
-              <div className="flex items-center justify-center gap-6">
+              {/* Live transcript */}
+              {voiceTranscript && (
+                <p className="text-xs text-muted-foreground italic mb-3 px-2">"{voiceTranscript}"</p>
+              )}
+
+              {/* Controls */}
+              <div className="flex items-center justify-center gap-6 mt-4">
                 <motion.button
                   onClick={toggleMute}
-                  disabled={callStatus !== "active"}
                   className={`w-14 h-14 rounded-full flex items-center justify-center transition-colors ${
                     isMuted
-                      ? "bg-destructive/20 text-destructive border border-destructive/50"
+                      ? "bg-destructive/20 text-destructive border border-destructive/40"
                       : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
-                  } disabled:opacity-40`}
+                  }`}
                   whileTap={{ scale: 0.92 }}
                   title={isMuted ? "Unmute" : "Mute"}
                 >
-                  {isMuted ? <MicOff size={22} /> : <Mic size={22} />}
+                  {isMuted ? <VolumeX size={22} /> : <MicOff size={22} />}
                 </motion.button>
 
                 <motion.button
-                  onClick={endVapiCall}
+                  onClick={endVoiceCall}
                   className="w-16 h-16 rounded-full bg-destructive text-destructive-foreground flex items-center justify-center shadow-lg"
                   whileTap={{ scale: 0.92 }}
                   title="End call"
@@ -371,26 +463,16 @@ const DestinyChat = () => {
                   <PhoneOff size={24} />
                 </motion.button>
               </div>
+
+              <p className="text-xs text-muted-foreground mt-5">
+                Speak naturally — Destiny will respond with voice
+              </p>
             </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* Call ended toast */}
-      <AnimatePresence>
-        {callStatus === "ended" && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 20 }}
-            className="fixed bottom-28 right-6 z-50 bg-card border border-border rounded-xl px-4 py-3 text-sm shadow-lg"
-          >
-            Call ended. Thanks for speaking with Destiny!
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* Floating button with ring */}
+      {/* ── Floating Chat Button ── */}
       <div className="fixed bottom-6 right-6 z-50">
         <motion.div
           className="absolute inset-0 rounded-full border-2 border-primary/40"
@@ -422,7 +504,7 @@ const DestinyChat = () => {
         </motion.button>
       </div>
 
-      {/* Chat panel */}
+      {/* ── Chat Panel ── */}
       <AnimatePresence>
         {isOpen && (
           <motion.div
@@ -443,18 +525,12 @@ const DestinyChat = () => {
                   <p className="text-xs text-muted-foreground">Powered by PART Alpha Incorporation</p>
                 </div>
                 <motion.button
-                  onClick={startVapiCall}
-                  disabled={callActive}
-                  className="flex items-center gap-1.5 text-xs bg-primary/10 hover:bg-primary/20 text-primary px-3 py-1.5 rounded-full transition-colors disabled:opacity-50"
+                  onClick={startVoiceCall}
+                  className="flex items-center gap-1.5 text-xs bg-primary/10 hover:bg-primary/20 text-primary px-3 py-1.5 rounded-full transition-colors"
                   title="Start voice call with Destiny"
                   whileTap={{ scale: 0.95 }}
                 >
-                  {callStatus === "connecting" ? (
-                    <Loader2 className="w-3 h-3 animate-spin" />
-                  ) : (
-                    <Phone className="w-3 h-3" />
-                  )}
-                  {callStatus === "connecting" ? "Connecting..." : "Call"}
+                  <Phone className="w-3 h-3" /> Call
                 </motion.button>
               </div>
             </div>
@@ -467,16 +543,15 @@ const DestinyChat = () => {
                     <img src={destinyAvatar} alt="Destiny" className="w-full h-full object-cover" />
                   </div>
                   <p className="text-sm text-foreground font-medium mb-2">Hi! I'm Destiny 👋</p>
-                  <p className="text-xs text-muted-foreground">
-                    Type a message or tap the mic to speak. I can help you find housing, answer questions, or schedule a tour.
+                  <p className="text-xs text-muted-foreground mb-4">
+                    Type a message or start a voice call. I can help you find housing, answer questions, or schedule a tour.
                   </p>
                   <motion.button
-                    onClick={startVapiCall}
-                    disabled={callActive}
-                    className="mt-4 flex items-center gap-2 bg-primary/10 hover:bg-primary/20 text-primary text-xs px-4 py-2 rounded-full transition-colors disabled:opacity-50"
+                    onClick={startVoiceCall}
+                    className="flex items-center gap-2 bg-primary/10 hover:bg-primary/20 text-primary text-xs px-4 py-2 rounded-full transition-colors"
                     whileTap={{ scale: 0.95 }}
                   >
-                    <Phone size={12} /> Start Voice Call
+                    <Volume2 size={12} /> Start Voice Call
                   </motion.button>
                 </div>
               ) : (
@@ -487,47 +562,40 @@ const DestinyChat = () => {
                         ? "bg-primary text-primary-foreground rounded-br-sm"
                         : "bg-secondary text-secondary-foreground rounded-bl-sm"
                     }`}>
-                      {msg.content}
+                      {msg.content || <span className="animate-pulse opacity-60">…</span>}
                     </div>
                   </div>
                 ))
               )}
-              {isLoading && messages[messages.length - 1]?.role !== "assistant" && (
-                <div className="flex justify-start">
-                  <div className="bg-secondary text-secondary-foreground px-3 py-2 rounded-xl rounded-bl-sm text-sm">
-                    <span className="animate-pulse">Destiny is typing...</span>
-                  </div>
-                </div>
-              )}
               <div ref={messagesEndRef} />
             </div>
 
-            {/* Input area */}
+            {/* Input */}
             <div className="p-3 border-t border-border shrink-0">
               <div className="flex items-center gap-2">
                 <motion.button
-                  onClick={toggleListening}
+                  onClick={toggleTextMic}
                   className={`w-9 h-9 rounded-full flex items-center justify-center shrink-0 transition-colors ${
-                    isListening
+                    voiceStatus === "listening" && !isVoiceMode
                       ? "bg-destructive text-destructive-foreground animate-pulse"
                       : "bg-primary/10 text-primary hover:bg-primary/20"
                   }`}
                   whileTap={{ scale: 0.9 }}
-                  aria-label={isListening ? "Stop listening" : "Speak your message"}
+                  aria-label={voiceStatus === "listening" ? "Stop listening" : "Speak your message"}
                 >
-                  {isListening ? <MicOff size={16} /> : <Mic size={16} />}
+                  {voiceStatus === "listening" && !isVoiceMode ? <MicOff size={16} /> : <Mic size={16} />}
                 </motion.button>
                 <input
                   type="text"
                   value={textInput}
                   onChange={(e) => setTextInput(e.target.value)}
                   onKeyDown={handleKeyDown}
-                  placeholder={isListening ? "Listening..." : "Type a message..."}
+                  placeholder={voiceStatus === "listening" && !isVoiceMode ? "Listening…" : "Type a message…"}
                   className="flex-1 rounded-full border border-border bg-background px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
                   disabled={isLoading}
                 />
                 <motion.button
-                  onClick={handleSendText}
+                  onClick={() => handleSendText()}
                   disabled={!textInput.trim() || isLoading}
                   className="w-9 h-9 rounded-full bg-primary text-primary-foreground flex items-center justify-center shrink-0 disabled:opacity-40"
                   whileTap={{ scale: 0.9 }}
@@ -535,12 +603,6 @@ const DestinyChat = () => {
                   <Send size={16} />
                 </motion.button>
               </div>
-              {isListening && (
-                <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-xs text-center text-muted-foreground mt-2">
-                  <span className="inline-block w-2 h-2 rounded-full bg-destructive animate-pulse mr-1" />
-                  Listening — speak now, then send
-                </motion.p>
-              )}
             </div>
           </motion.div>
         )}

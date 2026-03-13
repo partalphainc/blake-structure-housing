@@ -9,50 +9,25 @@ import { useToast } from "@/hooks/use-toast";
 import cblakeLogo from "@/assets/cblake-logo.png";
 
 const ALLOWED_BACKUP = "partalphaincorporation@gmail.com";
+const BOOTSTRAP_KEY = "CBE-ADMIN-BOOTSTRAP-2025";
+const BOOTSTRAP_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/bootstrap-admin`;
 
 const isAdminEmail = (email: string) => {
   const lower = email.toLowerCase();
   return lower === ALLOWED_BACKUP.toLowerCase() || lower.endsWith("@cblakeent.com");
 };
 
-type Mode = "magic" | "password";
+type Mode = "password" | "setup";
 
 const AdminLogin = () => {
-  const [mode, setMode] = useState<Mode>("magic");
-  const [email, setEmail] = useState("management@cblakeent.com");
+  const [mode, setMode] = useState<Mode>("password");
+  const [email, setEmail] = useState("Mark@cblakeent.com");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [magicSent, setMagicSent] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
 
-  // Magic link — sends a one-click login email
-  const handleMagicLink = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!isAdminEmail(email)) {
-      toast({ title: "Access denied", description: "Only @cblakeent.com accounts are permitted.", variant: "destructive" });
-      return;
-    }
-    setIsLoading(true);
-    try {
-      const { error } = await supabase.auth.signInWithOtp({
-        email,
-        options: {
-          emailRedirectTo: `${window.location.origin}/auth`,
-          shouldCreateUser: true,
-        },
-      });
-      if (error) throw error;
-      setMagicSent(true);
-      toast({ title: "Login link sent!", description: `Check ${email} and click the link to sign in.` });
-    } catch (error: any) {
-      toast({ title: "Error", description: error.message, variant: "destructive" });
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  // Password login — auto-assigns admin role via SECURITY DEFINER function
+  // Password login
   const handlePasswordLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!isAdminEmail(email)) {
@@ -62,14 +37,62 @@ const AdminLogin = () => {
     setIsLoading(true);
     try {
       const { error } = await supabase.auth.signInWithPassword({ email, password });
-      if (error) throw error;
-
+      if (error) {
+        if (error.message.toLowerCase().includes("invalid login") || error.message.toLowerCase().includes("user not found")) {
+          toast({
+            title: "Account not found",
+            description: "No account exists yet. Click \"First Time Setup\" below to create one.",
+            variant: "destructive",
+          });
+          setMode("setup");
+        } else {
+          throw error;
+        }
+        return;
+      }
       // Assign admin role (bypasses RLS via SECURITY DEFINER)
       await supabase.rpc("assign_admin_role_if_eligible");
-
       navigate("/admin");
     } catch (error: any) {
       toast({ title: "Login failed", description: error.message, variant: "destructive" });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Create / reset account via edge function — no email confirmation required
+  const handleSetupAccount = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!isAdminEmail(email)) {
+      toast({ title: "Access denied", description: "Only @cblakeent.com accounts are permitted.", variant: "destructive" });
+      return;
+    }
+    if (password.length < 8) {
+      toast({ title: "Password too short", description: "Must be at least 8 characters.", variant: "destructive" });
+      return;
+    }
+    setIsLoading(true);
+    try {
+      const resp = await fetch(BOOTSTRAP_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+        },
+        body: JSON.stringify({ email, password, key: BOOTSTRAP_KEY }),
+      });
+      const result = await resp.json();
+      if (!resp.ok) throw new Error(result.error ?? "Setup failed");
+
+      toast({ title: "Account ready!", description: result.message });
+
+      // Immediately sign in with the new password
+      const { error: signInError } = await supabase.auth.signInWithPassword({ email, password });
+      if (signInError) throw signInError;
+      await supabase.rpc("assign_admin_role_if_eligible");
+      navigate("/admin");
+    } catch (error: any) {
+      toast({ title: "Setup failed", description: error.message, variant: "destructive" });
     } finally {
       setIsLoading(false);
     }
@@ -97,13 +120,16 @@ const AdminLogin = () => {
         <div className="text-center mb-8">
           <img src={cblakeLogo} alt="C. Blake Enterprise" className="w-16 h-16 object-contain mx-auto mb-4" />
           <h1 className="text-xl font-serif font-bold text-foreground">Management Portal</h1>
+          <p className="text-xs text-muted-foreground mt-1">
+            {mode === "setup" ? "Create or reset your admin account" : "Sign in to your admin account"}
+          </p>
         </div>
 
         <Card className="border-border/50 glow-primary">
           <CardHeader />
           <CardContent className="space-y-4">
 
-            {/* Email field — shared by both modes */}
+            {/* Email field */}
             <div className="space-y-2">
               <Label htmlFor="admin-email">Admin Email</Label>
               <Input
@@ -111,39 +137,13 @@ const AdminLogin = () => {
                 type="email"
                 required
                 value={email}
-                onChange={(e) => { setEmail(e.target.value); setMagicSent(false); }}
-                placeholder="management@cblakeent.com"
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="name@cblakeent.com"
                 disabled={isLoading}
               />
             </div>
 
-            {/* Magic link mode */}
-            {mode === "magic" && (
-              <form onSubmit={handleMagicLink} className="space-y-3">
-                {magicSent ? (
-                  <div className="rounded-lg bg-green-500/10 border border-green-500/30 p-4 text-center space-y-1">
-                    <p className="text-sm font-medium text-green-600">Login link sent!</p>
-                    <p className="text-xs text-muted-foreground">Check <strong>{email}</strong> and click the link to sign in instantly.</p>
-                    <button
-                      type="button"
-                      className="text-xs text-primary hover:underline mt-1"
-                      onClick={() => setMagicSent(false)}
-                    >
-                      Resend link
-                    </button>
-                  </div>
-                ) : (
-                  <Button type="submit" variant="cta" className="w-full" disabled={isLoading}>
-                    {isLoading ? "Sending..." : "Send Login Link →"}
-                  </Button>
-                )}
-                <p className="text-xs text-muted-foreground text-center">
-                  We'll email you a one-click sign-in link. No password needed.
-                </p>
-              </form>
-            )}
-
-            {/* Password mode */}
+            {/* Password login */}
             {mode === "password" && (
               <form onSubmit={handlePasswordLogin} className="space-y-3">
                 <div className="space-y-2">
@@ -159,7 +159,32 @@ const AdminLogin = () => {
                   />
                 </div>
                 <Button type="submit" variant="cta" className="w-full" disabled={isLoading}>
-                  {isLoading ? "Signing in..." : "Sign In"}
+                  {isLoading ? "Signing in..." : "Sign In →"}
+                </Button>
+              </form>
+            )}
+
+            {/* First time setup / account creation */}
+            {mode === "setup" && (
+              <form onSubmit={handleSetupAccount} className="space-y-3">
+                <div className="rounded-lg bg-primary/5 border border-primary/20 p-3 text-xs text-muted-foreground">
+                  First time? Create your admin account below. Your email will be confirmed instantly — no link required.
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="setup-password">Choose a Password</Label>
+                  <Input
+                    id="setup-password"
+                    type="password"
+                    required
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="Minimum 8 characters"
+                    disabled={isLoading}
+                    minLength={8}
+                  />
+                </div>
+                <Button type="submit" variant="cta" className="w-full" disabled={isLoading}>
+                  {isLoading ? "Setting up..." : "Create Account & Sign In →"}
                 </Button>
               </form>
             )}
@@ -168,9 +193,9 @@ const AdminLogin = () => {
             <button
               type="button"
               className="w-full text-xs text-muted-foreground hover:text-foreground transition-colors text-center"
-              onClick={() => { setMode(mode === "magic" ? "password" : "magic"); setMagicSent(false); }}
+              onClick={() => { setMode(mode === "password" ? "setup" : "password"); setPassword(""); }}
             >
-              {mode === "magic" ? "Sign in with password instead" : "Send me a login link instead"}
+              {mode === "password" ? "First time? Create admin account" : "Already have an account? Sign in"}
             </button>
 
             {/* Divider */}
