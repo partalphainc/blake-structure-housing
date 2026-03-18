@@ -20,11 +20,17 @@ import ResidentReview from "./pages/resident/ResidentReview";
 import InvestorDashboard from "./pages/investor/InvestorDashboard";
 import InvestorProperties from "./pages/investor/InvestorProperties";
 import InvestorFinancials from "./pages/investor/InvestorFinancials";
+import InvestorPayouts from "./pages/investor/InvestorPayouts";
 import InvestorTenants from "./pages/investor/InvestorTenants";
+import InvestorMaintenance from "./pages/investor/InvestorMaintenance";
 import InvestorDocuments from "./pages/investor/InvestorDocuments";
 import InvestorInspections from "./pages/investor/InvestorInspections";
+import InvestorReports from "./pages/investor/InvestorReports";
 import InvestorMessages from "./pages/investor/InvestorMessages";
 import InvestorReview from "./pages/investor/InvestorReview";
+import InvestorAIAssistant from "./pages/investor/InvestorAIAssistant";
+import InvestorSettings from "./pages/investor/InvestorSettings";
+import InvestorSupport from "./pages/investor/InvestorSupport";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminProperties from "./pages/admin/AdminProperties";
 import AdminUnits from "./pages/admin/AdminUnits";
@@ -77,11 +83,17 @@ const App = () => (
           <Route path="/investor" element={<InvestorDashboard />} />
           <Route path="/investor/properties" element={<InvestorProperties />} />
           <Route path="/investor/financials" element={<InvestorFinancials />} />
+          <Route path="/investor/payouts" element={<InvestorPayouts />} />
           <Route path="/investor/tenants" element={<InvestorTenants />} />
+          <Route path="/investor/maintenance" element={<InvestorMaintenance />} />
           <Route path="/investor/documents" element={<InvestorDocuments />} />
           <Route path="/investor/inspections" element={<InvestorInspections />} />
+          <Route path="/investor/reports" element={<InvestorReports />} />
           <Route path="/investor/messages" element={<InvestorMessages />} />
           <Route path="/investor/review" element={<InvestorReview />} />
+          <Route path="/investor/ai-assistant" element={<InvestorAIAssistant />} />
+          <Route path="/investor/settings" element={<InvestorSettings />} />
+          <Route path="/investor/support" element={<InvestorSupport />} />
 
           {/* Admin Portal */}
           <Route path="/admin" element={<AdminDashboard />} />
