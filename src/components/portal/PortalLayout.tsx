@@ -56,7 +56,7 @@ const PortalLayout = ({ children, title, navItems, onSignOut, userName, userId }
 
       <div className="flex pt-16">
         {/* Sidebar */}
-        <aside className="hidden md:flex w-56 flex-col fixed left-0 top-16 bottom-0 border-r border-border bg-card/50 p-4 gap-1">
+        <aside className="hidden md:flex w-56 flex-col fixed left-0 top-16 bottom-0 border-r border-border bg-card/50 p-4 gap-1 overflow-y-auto">
           {navItems.map((item) => (
             <Link
               key={item.href}
