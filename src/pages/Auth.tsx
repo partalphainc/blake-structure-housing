@@ -101,7 +101,7 @@ const Auth = () => {
     e.preventDefault();
     setIsLoading(true);
     try {
-      const { error } = await supabase.auth.signUp({
+      const { data, error } = await supabase.auth.signUp({
         email: signupEmail,
         password: signupPassword,
         options: {
@@ -110,10 +110,26 @@ const Auth = () => {
         },
       });
       if (error) throw error;
-      toast({
-        title: "Account created!",
-        description: "Please check your email to verify your account before logging in.",
+
+      // Assign role immediately in user_roles table
+      if (data.user) {
+        await supabase.from("user_roles").insert({ user_id: data.user.id, role: signupRole });
+      }
+
+      // Try to sign in right away (works when email confirmation is disabled)
+      const { error: signInError } = await supabase.auth.signInWithPassword({
+        email: signupEmail,
+        password: signupPassword,
       });
+
+      if (signInError) {
+        // Email confirmation still required — let user know
+        toast({
+          title: "Account created!",
+          description: "Check your email for a confirmation link, then come back to sign in.",
+        });
+      }
+      // If sign-in succeeded, onAuthStateChange will redirect automatically
     } catch (error: any) {
       toast({ title: "Signup failed", description: error.message, variant: "destructive" });
     } finally {
