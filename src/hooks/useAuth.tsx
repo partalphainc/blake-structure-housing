@@ -23,7 +23,16 @@ export function useAuth(requiredRole?: string) {
           .from("user_roles")
           .select("role")
           .eq("user_id", session.user.id);
-        const userRoles: string[] = roles?.map((r) => r.role as string) || [];
+        let userRoles: string[] = roles?.map((r) => r.role as string) || [];
+
+        // Fallback: use user_metadata role for new signups whose role isn't in DB yet
+        if (userRoles.length === 0) {
+          const metaRole = session.user.user_metadata?.role as string | undefined;
+          if (metaRole === "investor" || metaRole === "resident") {
+            userRoles = [metaRole];
+          }
+        }
+
         const matchedRole = requiredRole && userRoles.includes(requiredRole)
           ? requiredRole
           : userRoles[0] || null;

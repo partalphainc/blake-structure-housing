@@ -36,17 +36,25 @@ const Auth = () => {
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (event === "SIGNED_IN" && session?.user) {
-        await redirectByRole(session.user.id, session.user.email);
+        await redirectByRole(session.user.id, session.user.email, session.user.user_metadata);
       }
     });
 
     return () => subscription.unsubscribe();
   }, [navigate]);
 
-  const redirectByRole = async (userId: string, userEmail?: string) => {
+  const redirectByRole = async (userId: string, userEmail?: string, userMeta?: Record<string, unknown>) => {
     try {
       const { data: roles } = await supabase.from("user_roles").select("role").eq("user_id", userId);
       let userRoles = roles?.map((r) => r.role) || [];
+
+      // Fallback: use user_metadata role for brand-new signups
+      if (userRoles.length === 0) {
+        const metaRole = userMeta?.role as string | undefined;
+        if (metaRole === "investor" || metaRole === "resident") {
+          userRoles = [metaRole];
+        }
+      }
 
       // Auto-assign admin role for @cblakeent.com accounts on first sign-in
       const email = (userEmail || "").toLowerCase();
