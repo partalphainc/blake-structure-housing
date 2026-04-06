@@ -53,6 +53,7 @@ import AdminMessaging from "./pages/admin/AdminMessaging";
 import AdminReviews from "./pages/admin/AdminReviews";
 import AdminCRM from "./pages/admin/AdminCRM";
 import AdminMedia from "./pages/admin/AdminMedia";
+import Trial from "./pages/Trial";
 
 const queryClient = new QueryClient();
 
@@ -69,6 +70,7 @@ const App = () => (
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/privacy" element={<PrivacyPolicy />} />
           <Route path="/terms" element={<TermsOfService />} />
+          <Route path="/trial" element={<Trial />} />
 
           {/* Resident Portal */}
           <Route path="/resident" element={<ResidentDashboard />} />
