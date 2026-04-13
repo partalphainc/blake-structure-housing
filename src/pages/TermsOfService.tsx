@@ -13,6 +13,7 @@ const TermsOfService = () => (
         <section>
           <h2 className="text-xl font-semibold mb-2">2. Services</h2>
           <p className="text-muted-foreground">C. Blake Enterprise provides structured residential housing solutions, property management services, and related portals for residents, investors, and administrators. All housing is provided under documented agreements.</p>
+          <p className="text-muted-foreground mt-2">Message and data rates may apply. Message frequency varies.</p>
         </section>
 
         <section>

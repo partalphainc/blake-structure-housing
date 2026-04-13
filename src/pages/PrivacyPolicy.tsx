@@ -18,6 +18,7 @@ const PrivacyPolicy = () => (
         <section>
           <h2 className="text-xl font-semibold mb-2">3. Information Sharing</h2>
           <p className="text-muted-foreground">We do not sell your personal information. We may share information with property owners/investors (limited to what is necessary for property management), service providers who assist our operations, and law enforcement when required by law.</p>
+          <p className="text-muted-foreground mt-2">No mobile information will be shared with third parties/affiliates for marketing/promotional purposes. All the above categories exclude text messaging originator opt-in data and consent; this information will not be shared with any third parties.</p>
         </section>
 
         <section>
