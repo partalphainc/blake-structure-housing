@@ -22,6 +22,7 @@ const HousingApplicationForm = ({ onClose }: Props) => {
   const [noSmoking, setNoSmoking] = useState("");
   const [noPets, setNoPets] = useState("");
   const [agreed, setAgreed] = useState(false);
+  const [smsConsent, setSmsConsent] = useState(false);
   const [lastSubmitTime, setLastSubmitTime] = useState(0);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
