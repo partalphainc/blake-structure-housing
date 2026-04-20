@@ -31,6 +31,10 @@ const HousingApplicationForm = ({ onClose }: Props) => {
       toast({ title: "Agreement Required", description: "You must agree to the authorization statement.", variant: "destructive" });
       return;
     }
+    if (!smsConsent) {
+      toast({ title: "SMS Consent Required", description: "You must agree to receive text messages to submit.", variant: "destructive" });
+      return;
+    }
     const now = Date.now();
     if (now - lastSubmitTime < 60000) {
       toast({ title: "Please wait", description: "You can submit another application in 1 minute.", variant: "destructive" });
@@ -75,6 +79,7 @@ const HousingApplicationForm = ({ onClose }: Props) => {
       emergency_address: val("app-emergency-address"),
       emergency_relationship: val("app-emergency-relationship"),
       esignature: val("app-esignature"),
+      sms_consent: smsConsent ? "yes" : "no",
       message: val("app-message"),
       timestamp: new Date().toISOString(),
       source: "cblake-website-application",
@@ -303,6 +308,20 @@ const HousingApplicationForm = ({ onClose }: Props) => {
           By entering your complete name in the provided field, you acknowledge and agree that it is the legal equivalent of personally signing this document.
         </p>
         <Input id="app-esignature" required placeholder="Type your full legal name" />
+      </div>
+
+      {/* SMS Consent */}
+      <div className="flex items-start gap-3 p-3 rounded-lg bg-muted/50 border border-border">
+        <Checkbox
+          id="app-sms-consent"
+          checked={smsConsent}
+          onCheckedChange={(c) => setSmsConsent(c === true)}
+          className="mt-1 shrink-0"
+          required
+        />
+        <label htmlFor="app-sms-consent" className="text-xs text-muted-foreground leading-relaxed cursor-pointer">
+          I agree to receive recurring automated text messages from Part Alpha Incorporation at the phone number provided. Consent is not a condition of purchase. Msg & data rates may apply. Reply STOP to opt out. *
+        </label>
       </div>
 
       <Button type="submit" variant="hero" className="w-full" disabled={isSubmitting}>
