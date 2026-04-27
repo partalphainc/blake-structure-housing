@@ -320,7 +320,10 @@ const HousingApplicationForm = ({ onClose }: Props) => {
           required
         />
         <label htmlFor="app-sms-consent" className="text-xs text-muted-foreground leading-relaxed cursor-pointer">
-          I agree to receive recurring automated text messages from Part Alpha Incorporation at the phone number provided. Consent is not a condition of purchase. Msg & data rates may apply. Reply STOP to opt out. *
+          I agree to receive recurring automated informational text messages from CBlake Enterprise at the phone number provided. I understand that consent is not a condition of any purchase or housing agreement. Msg & data rates may apply. Message frequency varies. Reply HELP for help and STOP to cancel. View our{" "}
+          <a href="https://www.cblakeent.com/privacy" target="_blank" rel="noopener noreferrer" className="underline text-primary">privacy</a>
+          {" "}and{" "}
+          <a href="https://www.cblakeent.com/terms" target="_blank" rel="noopener noreferrer" className="underline text-primary">terms</a>. *
         </label>
       </div>
 
