@@ -16,7 +16,7 @@ export function useAuth(requiredRole?: string) {
 
         // Auto-assign admin role for @cblakeent.com — bypasses RLS via SECURITY DEFINER
         if (requiredRole === "admin") {
-          await supabase.rpc("assign_admin_role_if_eligible");
+          await supabase.rpc("assign_admin_role_if_eligible" as any);
         }
 
         const { data: roles } = await supabase
