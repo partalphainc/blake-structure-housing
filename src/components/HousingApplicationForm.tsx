@@ -31,10 +31,6 @@ const HousingApplicationForm = ({ onClose }: Props) => {
       toast({ title: "Agreement Required", description: "You must agree to the authorization statement.", variant: "destructive" });
       return;
     }
-    if (!smsConsent) {
-      toast({ title: "SMS Consent Required", description: "You must agree to receive text messages to submit.", variant: "destructive" });
-      return;
-    }
     const now = Date.now();
     if (now - lastSubmitTime < 60000) {
       toast({ title: "Please wait", description: "You can submit another application in 1 minute.", variant: "destructive" });
