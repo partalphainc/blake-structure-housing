@@ -51,7 +51,7 @@ const AdminLogin = () => {
         return;
       }
       // Assign admin role (bypasses RLS via SECURITY DEFINER)
-      await supabase.rpc("assign_admin_role_if_eligible");
+      await supabase.rpc("assign_admin_role_if_eligible" as any);
       navigate("/admin");
     } catch (error: any) {
       toast({ title: "Login failed", description: error.message, variant: "destructive" });
@@ -89,7 +89,7 @@ const AdminLogin = () => {
       // Immediately sign in with the new password
       const { error: signInError } = await supabase.auth.signInWithPassword({ email, password });
       if (signInError) throw signInError;
-      await supabase.rpc("assign_admin_role_if_eligible");
+      await supabase.rpc("assign_admin_role_if_eligible" as any);
       navigate("/admin");
     } catch (error: any) {
       toast({ title: "Setup failed", description: error.message, variant: "destructive" });
