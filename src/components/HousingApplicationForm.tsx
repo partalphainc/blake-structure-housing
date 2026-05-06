@@ -313,13 +313,12 @@ const HousingApplicationForm = ({ onClose }: Props) => {
           checked={smsConsent}
           onCheckedChange={(c) => setSmsConsent(c === true)}
           className="mt-1 shrink-0"
-          required
         />
         <label htmlFor="app-sms-consent" className="text-xs text-muted-foreground leading-relaxed cursor-pointer">
-          I agree to receive recurring automated informational text messages from CBlake Enterprise at the phone number provided. I understand that consent is not a condition of any purchase or housing agreement. Msg & data rates may apply. Message frequency varies. Reply HELP for help and STOP to cancel. View our{" "}
-          <a href="https://www.cblakeent.com/privacy" target="_blank" rel="noopener noreferrer" className="underline text-primary">privacy</a>
+          I agree to receive recurring automated informational text messages from CBlake Enterprise at the phone number provided. Consent is not a condition of service or application completion. Msg & data rates may apply. Message frequency varies. Reply STOP to opt out. View our{" "}
+          <a href="https://www.cblakeent.com/privacy" target="_blank" rel="noopener noreferrer" className="underline text-primary">Privacy Policy</a>
           {" "}and{" "}
-          <a href="https://www.cblakeent.com/terms" target="_blank" rel="noopener noreferrer" className="underline text-primary">terms</a>. *
+          <a href="https://www.cblakeent.com/terms" target="_blank" rel="noopener noreferrer" className="underline text-primary">Terms</a>.
         </label>
       </div>
 
