@@ -17,7 +17,32 @@ const TermsOfService = () => (
         </section>
 
         <section>
-          <h2 className="text-xl font-semibold mb-2">3. User Accounts</h2>
+          <h2 className="text-xl font-semibold mb-2">3. Program Description</h2>
+          <p className="text-muted-foreground">Users can expect to receive informational updates regarding housing applications, appointment reminders, and lease documents.</p>
+        </section>
+
+        <section>
+          <h2 className="text-xl font-semibold mb-2">4. Opt-Out Instructions</h2>
+          <p className="text-muted-foreground">You can cancel the SMS service at any time. Just text <strong>STOP</strong> to our number. After you send the SMS message <strong>STOP</strong> to us, we will send you an SMS message to confirm that you have been unsubscribed.</p>
+        </section>
+
+        <section>
+          <h2 className="text-xl font-semibold mb-2">5. Help Instructions</h2>
+          <p className="text-muted-foreground">If you are experiencing issues with the messaging program you can reply with the keyword <strong>HELP</strong> for more assistance, or you can get help directly at <a href="mailto:support@cblakeent.com" className="text-primary underline">support@cblakeent.com</a>.</p>
+        </section>
+
+        <section>
+          <h2 className="text-xl font-semibold mb-2">6. Fees</h2>
+          <p className="text-muted-foreground">Carriers are not liable for delayed or undelivered messages. As always, message and data rates may apply for any messages sent to you from us and to us from you.</p>
+        </section>
+
+        <section>
+          <h2 className="text-xl font-semibold mb-2">7. Frequency</h2>
+          <p className="text-muted-foreground">Message frequency varies based on your interaction with our housing application process.</p>
+        </section>
+
+        <section>
+          <h2 className="text-xl font-semibold mb-2">8. User Accounts</h2>
           <p className="text-muted-foreground">You are responsible for maintaining the confidentiality of your account credentials. You agree to provide accurate information and notify us immediately of any unauthorized access to your account.</p>
         </section>
 
