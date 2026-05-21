@@ -312,7 +312,7 @@ const HousingApplicationForm = ({ onClose }: Props) => {
           id="app-sms-consent"
           checked={smsConsent}
           onCheckedChange={(c) => setSmsConsent(c === true)}
-          className="mt-1 shrink-0"
+          className="mt-1 shrink-0 rounded-none"
         />
         <label htmlFor="app-sms-consent" className="text-xs text-muted-foreground leading-relaxed cursor-pointer">
           I agree to receive recurring automated informational text messages from CBlake Enterprise at the phone number provided. Consent is not a condition of service or application completion. Msg & data rates may apply. Message frequency varies. Reply STOP to opt out. View our{" "}
