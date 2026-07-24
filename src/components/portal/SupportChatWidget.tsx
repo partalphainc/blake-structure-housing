@@ -118,8 +118,8 @@ const SupportChatWidget = () => {
                     </a>
                   </Button>
                   <Button variant="outline" size="sm" className="justify-start gap-2" asChild>
-                    <a href="tel:+16362066037">
-                      <Phone className="w-4 h-4" /> (636) 206-6037
+                    <a href="tel:+16362066357">
+                      <Phone className="w-4 h-4" /> (636) 206-6357
                     </a>
                   </Button>
                 </div>

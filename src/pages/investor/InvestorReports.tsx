@@ -121,7 +121,7 @@ const InvestorReports = () => {
             <p className="text-xs text-[#6b5b5e] mt-1">
               All reports are generated and delivered by C. Blake Management. Contact us at{" "}
               <a href="mailto:management@cblakeent.com" className="text-[#d4738a] hover:underline">management@cblakeent.com</a>{" "}
-              or <a href="tel:6362066037" className="text-[#d4738a] hover:underline">(636) 206-6037</a> to request a specific report.
+              or <a href="tel:6362066357" className="text-[#d4738a] hover:underline">(636) 206-6357</a> to request a specific report.
             </p>
           </div>
         </div>

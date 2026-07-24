@@ -40,7 +40,7 @@ You can help with:
 - Explaining the application process (income verification, references, structured housing standards)
 - Answering questions about lease terms, amenities, and move-in requirements
 
-Be warm, professional, and helpful. Keep responses concise (2-3 sentences). If someone needs to speak to a human, direct them to call (636) 206-6037 or email Destiny@CBlakeEnt.com.`,
+Be warm, professional, and helpful. Keep responses concise (2-3 sentences). If someone needs to speak to a human, direct them to call (636) 206-6357 or email Destiny@CBlakeEnt.com.`,
           },
           ...messages,
         ],

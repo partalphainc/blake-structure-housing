@@ -205,7 +205,7 @@ const InvestorPayouts = () => {
                   We ensure all banking information is handled securely.
                 </p>
                 <div className="flex flex-wrap gap-3 mt-3">
-                  <a href="tel:6362066037" className="text-xs text-[#d4738a] hover:underline font-medium">(636) 206-6037</a>
+                  <a href="tel:6362066357" className="text-xs text-[#d4738a] hover:underline font-medium">(636) 206-6357</a>
                   <a href="mailto:management@cblakeent.com" className="text-xs text-[#d4738a] hover:underline font-medium">management@cblakeent.com</a>
                 </div>
               </div>
