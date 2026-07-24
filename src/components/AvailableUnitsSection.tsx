@@ -1,6 +1,6 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { motion } from "framer-motion";
-import { MapPin, DollarSign, Droplets, CalendarDays, ChevronLeft, ChevronRight, Home } from "lucide-react";
+import { MapPin, DollarSign, Droplets, CalendarDays, ChevronLeft, ChevronRight, Home, Phone } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
