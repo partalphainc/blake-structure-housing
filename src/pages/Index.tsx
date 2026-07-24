@@ -1,9 +1,11 @@
 import Navbar from "@/components/Navbar";
 import HeroSection from "@/components/HeroSection";
+import TwoDoorSection from "@/components/TwoDoorSection";
 import ForResidentsSection from "@/components/ForResidentsSection";
 import ForOwnersSection from "@/components/ForOwnersSection";
 import AvailableUnitsSection from "@/components/AvailableUnitsSection";
 import ReviewsSection from "@/components/ReviewsSection";
+import FAQSection from "@/components/FAQSection";
 import ContactSection from "@/components/ContactSection";
 import Footer from "@/components/Footer";
 import DestinyChat from "@/components/DestinyChat";
@@ -13,6 +15,7 @@ const Index = () => {
     <div className="min-h-screen bg-background text-foreground">
       <Navbar />
       <HeroSection />
+      <TwoDoorSection />
       <div className="section-fade-overlap">
         <ForResidentsSection />
       </div>
@@ -24,6 +27,9 @@ const Index = () => {
       </div>
       <div className="section-fade-overlap">
         <ReviewsSection />
+      </div>
+      <div className="section-fade-overlap">
+        <FAQSection />
       </div>
       <div className="section-fade-overlap">
         <ContactSection />

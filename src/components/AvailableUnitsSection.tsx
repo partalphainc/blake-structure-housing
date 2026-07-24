@@ -1,6 +1,6 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { motion } from "framer-motion";
-import { MapPin, DollarSign, Droplets, CalendarDays, ChevronLeft, ChevronRight, Home } from "lucide-react";
+import { MapPin, DollarSign, Droplets, CalendarDays, ChevronLeft, ChevronRight, Home, Phone } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -134,6 +134,9 @@ const ImageCarousel = ({ images }: { images: string[] }) => {
   );
 };
 
+const FILTERS = ["All", "Private Rooms", "Furnished", "Unfurnished", "2nd Chance"] as const;
+type Filter = typeof FILTERS[number];
+
 const AvailableUnitsSection = () => {
   const [inquiryOpen, setInquiryOpen] = useState(false);
   const [selectedUnit, setSelectedUnit] = useState("");
@@ -142,8 +145,17 @@ const AvailableUnitsSection = () => {
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
   const [isSending, setIsSending] = useState(false);
+  const [filter, setFilter] = useState<Filter>("All");
   const { toast } = useToast();
   const isMobile = useIsMobile();
+
+  const visibleUnits = useMemo(() => {
+    if (filter === "All") return units;
+    if (filter === "Private Rooms") return units.filter((u) => u.tags.includes("Private Room"));
+    return units.filter((u) => u.tags.includes(filter));
+  }, [filter]);
+
+  const openApplication = () => window.dispatchEvent(new CustomEvent("openApplication"));
 
   const handleInquiry = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -212,10 +224,27 @@ const AvailableUnitsSection = () => {
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-serif font-bold">Available Units</h2>
         </motion.div>
 
+        {/* Filter chips */}
+        <div className="flex flex-wrap justify-center gap-2 mb-8">
+          {FILTERS.map((f) => (
+            <button
+              key={f}
+              onClick={() => setFilter(f)}
+              className={`text-xs md:text-sm font-semibold px-4 py-2 rounded-full border transition-all ${
+                filter === f
+                  ? "bg-primary text-primary-foreground border-primary"
+                  : "bg-transparent text-white/70 border-white/20 hover:border-primary/50 hover:text-white"
+              }`}
+            >
+              {f}
+            </button>
+          ))}
+        </div>
+
         <div className={`grid ${isMobile ? "grid-cols-1" : "md:grid-cols-2"} gap-6`}>
-          {units.map((u, i) => (
+          {visibleUnits.map((u, i) => (
             <div
-              key={i}
+              key={`${u.title}-${u.location}-${i}`}
               className="p-6 rounded-xl bg-[hsl(0,0%,10%)] border border-white/10 hover:border-primary/30 transition-all"
             >
               <ImageCarousel images={u.images} />
@@ -286,14 +315,27 @@ const AvailableUnitsSection = () => {
                 </div>
               )}
 
-              <div className="mt-2">
-                <Button variant="heroOutline" size="sm" className="text-white border-white/30 hover:text-white" onClick={() => { setSelectedUnit(`${u.title} — ${u.location}`); setSelectedWebhook(u.webhookUrl); setInquiryOpen(true); }}>
+              <div className="mt-2 flex flex-wrap gap-2">
+                <Button variant="cta" size="sm" onClick={openApplication}>
+                  Apply Now
+                </Button>
+                <Button variant="heroOutline" size="sm" className="text-white border-white/30 hover:text-white" asChild>
+                  <a href="sms:+16362514272" className="flex items-center gap-1.5">
+                    <Phone size={14} />
+                    Call / Text
+                  </a>
+                </Button>
+                <Button variant="ghost" size="sm" className="text-white/70 hover:text-white hover:bg-white/5" onClick={() => { setSelectedUnit(`${u.title} — ${u.location}`); setSelectedWebhook(u.webhookUrl); setInquiryOpen(true); }}>
                   Inquire
                 </Button>
               </div>
             </div>
           ))}
         </div>
+
+        {visibleUnits.length === 0 && (
+          <p className="text-center text-white/60 mt-8">No units match this filter right now.</p>
+        )}
       </div>
     </section>
     </>

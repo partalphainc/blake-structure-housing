@@ -8,3 +8,6 @@ verify_jwt = false
 
 [functions.admin-create-tenant]
 verify_jwt = false
+
+[functions.submit-owner-lead]
+verify_jwt = false
