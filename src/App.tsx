@@ -53,6 +53,7 @@ import AdminMessaging from "./pages/admin/AdminMessaging";
 import AdminReviews from "./pages/admin/AdminReviews";
 import AdminCRM from "./pages/admin/AdminCRM";
 import AdminMedia from "./pages/admin/AdminMedia";
+import AdminOwnerLeads from "./pages/admin/AdminOwnerLeads";
 import Trial from "./pages/Trial";
 
 const queryClient = new QueryClient();
