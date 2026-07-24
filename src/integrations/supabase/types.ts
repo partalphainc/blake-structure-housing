@@ -233,6 +233,39 @@ export type Database = {
           },
         ]
       }
+      owner_leads: {
+        Row: {
+          contact: string
+          created_at: string
+          full_name: string
+          id: string
+          notes: string | null
+          property_address: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          contact: string
+          created_at?: string
+          full_name: string
+          id?: string
+          notes?: string | null
+          property_address: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          contact?: string
+          created_at?: string
+          full_name?: string
+          id?: string
+          notes?: string | null
+          property_address?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       payments: {
         Row: {
           amount: number

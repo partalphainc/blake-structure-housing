@@ -53,6 +53,7 @@ import AdminMessaging from "./pages/admin/AdminMessaging";
 import AdminReviews from "./pages/admin/AdminReviews";
 import AdminCRM from "./pages/admin/AdminCRM";
 import AdminMedia from "./pages/admin/AdminMedia";
+import AdminOwnerLeads from "./pages/admin/AdminOwnerLeads";
 import Trial from "./pages/Trial";
 
 const queryClient = new QueryClient();
@@ -120,6 +121,7 @@ const App = () => (
           <Route path="/admin/reviews" element={<AdminReviews />} />
           <Route path="/admin/crm" element={<AdminCRM />} />
           <Route path="/admin/media" element={<AdminMedia />} />
+          <Route path="/admin/owner-leads" element={<AdminOwnerLeads />} />
 
           <Route path="*" element={<NotFound />} />
         </Routes>

@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Phone, Search, Home, Megaphone, FileSignature, ClipboardCheck, Camera, Users, TrendingUp, Sofa, FileText, MessageSquare } from "lucide-react";
+import RentalAnalysisForm from "@/components/RentalAnalysisForm";
 
 const allServices = [
   { icon: Home, label: "Converting underperforming properties into structured private-room housing" },
@@ -80,6 +81,7 @@ const ForOwnersSection = () => {
                 </a>
               </Button>
             </div>
+            <RentalAnalysisForm />
           </motion.div>
 
           <div className="space-y-3">
