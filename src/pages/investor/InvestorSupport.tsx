@@ -30,7 +30,7 @@ const faqs = [
   },
   {
     q: "How can I add a new property to my portfolio?",
-    a: "To add a new property, please contact C. Blake Management directly at (636) 206-6357 or management@cblakeent.com. We'll walk you through the onboarding process and get your property set up in the portal.",
+    a: "To add a new property, please contact C. Blake Management directly at (636) 251-4272 or management@cblakeent.com. We'll walk you through the onboarding process and get your property set up in the portal.",
   },
 ];
 
@@ -100,7 +100,7 @@ const InvestorSupport = () => {
             </p>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <a
-                href="tel:6362066357"
+                href="tel:6362514272"
                 className="flex items-center gap-4 p-4 bg-white rounded-xl border border-[#f0e8ea] hover:border-[#d4738a]/30 hover:shadow-sm transition-all group"
               >
                 <div className="w-11 h-11 bg-[#d4738a]/10 rounded-xl flex items-center justify-center group-hover:bg-[#d4738a]/20 transition-colors">
@@ -108,7 +108,7 @@ const InvestorSupport = () => {
                 </div>
                 <div>
                   <p className="text-xs text-[#9b8a8d] mb-0.5">Call Us</p>
-                  <p className="text-sm font-bold text-[#2c2c2c]">(636) 206-6357</p>
+                  <p className="text-sm font-bold text-[#2c2c2c]">(636) 251-4272</p>
                 </div>
               </a>
               <a
@@ -196,8 +196,8 @@ const InvestorSupport = () => {
                   <p className="text-xs text-red-600 leading-relaxed">
                     For emergencies such as flooding, fire, gas leaks, or security issues, call immediately:
                   </p>
-                  <a href="tel:6362066357" className="text-sm font-bold text-red-700 hover:underline mt-2 block">
-                    (636) 206-6357
+                  <a href="tel:6362514272" className="text-sm font-bold text-red-700 hover:underline mt-2 block">
+                    (636) 251-4272
                   </a>
                 </div>
               </div>
