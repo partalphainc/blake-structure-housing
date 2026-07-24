@@ -27,7 +27,8 @@ const RentalAnalysisForm = () => {
       return;
     }
     setSubmitting(true);
-    const { error } = await supabase.from("owner_leads").insert([parsed.data]);
+    const { property_address, full_name, contact } = parsed.data;
+    const { error } = await supabase.from("owner_leads").insert({ property_address: property_address!, full_name: full_name!, contact: contact! });
     setSubmitting(false);
     if (error) {
       toast.error("Something went wrong. Please try again.");
