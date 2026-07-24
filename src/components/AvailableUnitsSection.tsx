@@ -134,6 +134,9 @@ const ImageCarousel = ({ images }: { images: string[] }) => {
   );
 };
 
+const FILTERS = ["All", "Private Rooms", "Furnished", "Unfurnished", "2nd Chance"] as const;
+type Filter = typeof FILTERS[number];
+
 const AvailableUnitsSection = () => {
   const [inquiryOpen, setInquiryOpen] = useState(false);
   const [selectedUnit, setSelectedUnit] = useState("");
@@ -142,8 +145,17 @@ const AvailableUnitsSection = () => {
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
   const [isSending, setIsSending] = useState(false);
+  const [filter, setFilter] = useState<Filter>("All");
   const { toast } = useToast();
   const isMobile = useIsMobile();
+
+  const visibleUnits = useMemo(() => {
+    if (filter === "All") return units;
+    if (filter === "Private Rooms") return units.filter((u) => u.tags.includes("Private Room"));
+    return units.filter((u) => u.tags.includes(filter));
+  }, [filter]);
+
+  const openApplication = () => window.dispatchEvent(new CustomEvent("openApplication"));
 
   const handleInquiry = async (e: React.FormEvent) => {
     e.preventDefault();
