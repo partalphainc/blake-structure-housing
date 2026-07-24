@@ -85,7 +85,7 @@ const HeroSection = () => {
               <a href="#units">Find Housing</a>
             </Button>
             <Button variant="heroOutline" size="lg" className="text-white border-white/30 hover:text-white" asChild>
-              <a href="tel:+16362066357">Partner With Us</a>
+              <a href="tel:+16362514272">Partner With Us</a>
             </Button>
           </div>
         </motion.div>
@@ -107,7 +107,7 @@ const HeroSection = () => {
             <span className="text-sm">Speak With a Housing Representative</span>
           </button>
           <a
-            href="tel:+16362066357"
+            href="tel:+16362514272"
             className="flex items-center gap-3 text-white/50 hover:text-white transition-colors"
           >
             <span className="relative inline-flex items-center justify-center w-7 h-7 ring-pulse">

@@ -20,8 +20,8 @@ const ContactSupportCard = () => (
           </a>
         </Button>
         <Button variant="outline" size="sm" className="justify-start gap-2" asChild>
-          <a href="tel:+16362066357">
-            <Phone className="w-4 h-4" /> (636) 206-6357
+          <a href="tel:+16362514272">
+            <Phone className="w-4 h-4" /> (636) 251-4272
           </a>
         </Button>
       </div>

@@ -214,7 +214,7 @@ const InvestorSettings = () => {
                 All banking information is handled securely and confidentially.
               </p>
               <div className="flex flex-wrap gap-3 mt-3">
-                <a href="tel:6362066357" className="text-xs text-[#d4738a] font-medium hover:underline">(636) 206-6357</a>
+                <a href="tel:6362514272" className="text-xs text-[#d4738a] font-medium hover:underline">(636) 251-4272</a>
                 <a href="mailto:management@cblakeent.com" className="text-xs text-[#d4738a] font-medium hover:underline">management@cblakeent.com</a>
               </div>
             </div>

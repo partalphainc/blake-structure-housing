@@ -142,7 +142,7 @@ const DestinyChat = () => {
     } catch {
       const errMsg: ChatMessage = {
         role: "assistant",
-        content: "I'm having trouble connecting right now. Please call us at (636) 206-6357.",
+        content: "I'm having trouble connecting right now. Please call us at (636) 251-4272.",
         timestamp: new Date(),
       };
       setMessages((prev) => [...prev.slice(0, -1), errMsg]);

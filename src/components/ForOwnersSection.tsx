@@ -72,7 +72,7 @@ const ForOwnersSection = () => {
                 <a href="#contact">Schedule Owner Consultation</a>
               </Button>
               <Button variant="heroOutline" size="lg" asChild>
-                <a href="tel:+16362066357" className="flex items-center gap-2">
+                <a href="tel:+16362514272" className="flex items-center gap-2">
                   <span className="relative inline-flex items-center justify-center w-5 h-5 ring-pulse">
                     <Phone size={14} />
                   </span>
