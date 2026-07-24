@@ -343,10 +343,5 @@ const AvailableUnitsSection = () => {
 };
 
 export default AvailableUnitsSection;
-      </div>
-    </section>
-    </>
-  );
-};
 
 export default AvailableUnitsSection;
