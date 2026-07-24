@@ -81,6 +81,7 @@ const ForOwnersSection = () => {
                 </a>
               </Button>
             </div>
+            <RentalAnalysisForm />
           </motion.div>
 
           <div className="space-y-3">
