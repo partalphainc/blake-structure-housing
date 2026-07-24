@@ -5,7 +5,7 @@ import { Phone, Mail, Clock, CalendarDays, Home, BarChart3 } from "lucide-react"
 import { useIsMobile } from "@/hooks/use-mobile";
 
 const contactItems = [
-  { icon: Phone, label: "Phone", value: "(636) 206-6037", href: "tel:+16362066037" },
+  { icon: Phone, label: "Phone", value: "(636) 206-6357", href: "tel:+16362066357" },
   { icon: Mail, label: "Email", value: "Destiny@CBlakeEnt.com", href: "mailto:Destiny@CBlakeEnt.com" },
   { icon: Clock, label: "Hours", value: "Mon–Fri 9AM–6PM", href: null },
   { icon: CalendarDays, label: "Consult", value: "By Appointment", href: "#contact" },
@@ -84,7 +84,7 @@ const ContactSection = () => {
               <li className="flex items-center gap-2"><div className="w-1.5 h-1.5 rounded-full bg-accent-lavender" /> Revenue optimization consultation</li>
             </ul>
             <Button variant="heroOutline" size="default" asChild>
-              <a href="tel:+16362066037" className="flex items-center gap-2">
+              <a href="tel:+16362066357" className="flex items-center gap-2">
                 <span className="relative inline-flex items-center justify-center w-5 h-5 ring-pulse">
                   <Phone size={14} />
                 </span>
