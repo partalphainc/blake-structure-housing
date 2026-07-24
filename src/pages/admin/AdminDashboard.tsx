@@ -9,6 +9,7 @@ const adminNav = [
   { label: "Dashboard", href: "/admin", icon: <LayoutDashboard className="w-4 h-4" /> },
   { label: "Applications", href: "/admin/applications", icon: <ClipboardCheck className="w-4 h-4" /> },
   { label: "CRM", href: "/admin/crm", icon: <UserPlus className="w-4 h-4" /> },
+  { label: "Owner Leads", href: "/admin/owner-leads", icon: <UserPlus className="w-4 h-4" /> },
   { label: "Tenants", href: "/admin/tenants", icon: <UserCheck className="w-4 h-4" /> },
   { label: "Investors", href: "/admin/investors", icon: <Briefcase className="w-4 h-4" /> },
   { label: "Properties", href: "/admin/properties", icon: <Building2 className="w-4 h-4" /> },
