@@ -343,5 +343,3 @@ const AvailableUnitsSection = () => {
 };
 
 export default AvailableUnitsSection;
-
-export default AvailableUnitsSection;
