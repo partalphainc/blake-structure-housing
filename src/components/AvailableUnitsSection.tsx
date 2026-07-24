@@ -54,8 +54,8 @@ const units = [
   {
     title: "2 Bed 1.5 Bath Townhome – Unfurnished",
     location: "St. Louis Area, Missouri",
-    rate: "Contact for Pricing",
-    deposit: "Call (636) 206-6357",
+    rate: "$1,700/month",
+    deposit: "Utilities Not Included - Must Be in Tenant Name",
     amenities: "Unfurnished Townhome",
     utilities: "Contact for details",
     minStay: "Available Now",
@@ -66,8 +66,8 @@ const units = [
   {
     title: "2 Bed 1 Bath Full Unit – Unfurnished",
     location: "St. Louis Area, Missouri",
-    rate: "Contact for Pricing",
-    deposit: "Call (636) 206-6357",
+    rate: "$1,625/month",
+    deposit: "Utilities Not Included - Must Be in Tenant Name",
     amenities: "Unfurnished Full Unit",
     utilities: "Contact for details",
     minStay: "Available Now",
