@@ -320,9 +320,9 @@ const AvailableUnitsSection = () => {
                   Apply Now
                 </Button>
                 <Button variant="heroOutline" size="sm" className="text-white border-white/30 hover:text-white" asChild>
-                  <a href="sms:+16362514272" className="flex items-center gap-1.5">
+                  <a href="tel:+16362514272" className="flex items-center gap-1.5">
                     <Phone size={14} />
-                    Call / Text
+                    Call
                   </a>
                 </Button>
                 <Button variant="ghost" size="sm" className="text-white/70 hover:text-white hover:bg-white/5" onClick={() => { setSelectedUnit(`${u.title} — ${u.location}`); setSelectedWebhook(u.webhookUrl); setInquiryOpen(true); }}>
