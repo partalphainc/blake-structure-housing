@@ -67,7 +67,7 @@ const faqs = [
     q: "Can I talk to a real person?",
     a: (
       <>
-        Absolutely. Call or text us at{" "}
+        Absolutely. Call us at{" "}
         <a href="tel:+16362514272" className="text-primary underline underline-offset-2 hover:opacity-80">
           (636) 251-4272
         </a>
